@@ -181,12 +181,6 @@ fv_regression_function <- function(median_income_var_name, dfg) {
       df
     )
   
- 
-  atab <-
-    anova(lm1z, lm1a, lm1b, lm1c)
-  
-  write_csv(atab, paste0("/home/djolear/gallup/relative_status/regressions/fv_atab_", median_income_var_name, "_", dfg$year[1], ".csv"))
-  
   return(master_df)
 }
 
