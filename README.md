@@ -1,1 +1,1 @@
-# gallup_rs
+# Gallup Relative Status Analyses
