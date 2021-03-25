@@ -58,7 +58,7 @@ gallup_preprocess_master <-function(data_path, data_year) {
   df <- calculate_median_income(df)
   print(paste0("Generate gallup median income for ", df$year[1], " complete."))
 
-  df <- gallup_join_census_data_function(df, df$year[1])
+  df <- join_census_data(df, df$year[1])
   print(paste0("Attach general census data for ", df$year[1], " complete."))
   
   df <- bind_chr(df, df$year[1])
