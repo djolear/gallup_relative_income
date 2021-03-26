@@ -80,12 +80,6 @@ com_regression_function <- function(median_income_var_name, dfg) {
   
   master_df <- data.frame()
   
-  master_df <-
-    bind_rows(
-      master_df,
-      df
-    )
-  
   lm1b <-
     lmer(
       COMMUNITY_scale ~
@@ -194,7 +188,7 @@ com_regression_function <- function(median_income_var_name, dfg) {
   return(master_df)
 }
 
-data_path <- "/home/djolear/gallup/relative_status/data/regression/"
+data_path <- "/project/ourminsk/gallup/exports/for_regression_analyses/"
 
 file_list <- 
   data.frame(
@@ -213,7 +207,7 @@ file_list <-
 
 master_function <- function(path) {
   dfg <- 
-    read_csv(paste0("/home/djolear/gallup/relative_status/data/regression/", path))
+    read_csv(paste0("/project/ourminsk/gallup/exports/for_regression_analyses/", path))
   
   med_inc_vars <-
     c("median_income_county_scale", "median_income_demo_scale")
@@ -221,7 +215,7 @@ master_function <- function(path) {
   res <- 
     future_map_dfr(.x = med_inc_vars, .f = com_regression_function, dfg = dfg)
   
-  write_csv(res, paste0("/home/djolear/gallup/relative_status/regressions/median_income_models/results/community_mi_", dfg$year[1], ".csv"))
+  write_csv(res, paste0("/home/djolear/gallup/relative_status/regressions/median_income_models/results/social_mi_", dfg$year[1], ".csv"))
   
 }
 

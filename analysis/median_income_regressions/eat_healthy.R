@@ -189,7 +189,7 @@ eh_regression_function <- function(median_income_var_name, dfg) {
   return(master_df)
 }
 
-data_path <- "/home/djolear/gallup/relative_status/data/regression/"
+data_path <- "/project/ourminsk/gallup/exports/for_regression_analyses/"
 
 file_list <- 
   data.frame(
@@ -204,7 +204,7 @@ file_list <-
 
 master_function <- function(path) {
   dfg <- 
-    read_csv(paste0("/home/djolear/gallup/relative_status/data/regression/", path))
+    read_csv(paste0("/project/ourminsk/gallup/exports/for_regression_analyses/", path))
   
   med_inc_vars <-
     c("median_income_county_scale", "median_income_demo_scale")
