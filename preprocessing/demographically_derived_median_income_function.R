@@ -10,7 +10,7 @@ calculate_median_income <- function(df){
       education
     ) %>% 
     summarise(
-      med_inc_demo_age_gallup = matrixStats::weightedMedian(income, w = COMB_WEIGHT, na.rm = TRUE)
+      median_income_demo = matrixStats::weightedMedian(income, w = COMB_WEIGHT, na.rm = TRUE)
     ) %>% 
     ungroup() %>% 
     filter_all(all_vars(!is.na(.)))

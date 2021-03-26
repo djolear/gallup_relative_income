@@ -29,14 +29,12 @@ data_path <- "D:/data/gallup/raw/US Daily SPSS Files/"
 ## Load Functions ##
 ####################
 
-source(paste0(machine_path, "research/projects/gallup/gallup_analysis_1/relative_status_analysis/munge_data/gallup_data_select_function.R"))
+source(paste0(machine_path, "research/projects/gallup_rs/preprocessing/select_variables_function.R"))
+source(paste0(machine_path, "research/projects/gallup_rs/preprocessing/demographically_derived_median_income_function.R"))
+source(paste0(machine_path, "research/projects/gallup_rs/preprocessing/join_census_data_function.R"))
+source(paste0(machine_path, "research/projects/gallup_rs/preprocessing/join_chr_data_function.R"))
 
-source(paste0(machine_path, "research/projects/gallup/gallup_analysis_1/relative_status_analysis/munge_data/gallup_join_median_earnings_census_functions.R"))
-source(paste0(machine_path, "research/projects/gallup/gallup_analysis_1/relative_status_analysis/munge_data/gallup_join_median_income_gallup_functions.R"))
-source(paste0(machine_path, "research/projects/gallup/gallup_analysis_1/relative_status_analysis/munge_data/gallup_join_census_data_function.R"))
-source(paste0(machine_path, "research/projects/gallup/gallup_analysis_1/relative_status_analysis/munge_data/bind_chr_data.R"))
-
-gallup_preprocess_master <-function(data_path, data_year) {
+preprocess_master <-function(data_path, data_year) {
   
   # Read data
   df <-
@@ -45,26 +43,27 @@ gallup_preprocess_master <-function(data_path, data_year) {
       year = data_year
     )
   
+  
   # Rename and munge variables
-  df <-
-    munge_data(df)
+  df <- munge_data(df)
+  print(paste0("Munge data for ", df$year[1], " complete."))
   
   # Select variables
-  df <- 
-    select_data(df)
-  
+  df <- select_data(df)
   print(paste0("Select variables for ", df$year[1], " complete."))
 
-  df <- 
-    calculate_median_income(df)
+  
+  df <- calculate_median_income(df)
   print(paste0("Generate gallup median income for ", df$year[1], " complete."))
 
-  df <- 
-    join_census_data(df, df$year[1])
+  
+  df <- join_census_data(df, df$year[1])
+  
   print(paste0("Attach general census data for ", df$year[1], " complete."))
   
-  df <- 
-    join_chr_data(df, df$year[1])
+  
+  df <- join_chr_data(df, df$year[1])
+  
   print(paste0("Attach CHR ranking data for ", df$year[1], " complete."))
 
   write_data(df)

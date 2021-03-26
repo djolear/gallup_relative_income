@@ -36,7 +36,6 @@ source(paste0(machine_path, "research/projects/gallup_rs/preprocessing/preproces
 #####################
 
 # list all data files
-
 file_list <- 
   data.frame(
     file_list = list.files(path = paste0(data_path))
@@ -49,16 +48,20 @@ file_list <-
   ) 
 
 # run data preprocessing
-
 for(i in 1:length(file_list$file_list)) {
   
   # read each file and apply functions
   assign(
+    
+    # create name for file
     paste0("dfg_", str_extract(file_list$file_list[i], "[[:digit:]]+")), 
-    gallup_preprocess_master(
+    
+    # run function
+    preprocess_master(
       paste0(data_path, file_list$file_list[i]), 
       as.numeric(str_extract(file_list$file_list[i], "[[:digit:]]+"))
     )
+    
   )
   
   # print status
