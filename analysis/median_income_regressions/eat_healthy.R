@@ -212,7 +212,7 @@ master_function <- function(path) {
   res <- 
     future_map_dfr(.x = med_inc_vars, .f = eh_regression_function, dfg = dfg)
   
-  write_csv(res, paste0("/home/djolear/gallup/relative_status/regressions/median_income_models/eh_mi_", dfg$year[1], ".csv"))
+  write_csv(res, paste0("/home/djolear/gallup/relative_status/regressions/median_income_models/results/eh_mi_", dfg$year[1], ".csv"))
   
 }
 
