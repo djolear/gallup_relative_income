@@ -78,8 +78,12 @@ munge_data <- function(df) {
       obese = as.factor(OBESE),
       sr_health = H36,
       hbp = H4A,
+      cholesterol = H4B,
       diabetes = H4C,
       depression = H4D,
+      heart_attack = H4E,
+      #asthma = H4F,
+      cancer = H4G,
       height = HEIGHT,
       
       # Demographics
