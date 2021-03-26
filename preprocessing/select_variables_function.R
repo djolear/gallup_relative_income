@@ -1,6 +1,6 @@
 
 
-select_data <- function(df) {
+select_variables <- function(df) {
   df <-
     df %>% 
     dplyr::select(

@@ -45,7 +45,7 @@ file_list <-
   file_list %>% 
   filter(
     str_detect(file_list, ".SAV")
-  ) 
+  ) %>% slice(1:10)
 
 # run data preprocessing
 for(i in 1:length(file_list$file_list)) {

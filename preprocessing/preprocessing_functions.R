@@ -29,10 +29,12 @@ data_path <- "D:/data/gallup/raw/US Daily SPSS Files/"
 ## Load Functions ##
 ####################
 
+source(paste0(machine_path, "research/projects/gallup_rs/preprocessing/munge_data_function.R"))
 source(paste0(machine_path, "research/projects/gallup_rs/preprocessing/select_variables_function.R"))
 source(paste0(machine_path, "research/projects/gallup_rs/preprocessing/demographically_derived_median_income_function.R"))
 source(paste0(machine_path, "research/projects/gallup_rs/preprocessing/join_census_data_function.R"))
 source(paste0(machine_path, "research/projects/gallup_rs/preprocessing/join_chr_data_function.R"))
+source(paste0(machine_path, "research/projects/gallup_rs/preprocessing/write_data_function.R"))
 
 preprocess_master <-function(data_path, data_year) {
   
@@ -49,7 +51,7 @@ preprocess_master <-function(data_path, data_year) {
   print(paste0("Munge data for ", df$year[1], " complete."))
   
   # Select variables
-  df <- select_data(df)
+  df <- select_variables(df)
   print(paste0("Select variables for ", df$year[1], " complete."))
 
   

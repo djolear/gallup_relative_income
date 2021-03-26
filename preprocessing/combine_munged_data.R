@@ -103,7 +103,7 @@ dfg_rs <-
     neg_aff = enjoyment + happiness + stress + worry + sadness
   )
 
-dfg_rs <- gallup_scale_function(dfg_rs)
+dfg_rs <- standardize_variables(dfg_rs)
 
 
 write_rds(dfg_rs, paste0("D:/data/gallup/exports/", "dfg_rs.rds"))
