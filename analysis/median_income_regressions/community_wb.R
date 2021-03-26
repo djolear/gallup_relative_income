@@ -29,7 +29,7 @@ com_regression_function <- function(median_income_var_name, dfg) {
       COMMUNITY_scale,
       raw_income_scale,
       education_scale,
-      unweighted_pop_county_scale,
+      total_pop_county_scale,
       median_monthly_housing_cost_county_scale,
       land_area_2010_scale,
       physicians_scale,
@@ -47,7 +47,7 @@ com_regression_function <- function(median_income_var_name, dfg) {
         COMMUNITY_scale,
         raw_income_scale,
         education_scale,
-        unweighted_pop_county_scale,
+        total_pop_county_scale,
         median_monthly_housing_cost_county_scale,
         land_area_2010_scale,
         physicians_scale,
@@ -91,7 +91,7 @@ com_regression_function <- function(median_income_var_name, dfg) {
       COMMUNITY_scale ~
         raw_income_scale +
         median_income_var_scale +
-        unweighted_pop_county_scale +
+        total_pop_county_scale +
         median_monthly_housing_cost_county_scale +
         land_area_2010_scale +
         physicians_scale +
@@ -146,7 +146,7 @@ com_regression_function <- function(median_income_var_name, dfg) {
         median_income_var_scale * age_scale +
         median_income_var_scale * race +
         median_income_var_scale * married +
-        unweighted_pop_county_scale +
+        total_pop_county_scale +
         median_monthly_housing_cost_county_scale +
         land_area_2010_scale +
         physicians_scale +
