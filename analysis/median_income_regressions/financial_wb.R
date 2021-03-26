@@ -14,21 +14,19 @@ library("lme4", lib.loc = "/home/djolear/R")
 ## Setup Parallel ##
 ####################
 
-plan(multicore, workers = 8)
+plan(multicore, workers = 4)
 
 ###############
 ## Functions ##
 ###############
 
-fv_regression_function <- function(median_income_var_name, dfg) {
-  
-  # select data and set median income variable
+fin_regression_function <- function(median_income_var_name, dfg) {
   
   dfg <-
     dfg %>% 
     select(
       median_income_var_scale = !!enquo(median_income_var_name),
-      fruits_veggies_scale,
+      FINANCIAL_scale,
       raw_income_scale,
       education_scale,
       unweighted_pop_county_scale,
@@ -46,7 +44,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
     filter_at(
       vars(
         median_income_var_scale,
-        fruits_veggies_scale,
+        FINANCIAL_scale,
         raw_income_scale,
         education_scale,
         unweighted_pop_county_scale,
@@ -75,19 +73,16 @@ fv_regression_function <- function(median_income_var_name, dfg) {
       as.factor
     )
   
-  # set up coding of factor variables
   contrasts(dfg$sex) <- contr.sum(2)
   contrasts(dfg$employment_all) <- contr.sum(2)
   contrasts(dfg$race) <- contr.sum(5)
   contrasts(dfg$married) <- contr.sum(6)
   
-  # create dataframe for results
   master_df <- data.frame()
   
-  # fit main effect model
   lm1b <-
     lmer(
-      fruits_veggies_scale ~
+      FINANCIAL_scale ~
         raw_income_scale +
         median_income_var_scale +
         unweighted_pop_county_scale +
@@ -121,7 +116,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
     mutate(
       median_income_var = median_income_var_name,
       year = dfg$year[1],
-      outcome = "fruit_veggies_scale",
+      outcome = "FINANCIAL_scale",
       id_controls = "yes"
     ) %>% 
     left_join(
@@ -135,10 +130,9 @@ fv_regression_function <- function(median_income_var_name, dfg) {
       df
     )
   
-  # fit interactive model
   lm1c <-
     lmer(
-      fruits_veggies_scale ~
+      FINANCIAL_scale ~
         median_income_var_scale * raw_income_scale +
         median_income_var_scale * education_scale +
         median_income_var_scale * employment_all +
@@ -177,7 +171,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
     mutate(
       median_income_var = median_income_var_name,
       year = dfg$year[1],
-      outcome = "fruit_veggies_scale",
+      outcome = "FINANCIAL_scale",
       id_controls = "yes_int"
     ) %>% 
     left_join(
@@ -205,7 +199,11 @@ file_list <-
   file_list %>% 
   filter(
     str_detect(file_list, ".csv")
-  )
+  ) %>% 
+  mutate(
+    year = as.numeric(str_extract(file_list, "[[:digit:]]+"))
+  ) %>% 
+  filter(year %in% c(2014:2017))
 
 master_function <- function(path) {
   dfg <- 
@@ -215,9 +213,9 @@ master_function <- function(path) {
     c("median_income_county_scale", "median_income_demo_scale")
   
   res <- 
-    future_map_dfr(.x = med_inc_vars, .f = fv_regression_function, dfg = dfg)
+    future_map_dfr(.x = med_inc_vars, .f = fin_regression_function, dfg = dfg)
   
-  write_csv(res, paste0("/home/djolear/gallup/relative_status/regressions/median_income_models/fv_mi_", dfg$year[1], ".csv"))
+  write_csv(res, paste0("/home/djolear/gallup/relative_status/regressions/financial_mi_", dfg$year[1], ".csv"))
   
 }
 
