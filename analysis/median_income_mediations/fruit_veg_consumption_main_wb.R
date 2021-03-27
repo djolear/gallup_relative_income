@@ -113,7 +113,7 @@ master_function <- function(path) {
   
   res <- fv_mediation1_function(dfg$year[1], dfg)
   
-  write_csv(res, paste0("/project/ourminsk/gallup/results/mediation/fv_mediation_main_wb", dfg$year[1], ".csv"))
+  write_csv(res, paste0("/project/ourminsk/gallup/results/mediation/fv_mediation_main_wb_", dfg$year[1], ".csv"))
   
 }
 
