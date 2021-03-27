@@ -1,0 +1,108 @@
+---
+title: "Gallup Relative Status Health Behavior Mediation Analysis"
+author: "Daniel O'Leary"
+date: "1/11/2021"
+output:
+  github_document:
+    toc: true
+    toc_depth: 5
+---
+
+```{r, include = FALSE}
+if (!require("pacman")) install.packages("pacman")
+
+pacman::p_load(
+  tidyverse, 
+  haven,
+  lme4,
+  lm.beta,
+  sjPlot,
+  stargazer
+)
+```
+
+```{r, include = FALSE}
+sinfo <- data.frame(Sys.info())
+machine <- sinfo$Sys.info..[4]
+
+machine_path <- 
+  ifelse(
+    machine %in% c("sussman-rp-mbpro.local", "sussman-rp-mbpro.lan"), 
+    "/Users/djolear/Google Drive/", 
+    "G:/My Drive/"
+  )
+
+source(paste0(machine_path, "research/projects/gallup/gallup_analysis_1/relative_status_analysis/mediation_results_munge.R"))
+```
+
+
+# Analysis
+
+## Days w/ 5 servings of fruits and veggies
+
+```{r}
+fv_med %>% 
+  filter(str_detect(lhs, "indirect")) %>% 
+  mutate(
+    mech = 
+      case_when(
+        lhs == "indirect1" ~ "purpose",
+        lhs == "indirect2" ~ "financial",
+        lhs == "indirect3" ~ "community",
+        lhs == "indirect4" ~ "social",
+      )
+  ) %>% 
+  mutate(year = as.factor(year)) %>% 
+  ggplot(aes(year, est)) +
+  geom_col() +
+  geom_errorbar(aes(ymin = est - se, ymax = est + se), width = 0.1) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  facet_grid(. ~ mech)
+```
+
+## Eat healthy yesterday?
+
+```{r}
+eh_med %>% 
+  filter(str_detect(lhs, "indirect")) %>% 
+  mutate(
+    mech = 
+      case_when(
+        lhs == "indirect1" ~ "purpose",
+        lhs == "indirect2" ~ "financial",
+        lhs == "indirect3" ~ "community",
+        lhs == "indirect4" ~ "social",
+      )
+  ) %>% 
+  mutate(year = as.factor(year)) %>% 
+  ggplot(aes(year, est)) +
+  geom_col() +
+  geom_errorbar(aes(ymin = est - se, ymax = est + se), width = 0.1) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  facet_grid(. ~ mech)
+```
+
+
+## Smoke?
+
+```{r}
+smoke_med %>% 
+  filter(str_detect(lhs, "indirect")) %>% 
+  mutate(
+    mech = 
+      case_when(
+        lhs == "indirect1" ~ "purpose",
+        lhs == "indirect2" ~ "financial",
+        lhs == "indirect3" ~ "community",
+        lhs == "indirect4" ~ "social",
+      )
+  ) %>% 
+  mutate(year = as.factor(year)) %>% 
+  ggplot(aes(year, est)) +
+  geom_col() +
+  geom_errorbar(aes(ymin = est - se, ymax = est + se), width = 0.1) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  facet_grid(. ~ mech)
+```
+
+
