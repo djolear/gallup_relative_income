@@ -20,7 +20,7 @@ plan(multicore, workers = 4)
 ## Functions ##
 ###############
 
-fv_mediation1_function <- function(current_year, dfg){
+smoking_mediation1_function <- function(current_year, dfg){
   print(current_year)
   model <- 
     '
@@ -79,7 +79,7 @@ fv_mediation1_function <- function(current_year, dfg){
     lavaan::sem(
       model = model,
       data = dfg,
-      ordered = c("eat_healthy", "sex_1", "race_1", "race_2", "race_3", "race_4", "employment_all_1", "married_1", "married_2", "married_3", "married_4", "married_5"),
+      ordered = c("eat_healthy", "smoking", "sex_1", "race_1", "race_2", "race_3", "race_4", "employment_all_1", "married_1", "married_2", "married_3", "married_4", "married_5"),
       se = "bootstrap",
       bootstrap = 5000,
       estimator = "DWLS"
@@ -117,9 +117,9 @@ master_function <- function(path) {
   dfg <- 
     read_csv(paste0("/project/ourminsk/gallup/exports/for_mediation_analyses/", path))
   
-  res <- fv_mediation1_function(dfg$year[1], dfg)
+  res <- smoking_mediation1_function(dfg$year[1], dfg)
   
-  write_csv(res, paste0("/project/ourminsk/gallup/results/mediation/fv_mediation_alt_wb_", dfg$year[1], ".csv"))
+  write_csv(res, paste0("/project/ourminsk/gallup/results/mediation/smoking_mediation_alt_wb_", dfg$year[1], ".csv"))
   
 }
 
