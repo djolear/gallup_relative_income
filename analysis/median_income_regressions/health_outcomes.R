@@ -14,13 +14,13 @@ library("lme4", lib.loc = "/home/djolear/R")
 ## Setup Parallel ##
 ####################
 
-plan(multicore, workers = 8)
+plan(multicore, workers = 2)
 
 ###############
 ## Functions ##
 ###############
 
-fv_regression_function <- function(median_income_var_name, dfg) {
+health_regression_function <- function(median_income_var_name, dfg) {
   
   # select data and set median income variable
   
@@ -80,7 +80,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
   master_df <- data.frame()
   
   # fit main effect model
-  lm1_ladder_now <-
+  lm1_fv <-
     lmer(
       ladder_now_scale ~
         raw_income_scale +
@@ -100,7 +100,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
         (1 + median_income_var_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
-      data = dfg
+      data = dfg_current
     )
   
   df <-
@@ -199,7 +199,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
         (1 + median_income_var_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
-      data = dfg
+      data = dfg_current
     )
   
   df <-
@@ -296,7 +296,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
         (1 + median_income_var_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
-      data = dfg
+      data = dfg_current
     )
   
   df <-
@@ -320,6 +320,157 @@ fv_regression_function <- function(median_income_var_name, dfg) {
       by = "id_controls"
     )
   
+  
+  
+  dfg_current <-
+    dfg %>% 
+    select(
+      median_income_var_scale = !!enquo(median_income_var_name),
+      HEIGHT,
+      raw_income_scale,
+      education_scale,
+      total_pop_county_scale,
+      median_monthly_housing_cost_county_scale,
+      land_area_2010_scale,
+      physicians_scale,
+      employment_all,
+      sex,
+      age_scale,
+      race,
+      married, 
+      year,
+      fips_code
+    ) %>% 
+    filter_at(
+      vars(
+        median_income_var_scale,
+        HEIGHT,
+        raw_income_scale,
+        education_scale,
+        total_pop_county_scale,
+        median_monthly_housing_cost_county_scale,
+        land_area_2010_scale,
+        physicians_scale,
+        employment_all,
+        sex,
+        age_scale,
+        race,
+        married, 
+        year,
+        fips_code
+      ),
+      all_vars(!is.na(.))
+    ) %>% 
+    mutate_at(
+      vars(
+        employment_all,
+        sex,
+        race,
+        married,
+        year,
+        fips_code
+      ),
+      as.factor
+    )
+  
+  lm1_height <-
+    lmer(
+      scale(HEIGHT) ~
+        raw_income_scale +
+        median_income_var_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_var_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_current
+    )
+  
+  df <-
+    tidy(lm1_height)
+  
+  fit_stats <-
+    glance(lm1_height) %>% 
+    mutate(
+      id_controls = "yes"
+    )
+  
+  df <-
+    df %>%
+    mutate(
+      median_income_var = median_income_var_name,
+      outcome = "height",
+      id_controls = "yes"
+    ) %>% 
+    left_join(
+      fit_stats,
+      by = "id_controls"
+    )
+  
+  
+  
+  
+  dfg_current <-
+    dfg %>% 
+    select(
+      median_income_var_scale = !!enquo(median_income_var_name),
+      sr_health_scale,
+      raw_income_scale,
+      education_scale,
+      total_pop_county_scale,
+      median_monthly_housing_cost_county_scale,
+      land_area_2010_scale,
+      physicians_scale,
+      employment_all,
+      sex,
+      age_scale,
+      race,
+      married, 
+      year,
+      fips_code
+    ) %>% 
+    filter_at(
+      vars(
+        median_income_var_scale,
+        sr_health_scale,
+        raw_income_scale,
+        education_scale,
+        total_pop_county_scale,
+        median_monthly_housing_cost_county_scale,
+        land_area_2010_scale,
+        physicians_scale,
+        employment_all,
+        sex,
+        age_scale,
+        race,
+        married, 
+        year,
+        fips_code
+      ),
+      all_vars(!is.na(.))
+    ) %>% 
+    mutate_at(
+      vars(
+        employment_all,
+        sex,
+        race,
+        married,
+        year,
+        fips_code
+      ),
+      as.factor
+    )
+  
   lm1_sr_health <-
     lmer(
       sr_health_scale ~
@@ -340,7 +491,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
         (1 + median_income_var_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
-      data = dfg
+      data = dfg_current
     )
   
   df <-
@@ -365,6 +516,58 @@ fv_regression_function <- function(median_income_var_name, dfg) {
     )
   
   
+  
+  dfg_current <-
+    dfg %>% 
+    select(
+      median_income_var_scale = !!enquo(median_income_var_name),
+      diabetes,
+      raw_income_scale,
+      education_scale,
+      total_pop_county_scale,
+      median_monthly_housing_cost_county_scale,
+      land_area_2010_scale,
+      physicians_scale,
+      employment_all,
+      sex,
+      age_scale,
+      race,
+      married, 
+      year,
+      fips_code
+    ) %>% 
+    filter_at(
+      vars(
+        median_income_var_scale,
+        diabetes,
+        raw_income_scale,
+        education_scale,
+        total_pop_county_scale,
+        median_monthly_housing_cost_county_scale,
+        land_area_2010_scale,
+        physicians_scale,
+        employment_all,
+        sex,
+        age_scale,
+        race,
+        married, 
+        year,
+        fips_code
+      ),
+      all_vars(!is.na(.))
+    ) %>% 
+    mutate_at(
+      vars(
+        employment_all,
+        sex,
+        race,
+        married,
+        year,
+        fips_code
+      ),
+      as.factor
+    )
+  
   lm1_diab <-
     glm(
       diabetes ~
@@ -385,7 +588,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
         (1 + median_income_var_scale|fips_code),
       family = "binomial",
       control = glmerControl(optimizer = "bobyqa"),
-      data = dfg %>% mutate(diabetes = ifelse(diabetes == 1, 1, ifelse(diabetes == 2, 0, NA)))
+      data = dfg_current %>% mutate(diabetes = ifelse(diabetes == 1, 1, ifelse(diabetes == 2, 0, NA)))
     )
   
   df <-
@@ -410,6 +613,59 @@ fv_regression_function <- function(median_income_var_name, dfg) {
     )
   
   
+  
+  dfg_current <-
+    dfg %>% 
+    select(
+      median_income_var_scale = !!enquo(median_income_var_name),
+      hbp,
+      raw_income_scale,
+      education_scale,
+      total_pop_county_scale,
+      median_monthly_housing_cost_county_scale,
+      land_area_2010_scale,
+      physicians_scale,
+      employment_all,
+      sex,
+      age_scale,
+      race,
+      married, 
+      year,
+      fips_code
+    ) %>% 
+    filter_at(
+      vars(
+        median_income_var_scale,
+        hbp,
+        raw_income_scale,
+        education_scale,
+        total_pop_county_scale,
+        median_monthly_housing_cost_county_scale,
+        land_area_2010_scale,
+        physicians_scale,
+        employment_all,
+        sex,
+        age_scale,
+        race,
+        married, 
+        year,
+        fips_code
+      ),
+      all_vars(!is.na(.))
+    ) %>% 
+    mutate_at(
+      vars(
+        employment_all,
+        sex,
+        race,
+        married,
+        year,
+        fips_code
+      ),
+      as.factor
+    )
+  
+  
   lm1_hbp <-
     glm(
       hbp ~
@@ -430,7 +686,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
         (1 + median_income_var_scale|fips_code),
       family = "binomial",
       control = glmerControl(optimizer = "bobyqa"),
-      data = dfg %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)))
+      data = dfg_current %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)))
     )
   
   df <-
@@ -454,6 +710,59 @@ fv_regression_function <- function(median_income_var_name, dfg) {
       by = "id_controls"
     )
   
+  
+  
+  dfg_current <-
+    dfg %>% 
+    select(
+      median_income_var_scale = !!enquo(median_income_var_name),
+      obese,
+      raw_income_scale,
+      education_scale,
+      total_pop_county_scale,
+      median_monthly_housing_cost_county_scale,
+      land_area_2010_scale,
+      physicians_scale,
+      employment_all,
+      sex,
+      age_scale,
+      race,
+      married, 
+      year,
+      fips_code
+    ) %>% 
+    filter_at(
+      vars(
+        median_income_var_scale,
+        obese,
+        raw_income_scale,
+        education_scale,
+        total_pop_county_scale,
+        median_monthly_housing_cost_county_scale,
+        land_area_2010_scale,
+        physicians_scale,
+        employment_all,
+        sex,
+        age_scale,
+        race,
+        married, 
+        year,
+        fips_code
+      ),
+      all_vars(!is.na(.))
+    ) %>% 
+    mutate_at(
+      vars(
+        employment_all,
+        sex,
+        race,
+        married,
+        year,
+        fips_code
+      ),
+      as.factor
+    )
+  
   lm1_obese <-
     glm(
       obese ~
@@ -474,7 +783,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
         (1 + median_income_var_scale|fips_code),
       family = "binomial",
       control = glmerControl(optimizer = "bobyqa"),
-      data = dfg %>% mutate(obese = ifelse(obese == 1, 1, ifelse(obese == 2, 0, NA)))
+      data = dfg_current %>% mutate(obese = ifelse(obese == 1, 1, ifelse(obese == 2, 0, NA)))
     )
   
   df <-
@@ -498,6 +807,58 @@ fv_regression_function <- function(median_income_var_name, dfg) {
       by = "id_controls"
     )
   
+  
+  dfg_current <-
+    dfg %>% 
+    select(
+      median_income_var_scale = !!enquo(median_income_var_name),
+      depression,
+      raw_income_scale,
+      education_scale,
+      total_pop_county_scale,
+      median_monthly_housing_cost_county_scale,
+      land_area_2010_scale,
+      physicians_scale,
+      employment_all,
+      sex,
+      age_scale,
+      race,
+      married, 
+      year,
+      fips_code
+    ) %>% 
+    filter_at(
+      vars(
+        median_income_var_scale,
+        depression,
+        raw_income_scale,
+        education_scale,
+        total_pop_county_scale,
+        median_monthly_housing_cost_county_scale,
+        land_area_2010_scale,
+        physicians_scale,
+        employment_all,
+        sex,
+        age_scale,
+        race,
+        married, 
+        year,
+        fips_code
+      ),
+      all_vars(!is.na(.))
+    ) %>% 
+    mutate_at(
+      vars(
+        employment_all,
+        sex,
+        race,
+        married,
+        year,
+        fips_code
+      ),
+      as.factor
+    )
+  
   lm1_depression <-
     glm(
       depression ~
@@ -518,7 +879,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
         (1 + median_income_var_scale|fips_code),
       family = "binomial",
       control = glmerControl(optimizer = "bobyqa"),
-      data = dfg %>% mutate(depression = ifelse(depression == 1, 1, ifelse(depression == 2, 0, NA)))
+      data = dfg_current %>% mutate(depression = ifelse(depression == 1, 1, ifelse(depression == 2, 0, NA)))
     )
   
   df <-
@@ -545,31 +906,20 @@ fv_regression_function <- function(median_income_var_name, dfg) {
   return(master_df)
 }
 
-data_path <- "/project/ourminsk/gallup/exports/for_regression_analyses/"
-
-file_list <- 
-  data.frame(
-    file_list = list.files(path = data_path)
-  )
-
-file_list <-
-  file_list %>% 
-  filter(
-    str_detect(file_list, ".csv")
-  )
+data_path <- "/project/ourminsk/gallup/exports/dfg_rs.csv"
 
 master_function <- function(path) {
   dfg <- 
-    read_csv(paste0("/project/ourminsk/gallup/exports/for_regression_analyses/", path))
+    read_csv(path)
   
   med_inc_vars <-
     c("median_income_county_scale", "median_income_demo_scale")
   
   res <- 
-    future_map_dfr(.x = med_inc_vars, .f = fv_regression_function, dfg = dfg)
+    future_map_dfr(.x = med_inc_vars, .f = health_regression_function, dfg = dfg)
   
-  write_csv(res, paste0("/home/djolear/gallup/relative_status/regressions/median_income_models/results/health_outcomes_mi_", dfg$year[1], ".csv"))
+  write_csv(res, paste0("/home/djolear/gallup/relative_status/regressions/median_income_models/results/health_outcomes_mi.csv"))
   
 }
 
-future_map(.x = file_list$file_list, .f = master_function)
+master_function(data_path)
