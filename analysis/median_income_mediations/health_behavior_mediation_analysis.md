@@ -1,40 +1,22 @@
----
-title: "Gallup Relative Status Health Behavior Mediation Analysis"
-author: "Daniel O'Leary"
-date: "1/11/2021"
-output:
-  github_document:
-    toc: true
-    toc_depth: 5
----
+Gallup Relative Status Health Behavior Mediation Analysis
+================
+Daniel O’Leary
+1/11/2021
 
-```{r, include = FALSE}
-if (!require("pacman")) install.packages("pacman")
-
-pacman::p_load(
-  tidyverse, 
-  haven,
-  lme4,
-  lm.beta,
-  sjPlot,
-  stargazer
-)
-```
-
-```{r, include = FALSE}
-sinfo <- data.frame(Sys.info())
-machine <- sinfo$Sys.info..[4]
-
-machine_path <- 
-  ifelse(
-    machine %in% c("sussman-rp-mbpro.local", "sussman-rp-mbpro.lan"), 
-    "/Users/djolear/Google Drive/", 
-    "G:/My Drive/"
-  )
-
-source(paste0(machine_path, "research/projects/gallup_rs/analysis/median_income_mediations/health_behavior_mediation_munge.R"))
-```
-
+  - [Analysis](#analysis)
+      - [Days w/ 5 servings of fruits and
+        veggies](#days-w-5-servings-of-fruits-and-veggies)
+          - [Main Well-Being Measures](#main-well-being-measures)
+          - [Alternative Well-Being
+            Measures](#alternative-well-being-measures)
+      - [Eat healthy yesterday?](#eat-healthy-yesterday)
+          - [Main Well-Being Measures](#main-well-being-measures-1)
+          - [Alternative Well-Being
+            Measures](#alternative-well-being-measures-1)
+      - [Smoke?](#smoke)
+          - [Main Well-Being Measures](#main-well-being-measures-2)
+          - [Alternative Well-Being
+            Measures](#alternative-well-being-measures-2)
 
 # Analysis
 
@@ -42,7 +24,7 @@ source(paste0(machine_path, "research/projects/gallup_rs/analysis/median_income_
 
 ### Main Well-Being Measures
 
-```{r}
+``` r
 fv_med_main %>% 
   filter(str_detect(lhs, "indirect")) %>% 
   mutate(
@@ -62,10 +44,11 @@ fv_med_main %>%
   facet_grid(. ~ mech)
 ```
 
+![](health_behavior_mediation_analysis_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ### Alternative Well-Being Measures
 
-```{r}
+``` r
 fv_med_alt %>% 
   filter(str_detect(lhs, "indirect")) %>% 
   mutate(
@@ -86,11 +69,13 @@ fv_med_alt %>%
   facet_grid(. ~ mech)
 ```
 
+![](health_behavior_mediation_analysis_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
 ## Eat healthy yesterday?
 
 ### Main Well-Being Measures
 
-```{r}
+``` r
 eh_med_main %>% 
   filter(str_detect(lhs, "indirect")) %>% 
   mutate(
@@ -110,10 +95,11 @@ eh_med_main %>%
   facet_grid(. ~ mech)
 ```
 
+![](health_behavior_mediation_analysis_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ### Alternative Well-Being Measures
 
-```{r}
+``` r
 eh_med_alt %>% 
   filter(str_detect(lhs, "indirect")) %>% 
   mutate(
@@ -134,12 +120,13 @@ eh_med_alt %>%
   facet_grid(. ~ mech)
 ```
 
+![](health_behavior_mediation_analysis_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ## Smoke?
 
 ### Main Well-Being Measures
 
-```{r}
+``` r
 smoking_med_main %>% 
   filter(str_detect(lhs, "indirect")) %>% 
   mutate(
@@ -159,10 +146,11 @@ smoking_med_main %>%
   facet_grid(. ~ mech)
 ```
 
+![](health_behavior_mediation_analysis_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ### Alternative Well-Being Measures
 
-```{r}
+``` r
 smoking_med_alt %>% 
   filter(str_detect(lhs, "indirect")) %>% 
   mutate(
@@ -181,6 +169,6 @@ smoking_med_alt %>%
   geom_errorbar(aes(ymin = est - se, ymax = est + se), width = 0.1) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   facet_grid(. ~ mech)
-````
+```
 
-
+![](health_behavior_mediation_analysis_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
