@@ -32,13 +32,10 @@ machine_path <-
     "G:/My Drive/"
   )
 
-source(paste0(machine_path, "research/projects/gallup/gallup_analysis_1/relative_status_analysis/regression_results_munge.R"))
+source(paste0(machine_path, "research/projects/gallup_rs/analysis/median_income_regressions/health_behavior_regression_munge.R"))
 
 dfg_rs <-
   read_rds("D:/data/gallup/exports/dfg_rs.rds")
-
-dfg_rs <-
-  read_rds("/Users/djolear/Google Drive/research/projects/gallup/gallup_data/relative_status/dfg_rs.rds")
 
 dfg_rs <-
   dfg_rs %>% 
@@ -59,35 +56,6 @@ contrasts(dfg_rs$employment_all) <- contr.sum(2)
 contrasts(dfg_rs$race) <- contr.sum(5)
 contrasts(dfg_rs$married) <- contr.sum(6)
 ```
-
-```{r}
-# c <- contr.treatment(2)
-# c
-# my.coding <- matrix(rep(1/2, 2), ncol = 1)
-# my.simple = c - my.coding
-# my.simple
-# 
-# contrasts(dfg_rs$sex) <- my.simple
-# contrasts(dfg_rs$employment_all) <- my.simple
-# 
-# 
-# c <- contr.treatment(5)
-# my.coding <- matrix(rep(1/5, 20), ncol = 4)
-# my.simple = c - my.coding
-# my.simple
-# 
-# contrasts(dfg_rs$race) <- my.simple
-# 
-# 
-# c <- contr.treatment(6)
-# my.coding <- matrix(rep(1/6, 30), ncol = 5)
-# my.simple = c - my.coding
-# my.simple
-# 
-# contrasts(dfg_rs$married) <- my.simple
-```
-
-
 # Analysis
 
 ## Days w/ 5 servings of fruits and veggies
@@ -115,6 +83,28 @@ fv_terms %>%
 ### Main effects model
 
 ```{r}
+lm0 <-
+  lmer(
+    fruits_veggies_scale ~
+      raw_income_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs %>% filter(!is.na(median_income_demo_scale))
+  )
+
+
 lm1 <-
   lmer(
     fruits_veggies_scale ~
@@ -180,7 +170,7 @@ summary(lm2)
 ### Model comparison
 
 ```{r}
-# anova(lm1, lm2)
+anova(lm0, lm1, lm2)
 ```
 
 
@@ -201,8 +191,8 @@ plot_model(lm2, type = "pred", terms = c("median_income_demo_scale", "sex"))
 ```{r}
 eh_terms %>% 
   filter(term == "median_income_var_scale") %>% 
-  mutate(median_income_var = factor(median_income_var, labels = c("demo", "geo"))) %>% 
-  mutate(id_controls = factor(id_controls, labels = c("no id controls", "id controls m.e.", "id controls int."))) %>% 
+  mutate(median_income_var = factor(median_income_var, labels = c("geo", "demo"))) %>% 
+  mutate(id_controls = factor(id_controls, labels = c("id controls m.e.", "id controls int."))) %>% 
   filter(id_controls != "no id controls") %>% 
   mutate(year = as.factor(year)) %>% 
   ggplot(aes(year, estimate)) +
@@ -219,12 +209,12 @@ eh_terms %>%
 ### Main effects model
 
 ```{r}
-lm1 <-
+lm0 <-
   glm(
-    I(ifelse(fruits_veggies > 6, 1, ifelse(fruits_veggies %in% c(0:6), 0, NA))) ~
+    eat_healthy ~
       raw_income_scale +
-      median_income_demo_scale +
-      #physicians_scale +
+      #median_income_demo_scale +
+      physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
       land_area_2010_scale +
@@ -236,7 +226,27 @@ lm1 <-
       married +
       year,
     family = "binomial",
-    data = dfg_rs 
+    data = dfg_rs  %>% filter(!is.na(median_income_demo_scale))
+  )
+
+lm1 <-
+  glm(
+    eat_healthy ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married +
+      year,
+    family = "binomial",
+    data = dfg_rs  %>% filter(!is.na(median_income_demo_scale))
   )
 
 summary(lm1)
@@ -278,7 +288,7 @@ summary(lm2)
 ### Model comparison 
 
 ```{r}
-# anova(lm1, lm2)
+anova(lm0, lm1, lm2,  test = "Chisq")
 ```
 
 
@@ -299,8 +309,8 @@ plot_model(lm2, type = "pred", terms = c("median_income_demo_scale", "sex"))
 ```{r}
 smoke_terms %>% 
   filter(term == "median_income_var_scale") %>% 
-  mutate(median_income_var = factor(median_income_var, labels = c("demo", "geo"))) %>% 
-  mutate(id_controls = factor(id_controls, labels = c("no id controls", "id controls m.e.", "id controls int."))) %>% 
+  mutate(median_income_var = factor(median_income_var, labels = c("geo", "demo"))) %>% 
+  mutate(id_controls = factor(id_controls, labels = c("id controls m.e.", "id controls int."))) %>% 
   filter(id_controls != "no id controls") %>% 
   mutate(year = as.factor(year)) %>% 
   ggplot(aes(year, estimate)) +
@@ -317,6 +327,27 @@ smoke_terms %>%
 ### Main effects model
 
 ```{r}
+lm0 <-
+  glm(
+    smoke ~
+      raw_income_scale +
+      #median_income_demo_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married +
+      year,
+    family = "binomial",
+    data = dfg_rs  %>% filter(!is.na(median_income_demo_scale))
+  )
+
+
 lm1 <-
   glm(
     smoke ~
@@ -372,10 +403,11 @@ lm2 <-
 summary(lm2)
 ```
 
+
 ### Model comparison 
 
 ```{r}
-# anova(lm1, lm2)
+anova(lm0, lm1, lm2, test = "Chisq")
 ```
 
 
@@ -388,679 +420,3 @@ plot_model(lm2, type = "pred", terms = c("median_income_demo_scale", "age_scale"
 plot_model(lm2, type = "pred", terms = c("median_income_demo_scale", "sex"))
 ```
 
-
-## Purpose
-
-### Effect of median income
-
-```{r}
-pur_terms %>% 
-  filter(term == "median_income_var_scale") %>% 
-  mutate(median_income_var = factor(median_income_var, labels = c("demo", "geo"))) %>% 
-  mutate(id_controls = factor(id_controls, labels = c("no id controls", "id controls m.e.", "id controls int."))) %>% 
-  filter(id_controls != "no id controls") %>% 
-  mutate(year = as.factor(year)) %>% 
-  ggplot(aes(year, estimate)) +
-  geom_col() +
-  geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error), width = 0.1) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-  labs(
-    y = "median income"
-  ) +
-  facet_grid(id_controls ~ median_income_var)
-```
-
-
-### Main effects model
-
-```{r}
-lm1 <-
-  lm(
-    PURPOSE_scale ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs 
-  )
-
-summary(lm1)
-```
-
-
-### Interactive model
-
-```{r}
-lm2 <-
-  lm(
-    PURPOSE_scale ~
-      median_income_demo_scale * raw_income_scale +
-      median_income_demo_scale * education_scale +
-      median_income_demo_scale * employment_all +
-      median_income_demo_scale * sex +
-      median_income_demo_scale * age_scale +
-      median_income_demo_scale * race +
-      median_income_demo_scale * married +
-      median_income_demo_scale * year +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married +
-      year,
-    data = dfg_rs
-  )
-
-summary(lm2)
-```
-
-
-### Model comparison 
-
-```{r}
-# anova(lm1, lm2)
-```
-
-
-### Interaction plots
-
-```{r}
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "education_scale"))
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "raw_income_scale"))
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "age_scale"))
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
-```
-
-
-## Financial
-
-### Effect of median income
-
-```{r}
-fin_terms %>% 
-  filter(term == "median_income_var_scale") %>% 
-  mutate(median_income_var = factor(median_income_var, labels = c("demo", "geo"))) %>% 
-  mutate(id_controls = factor(id_controls, labels = c("no id controls", "id controls m.e.", "id controls int."))) %>% 
-  filter(id_controls != "no id controls") %>% 
-  mutate(year = as.factor(year)) %>% 
-  ggplot(aes(year, estimate)) +
-  geom_col() +
-  geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error), width = 0.1) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-  labs(
-    y = "median income"
-  ) +
-  facet_grid(id_controls ~ median_income_var)
-```
-
-
-### Main effects model
-
-```{r}
-lm1 <-
-  lm(
-    FINANCIAL_scale ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs 
-  )
-
-summary(lm1)
-```
-
-
-### Interactive model
-
-```{r}
-lm2 <-
-  lm(
-    FINANCIAL_scale ~
-      median_income_demo_scale * raw_income_scale +
-      median_income_demo_scale * education_scale +
-      median_income_demo_scale * employment_all +
-      median_income_demo_scale * sex +
-      median_income_demo_scale * age_scale +
-      median_income_demo_scale * race +
-      median_income_demo_scale * married +
-      median_income_demo_scale * year +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married +
-      year,
-    data = dfg_rs
-  )
-
-summary(lm2)
-```
-
-
-### Model comparison 
-
-```{r}
-# anova(lm1, lm2)
-```
-
-
-### Interaction plots
-
-```{r}
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "education_scale"))
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "raw_income_scale"))
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "age_scale"))
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
-```
-
-
-## Community
-
-### Effect of median income
-
-```{r}
-com_terms %>% 
-  filter(term == "median_income_var_scale") %>% 
-  mutate(median_income_var = factor(median_income_var, labels = c("demo", "geo"))) %>% 
-  mutate(id_controls = factor(id_controls, labels = c("no id controls", "id controls m.e.", "id controls int."))) %>% 
-  filter(id_controls != "no id controls") %>% 
-  mutate(year = as.factor(year)) %>% 
-  ggplot(aes(year, estimate)) +
-  geom_col() +
-  geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error), width = 0.1) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-  labs(
-    y = "median income"
-  ) +
-  facet_grid(id_controls ~ median_income_var)
-```
-
-
-### Main effects model
-
-```{r}
-lm1 <-
-  lm(
-    COMMUNITY_scale ~
-      raw_income_scale +
-      median_income_demo_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs 
-  )
-
-summary(lm1)
-```
-
-
-### Interactive model
-
-```{r}
-lm2 <-
-  lm(
-    COMMUNITY_scale ~
-      median_income_demo_scale * raw_income_scale +
-      median_income_demo_scale * education_scale +
-      median_income_demo_scale * employment_all +
-      median_income_demo_scale * sex +
-      median_income_demo_scale * age_scale +
-      median_income_demo_scale * race +
-      median_income_demo_scale * married +
-      median_income_demo_scale * year +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married +
-      year,
-    data = dfg_rs
-  )
-
-summary(lm2)
-```
-
-
-### Model comparison 
-
-```{r}
-# anova(lm1, lm2)
-```
-
-
-### Interaction plots
-
-```{r}
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "education_scale"))
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "raw_income_scale"))
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "age_scale"))
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
-```
-
-
-## Social
-
-### Effect of median income
-
-```{r}
-soc_terms %>% 
-  filter(term == "median_income_var_scale") %>% 
-  mutate(median_income_var = factor(median_income_var, labels = c("demo", "geo"))) %>% 
-  mutate(id_controls = factor(id_controls, labels = c("no id controls", "id controls m.e.", "id controls int."))) %>% 
-  filter(id_controls != "no id controls") %>% 
-  mutate(year = as.factor(year)) %>% 
-  ggplot(aes(year, estimate)) +
-  geom_col() +
-  geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error), width = 0.1) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-  labs(
-    y = "median income"
-  ) +
-  facet_grid(id_controls ~ median_income_var)
-```
-
-
-### Main effects model
-
-```{r}
-lm1 <-
-  lm(
-    SOCIAL_scale ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs 
-  )
-
-summary(lm1)
-```
-
-
-### Interactive model
-
-```{r}
-lm2 <-
-  lm(
-    SOCIAL_scale ~
-      median_income_demo_scale * raw_income_scale +
-      median_income_demo_scale * education_scale +
-      median_income_demo_scale * employment_all +
-      median_income_demo_scale * sex +
-      median_income_demo_scale * age_scale +
-      median_income_demo_scale * race +
-      median_income_demo_scale * married +
-      median_income_demo_scale * year +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married +
-      year,
-    data = dfg_rs
-  )
-
-summary(lm2)
-```
-
-
-### Model comparison 
-
-```{r}
-# anova(lm1, lm2)
-```
-
-
-### Interaction plots
-
-```{r}
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "education_scale"))
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "raw_income_scale"))
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "age_scale"))
-plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
-```
-
-
-## Health outcomes
-
-### BMI
-
-```{r}
-lm1 <-
-  lm(
-    bmi_scale ~
-      raw_income_scale +
-      median_income_county_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs 
-  )
-
-summary(lm1)
-
-lm1 <-
-  lm(
-    bmi_scale ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs 
-  )
-
-summary(lm1)
-```
-
-
-### Diabetes
-
-```{r}
-lm1 <-
-  glm(
-    diabetes ~
-      raw_income_scale +
-      median_income_county_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    family = "binomial",
-    data = dfg_rs %>% mutate(diabetes = ifelse(diabetes == 1, 1, ifelse(diabetes == 2, 0, NA)))
-  )
-
-summary(lm1)
-
-lm1 <-
-  glm(
-    diabetes ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    family = "binomial",
-    data = dfg_rs %>% mutate(diabetes = ifelse(diabetes == 1, 1, ifelse(diabetes == 2, 0, NA)))
-  )
-
-summary(lm1)
-```
-
-
-### High blood pressure
-
-```{r}
-lm1 <-
-  glm(
-    hbp ~
-      raw_income_scale +
-      median_income_county_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    family = "binomial",
-    data = dfg_rs %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)))
-  )
-
-summary(lm1)
-
-lm1 <-
-  glm(
-    hbp ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    family = "binomial",
-    data = dfg_rs %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)))
-  )
-
-summary(lm1)
-```
-
-
-### Obesity
-
-```{r}
-lm1 <-
-  glm(
-    obese ~
-      raw_income_scale +
-      median_income_county_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    family = "binomial",
-    data = dfg_rs %>% mutate(obese = ifelse(obese == 1, 0, ifelse(obese == 0, 1, NA)))
-  )
-
-summary(lm1)
-
-lm1 <-
-  glm(
-    obese ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    family = "binomial",
-    data = dfg_rs %>% mutate(obese = ifelse(obese == 1, 0, ifelse(obese == 0, 1, NA)))
-  )
-
-summary(lm1)
-```
-
-
-### Self-reported health
-
-```{r}
-lm1 <-
-  lm(
-    scale(sr_health) ~
-      raw_income_scale +
-      median_income_county_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs %>% mutate(sr_health = ifelse(sr_health %in% c(1:5), 6 - sr_health, NA))
-  )
-
-summary(lm1)
-
-lm1 <-
-  lm(
-    scale(sr_health) ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs %>% mutate(sr_health = ifelse(sr_health %in% c(1:5), 6 - sr_health, NA))
-  )
-
-summary(lm1)
-```
-
-
-### Height
-
-```{r}
-lm1 <-
-  lm(
-    scale(HEIGHT) ~
-      raw_income_scale +
-      median_income_county_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs 
-  )
-
-summary(lm1)
-
-lm1 <-
-  lm(
-    scale(HEIGHT) ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs 
-  )
-
-summary(lm1)
-```
