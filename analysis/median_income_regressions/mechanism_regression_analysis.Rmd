@@ -90,297 +90,6 @@ contrasts(dfg_rs$married) <- contr.sum(6)
 
 # Analysis
 
-## Days w/ 5 servings of fruits and veggies
-
-### Effect of median income
-
-```{r}
-fv_terms %>% 
-  filter(term == "median_income_var_scale") %>% 
-  mutate(median_income_var = factor(median_income_var, labels = c("demo", "geo"))) %>% 
-  mutate(id_controls = factor(id_controls, labels = c("no id controls", "id controls m.e.", "id controls int."))) %>% 
-  filter(id_controls != "no id controls") %>% 
-  mutate(year = as.factor(year)) %>% 
-  ggplot(aes(year, estimate)) +
-  geom_col() +
-  geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error), width = 0.1) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-  labs(
-    y = "median income"
-  ) +
-  facet_grid(id_controls ~ median_income_var)
-```
-
-
-### Main effects model
-
-```{r}
-lm1 <-
-  lm(
-    fruits_veggies_scale ~
-      raw_income_scale +
-      med_inc_demo_age_gallup_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs 
-  )
-
-summary(lm1)
-```
-
-### Interactive model
-
-```{r}
-lm2 <-
-  lm(
-    fruits_veggies_scale ~
-      med_inc_demo_age_gallup_scale * raw_income_scale +
-      med_inc_demo_age_gallup_scale * education_scale +
-      med_inc_demo_age_gallup_scale * employment_all +
-      med_inc_demo_age_gallup_scale * sex +
-      med_inc_demo_age_gallup_scale * age_scale +
-      med_inc_demo_age_gallup_scale * race +
-      med_inc_demo_age_gallup_scale * married +
-      med_inc_demo_age_gallup_scale * year +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married +
-      year,
-    data = dfg_rs
-  )
-
-summary(lm2)
-```
-
-
-### Model comparison
-
-```{r}
-# anova(lm1, lm2)
-```
-
-
-### Interaction plots
-
-```{r}
-plot_model(lm2, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "education_scale"))
-plot_model(lm2, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "raw_income_scale"))
-plot_model(lm2, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "age_scale"))
-plot_model(lm2, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "sex"))
-```
-
-
-## Eat healthy all day yesterday
-
-### Effect of median income
-
-```{r}
-eh_terms %>% 
-  filter(term == "median_income_var_scale") %>% 
-  mutate(median_income_var = factor(median_income_var, labels = c("demo", "geo"))) %>% 
-  mutate(id_controls = factor(id_controls, labels = c("no id controls", "id controls m.e.", "id controls int."))) %>% 
-  filter(id_controls != "no id controls") %>% 
-  mutate(year = as.factor(year)) %>% 
-  ggplot(aes(year, estimate)) +
-  geom_col() +
-  geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error), width = 0.1) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-  labs(
-    y = "median income"
-  ) +
-  facet_grid(id_controls ~ median_income_var)
-```
-
-
-### Main effects model
-
-```{r}
-lm1 <-
-  glm(
-    I(ifelse(fruits_veggies > 6, 1, ifelse(fruits_veggies %in% c(0:6), 0, NA))) ~
-      raw_income_scale +
-      median_income_demo_scale +
-      #physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married +
-      year,
-    family = "binomial",
-    data = dfg_rs 
-  )
-
-summary(lm1)
-```
-
-
-### Interactive model
-
-```{r}
-lm2 <-
-  glm(
-    eat_healthy ~
-      med_inc_demo_age_gallup_scale * raw_income_scale +
-      med_inc_demo_age_gallup_scale * education_scale +
-      med_inc_demo_age_gallup_scale * employment_all +
-      med_inc_demo_age_gallup_scale * sex +
-      med_inc_demo_age_gallup_scale * age_scale +
-      med_inc_demo_age_gallup_scale * race +
-      med_inc_demo_age_gallup_scale * married +
-      med_inc_demo_age_gallup_scale * year +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married,
-    family = "binomial",
-    data = dfg_rs
-  )
-
-summary(lm2)
-```
-
-
-### Model comparison 
-
-```{r}
-# anova(lm1, lm2)
-```
-
-
-### Interaction plots
-
-```{r}
-plot_model(lm2, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "education_scale"))
-plot_model(lm2, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "raw_income_scale"))
-plot_model(lm2, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "age_scale"))
-plot_model(lm2, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "sex"))
-```
-
-
-## Smoker?
-
-### Effect of median income
-
-```{r}
-smoke_terms %>% 
-  filter(term == "median_income_var_scale") %>% 
-  mutate(median_income_var = factor(median_income_var, labels = c("demo", "geo"))) %>% 
-  mutate(id_controls = factor(id_controls, labels = c("no id controls", "id controls m.e.", "id controls int."))) %>% 
-  filter(id_controls != "no id controls") %>% 
-  mutate(year = as.factor(year)) %>% 
-  ggplot(aes(year, estimate)) +
-  geom_col() +
-  geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error), width = 0.1) +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-  labs(
-    y = "median income"
-  ) +
-  facet_grid(id_controls ~ median_income_var)
-```
-
-
-### Main effects model
-
-```{r}
-lm1 <-
-  glm(
-    smoke ~
-      raw_income_scale +
-      med_inc_demo_age_gallup_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married +
-      year,
-    family = "binomial",
-    data = dfg_rs  
-  )
-
-summary(lm1)
-```
-
-
-### Interactive model
-
-```{r}
-lm2 <-
-  glm(
-    smoke ~
-      med_inc_demo_age_gallup_scale * raw_income_scale +
-      med_inc_demo_age_gallup_scale * education_scale +
-      med_inc_demo_age_gallup_scale * employment_all +
-      med_inc_demo_age_gallup_scale * sex +
-      med_inc_demo_age_gallup_scale * age_scale +
-      med_inc_demo_age_gallup_scale * race +
-      med_inc_demo_age_gallup_scale * married +
-      med_inc_demo_age_gallup_scale * year +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married,
-    family = "binomial",
-    data = dfg_rs
-  )
-
-summary(lm2)
-```
-
-### Model comparison 
-
-```{r}
-# anova(lm1, lm2)
-```
-
-
-### Interaction plots
-
-```{r}
-plot_model(lm2, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "education_scale"))
-plot_model(lm2, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "raw_income_scale"))
-plot_model(lm2, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "age_scale"))
-plot_model(lm2, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "sex"))
-```
-
-
 ## Purpose
 
 ### Effect of median income
@@ -410,7 +119,7 @@ lm1 <-
   lm(
     PURPOSE_scale ~
       raw_income_scale +
-      med_inc_demo_age_gallup_scale +
+      median_income_demo_scale +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
@@ -435,14 +144,14 @@ summary(lm1)
 lm2 <-
   lm(
     PURPOSE_scale ~
-      med_inc_demo_age_gallup_scale * raw_income_scale +
-      med_inc_demo_age_gallup_scale * education_scale +
-      med_inc_demo_age_gallup_scale * employment_all +
-      med_inc_demo_age_gallup_scale * sex +
-      med_inc_demo_age_gallup_scale * age_scale +
-      med_inc_demo_age_gallup_scale * race +
-      med_inc_demo_age_gallup_scale * married +
-      med_inc_demo_age_gallup_scale * year +
+      median_income_demo_scale * raw_income_scale +
+      median_income_demo_scale * education_scale +
+      median_income_demo_scale * employment_all +
+      median_income_demo_scale * sex +
+      median_income_demo_scale * age_scale +
+      median_income_demo_scale * race +
+      median_income_demo_scale * married +
+      median_income_demo_scale * year +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
@@ -471,10 +180,10 @@ summary(lm2)
 ### Interaction plots
 
 ```{r}
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "education_scale"))
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "raw_income_scale"))
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "age_scale"))
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "sex"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "education_scale"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "raw_income_scale"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "age_scale"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
 ```
 
 
@@ -507,7 +216,7 @@ lm1 <-
   lm(
     FINANCIAL_scale ~
       raw_income_scale +
-      med_inc_demo_age_gallup_scale +
+      median_income_demo_scale +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
@@ -532,14 +241,14 @@ summary(lm1)
 lm2 <-
   lm(
     FINANCIAL_scale ~
-      med_inc_demo_age_gallup_scale * raw_income_scale +
-      med_inc_demo_age_gallup_scale * education_scale +
-      med_inc_demo_age_gallup_scale * employment_all +
-      med_inc_demo_age_gallup_scale * sex +
-      med_inc_demo_age_gallup_scale * age_scale +
-      med_inc_demo_age_gallup_scale * race +
-      med_inc_demo_age_gallup_scale * married +
-      med_inc_demo_age_gallup_scale * year +
+      median_income_demo_scale * raw_income_scale +
+      median_income_demo_scale * education_scale +
+      median_income_demo_scale * employment_all +
+      median_income_demo_scale * sex +
+      median_income_demo_scale * age_scale +
+      median_income_demo_scale * race +
+      median_income_demo_scale * married +
+      median_income_demo_scale * year +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
@@ -568,10 +277,10 @@ summary(lm2)
 ### Interaction plots
 
 ```{r}
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "education_scale"))
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "raw_income_scale"))
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "age_scale"))
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "sex"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "education_scale"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "raw_income_scale"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "age_scale"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
 ```
 
 
@@ -604,7 +313,7 @@ lm1 <-
   lm(
     COMMUNITY_scale ~
       raw_income_scale +
-      med_inc_demo_age_gallup_scale +
+      median_income_demo_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
       land_area_2010_scale +
@@ -628,14 +337,14 @@ summary(lm1)
 lm2 <-
   lm(
     COMMUNITY_scale ~
-      med_inc_demo_age_gallup_scale * raw_income_scale +
-      med_inc_demo_age_gallup_scale * education_scale +
-      med_inc_demo_age_gallup_scale * employment_all +
-      med_inc_demo_age_gallup_scale * sex +
-      med_inc_demo_age_gallup_scale * age_scale +
-      med_inc_demo_age_gallup_scale * race +
-      med_inc_demo_age_gallup_scale * married +
-      med_inc_demo_age_gallup_scale * year +
+      median_income_demo_scale * raw_income_scale +
+      median_income_demo_scale * education_scale +
+      median_income_demo_scale * employment_all +
+      median_income_demo_scale * sex +
+      median_income_demo_scale * age_scale +
+      median_income_demo_scale * race +
+      median_income_demo_scale * married +
+      median_income_demo_scale * year +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
@@ -664,10 +373,10 @@ summary(lm2)
 ### Interaction plots
 
 ```{r}
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "education_scale"))
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "raw_income_scale"))
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "age_scale"))
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "sex"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "education_scale"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "raw_income_scale"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "age_scale"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
 ```
 
 
@@ -700,7 +409,7 @@ lm1 <-
   lm(
     SOCIAL_scale ~
       raw_income_scale +
-      med_inc_demo_age_gallup_scale +
+      median_income_demo_scale +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
@@ -725,14 +434,14 @@ summary(lm1)
 lm2 <-
   lm(
     SOCIAL_scale ~
-      med_inc_demo_age_gallup_scale * raw_income_scale +
-      med_inc_demo_age_gallup_scale * education_scale +
-      med_inc_demo_age_gallup_scale * employment_all +
-      med_inc_demo_age_gallup_scale * sex +
-      med_inc_demo_age_gallup_scale * age_scale +
-      med_inc_demo_age_gallup_scale * race +
-      med_inc_demo_age_gallup_scale * married +
-      med_inc_demo_age_gallup_scale * year +
+      median_income_demo_scale * raw_income_scale +
+      median_income_demo_scale * education_scale +
+      median_income_demo_scale * employment_all +
+      median_income_demo_scale * sex +
+      median_income_demo_scale * age_scale +
+      median_income_demo_scale * race +
+      median_income_demo_scale * married +
+      median_income_demo_scale * year +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
@@ -761,10 +470,10 @@ summary(lm2)
 ### Interaction plots
 
 ```{r}
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "education_scale"))
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "raw_income_scale"))
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "age_scale"))
-plot_model(lm1, type = "pred", terms = c("med_inc_demo_age_gallup_scale", "sex"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "education_scale"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "raw_income_scale"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "age_scale"))
+plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
 ```
 
 
@@ -798,7 +507,7 @@ lm1 <-
   lm(
     bmi_scale ~
       raw_income_scale +
-      med_inc_demo_age_gallup_scale +
+      median_income_demo_scale +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
@@ -846,7 +555,7 @@ lm1 <-
   glm(
     diabetes ~
       raw_income_scale +
-      med_inc_demo_age_gallup_scale +
+      median_income_demo_scale +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
@@ -895,7 +604,7 @@ lm1 <-
   glm(
     hbp ~
       raw_income_scale +
-      med_inc_demo_age_gallup_scale +
+      median_income_demo_scale +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
@@ -944,7 +653,7 @@ lm1 <-
   glm(
     obese ~
       raw_income_scale +
-      med_inc_demo_age_gallup_scale +
+      median_income_demo_scale +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
@@ -992,7 +701,7 @@ lm1 <-
   lm(
     scale(sr_health) ~
       raw_income_scale +
-      med_inc_demo_age_gallup_scale +
+      median_income_demo_scale +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
@@ -1039,7 +748,7 @@ lm1 <-
   lm(
     scale(HEIGHT) ~
       raw_income_scale +
-      med_inc_demo_age_gallup_scale +
+      median_income_demo_scale +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
