@@ -85,7 +85,58 @@ fv_regression_function <- function(median_income_var_name, dfg) {
   master_df <- data.frame()
   
   # fit main effect model
-  lm1b <-
+  lm1 <-
+    lmer(
+      fruits_veggies_scale ~
+        raw_income_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married +
+        year +
+        (1 + raw_income_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg
+    )
+  
+  df <-
+    tidy(lm1)
+  
+  fit_stats <-
+    glance(lm1) %>% 
+    mutate(
+      mod = "no_mi"
+    )
+  
+  df <-
+    df %>%
+    mutate(
+      median_income_var = median_income_var_name,
+      outcome = "fruit_veggies_scale",
+      mod = "no_mi"
+    ) %>% 
+    left_join(
+      fit_stats,
+      by = "mod"
+    )
+  
+  master_df <-
+    bind_rows(
+      master_df,
+      df
+    )
+  
+  gc()
+  
+  
+  lm1 <-
     lmer(
       fruits_veggies_scale ~
         raw_income_scale +
@@ -109,12 +160,12 @@ fv_regression_function <- function(median_income_var_name, dfg) {
     )
   
   df <-
-    tidy(lm1b)
+    tidy(lm1)
   
   fit_stats <-
-    glance(lm1b) %>% 
+    glance(lm1) %>% 
     mutate(
-      id_controls = "yes"
+      mod = "mi"
     )
   
   df <-
@@ -122,11 +173,11 @@ fv_regression_function <- function(median_income_var_name, dfg) {
     mutate(
       median_income_var = median_income_var_name,
       outcome = "fruit_veggies_scale",
-      id_controls = "yes"
+      mod = "mi"
     ) %>% 
     left_join(
       fit_stats,
-      by = "id_controls"
+      by = "mod"
     )
   
   master_df <-
@@ -135,8 +186,10 @@ fv_regression_function <- function(median_income_var_name, dfg) {
       df
     )
   
+  gc()
+  
   # fit interactive model
-  lm1c <-
+  lm1 <-
     lmer(
       fruits_veggies_scale ~
         median_income_var_scale * raw_income_scale +
@@ -165,12 +218,12 @@ fv_regression_function <- function(median_income_var_name, dfg) {
     )
   
   df <-
-    tidy(lm1c)
+    tidy(lm1)
   
   fit_stats <-
-    glance(lm1c) %>% 
+    glance(lm1) %>% 
     mutate(
-      id_controls = "yes_int"
+      mod = "mi_int"
     )
   
   df <-
@@ -178,11 +231,11 @@ fv_regression_function <- function(median_income_var_name, dfg) {
     mutate(
       median_income_var = median_income_var_name,
       outcome = "fruit_veggies_scale",
-      id_controls = "yes_int"
+      mod = "mi_int"
     ) %>% 
     left_join(
       fit_stats,
-      by = "id_controls"
+      by = "mod"
     )
   
   master_df <-

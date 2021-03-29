@@ -80,8 +80,52 @@ eh_regression_function <- function(median_income_var_name, dfg) {
   
   master_df <- data.frame()
   
+  
+  lm1 <-
+    glmer(
+      eat_healthy ~
+        raw_income_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married +
+        year +
+        (1 + raw_income_scale|fips_code),
+      family = "binomial",
+      control = glmerControl(optimizer = "bobyqa"),
+      data = dfg
+    )
+  
+  df <-
+    tidy(lm1)
+  
+  fit_stats <-
+    glance(lm1) %>% 
+    mutate(
+      mod = "no_mi"
+    )
+  
+  df <-
+    df %>%
+    mutate(
+      median_income_var = median_income_var_name,
+      outcome = "eat_healthy",
+      mod = "no_mi"
+    ) %>% 
+    left_join(
+      fit_stats,
+      by = "mod"
+    )
+  
+  gc()
 
-  lm1b <-
+  lm1 <-
     glmer(
       eat_healthy ~
         raw_income_scale +
@@ -105,12 +149,12 @@ eh_regression_function <- function(median_income_var_name, dfg) {
     )
 
   df <-
-    tidy(lm1b)
+    tidy(lm1)
   
   fit_stats <-
-    glance(lm1b) %>% 
+    glance(lm1) %>% 
     mutate(
-      id_controls = "yes"
+      mod = "mi"
     )
 
   df <-
@@ -118,11 +162,11 @@ eh_regression_function <- function(median_income_var_name, dfg) {
     mutate(
       median_income_var = median_income_var_name,
       outcome = "eat_healthy",
-      id_controls = "yes"
+      mod = "yes"
     ) %>% 
     left_join(
       fit_stats,
-      by = "id_controls"
+      by = "mi"
     )
 
   master_df <-
@@ -131,7 +175,9 @@ eh_regression_function <- function(median_income_var_name, dfg) {
       df
     )
   
-  lm1c <-
+  gc()
+  
+  lm1 <-
     glmer(
       eat_healthy ~
         median_income_var_scale * raw_income_scale +
@@ -160,12 +206,12 @@ eh_regression_function <- function(median_income_var_name, dfg) {
     )
   
   df <-
-    tidy(lm1c)
+    tidy(lm1)
   
   fit_stats <-
-    glance(lm1c) %>% 
+    glance(lm1) %>% 
     mutate(
-      id_controls = "yes_int"
+      mod = "mi_int"
     )
   
   df <-
@@ -173,11 +219,11 @@ eh_regression_function <- function(median_income_var_name, dfg) {
     mutate(
       median_income_var = median_income_var_name,
       outcome = "eat_healthy",
-      id_controls = "yes_int"
+      mod = "mi_int"
     ) %>% 
     left_join(
       fit_stats,
-      by = "id_controls"
+      by = "mod"
     )
   
   master_df <-
@@ -185,6 +231,8 @@ eh_regression_function <- function(median_income_var_name, dfg) {
       master_df,
       df
     )
+  
+  gc()
   
   return(master_df)
 }

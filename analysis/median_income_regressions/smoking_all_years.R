@@ -80,7 +80,55 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
   
   master_df <- data.frame()
   
-  lm1b <-
+  lm1 <-
+    glmer(
+      smoke ~
+        raw_income_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married +
+        (1 + raw_income_scale|fips_code),
+      family = "binomial",
+      control = glmerControl(optimizer = "bobyqa"),
+      data = dfg
+    )
+  
+  df <-
+    tidy(lm1)
+  
+  fit_stats <-
+    glance(lm1) %>% 
+    mutate(
+      mod = "no_mi"
+    )
+  
+  df <-
+    df %>%
+    mutate(
+      median_income_var = median_income_var_name,
+      outcome = "smoke",
+      mod = "no_mi"
+    ) %>% 
+    left_join(
+      fit_stats,
+      by = "mod"
+    )
+  
+  master_df <-
+    bind_rows(
+      master_df,
+      df
+    )
+  
+  
+  lm1 <-
     glmer(
       smoke ~
         raw_income_scale +
@@ -95,19 +143,20 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
         age_scale +
         race +
         married +
-        (1 + median_income_var_scale|fips_code),
+        (1 + median_income_var_scale|fips_code)
+        (1 + raw_income_scale|fips_code),
       family = "binomial",
       control = glmerControl(optimizer = "bobyqa"),
       data = dfg
     )
   
   df <-
-    tidy(lm1b)
+    tidy(lm1)
   
   fit_stats <-
-    glance(lm1b) %>% 
+    glance(lm1) %>% 
     mutate(
-      id_controls = "yes"
+      mod = "mi"
     )
   
   df <-
@@ -115,11 +164,11 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
     mutate(
       median_income_var = median_income_var_name,
       outcome = "smoke",
-      id_controls = "yes"
+      mod = "mi"
     ) %>% 
     left_join(
       fit_stats,
-      by = "id_controls"
+      by = "mod"
     )
   
   master_df <-
@@ -128,7 +177,7 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
       df
     )
   
-  lm1c <-
+  lm1 <-
     glmer(
       smoke ~
         median_income_var_scale * raw_income_scale +
@@ -156,12 +205,12 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
     )
   
   df <-
-    tidy(lm1c)
+    tidy(lm1)
   
   fit_stats <-
-    glance(lm1c) %>% 
+    glance(lm1) %>% 
     mutate(
-      id_controls = "yes_int"
+      mod = "mi_int"
     )
   
   df <-
@@ -169,11 +218,11 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
     mutate(
       median_income_var = median_income_var_name,
       outcome = "smoke",
-      id_controls = "yes_int"
+      mod = "mi_int"
     ) %>% 
     left_join(
       fit_stats,
-      by = "id_controls"
+      by = "mod"
     )
   
   master_df <-
