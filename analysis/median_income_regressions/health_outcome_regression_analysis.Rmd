@@ -194,9 +194,9 @@ summary(lm1)
 ```{r}
 lm1 <-
   glm(
-    hbp ~
+    depression ~
       raw_income_scale +
-      median_income_county_scale +
+      median_income_demo_scale +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
@@ -209,7 +209,7 @@ lm1 <-
       married + 
       year,
     family = "binomial",
-    data = dfg_rs %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)))
+    data = dfg_rs %>% mutate(depression = ifelse(depression == 1, 1, ifelse(depression == 2, 0, NA)))
   )
 
 summary(lm1)
