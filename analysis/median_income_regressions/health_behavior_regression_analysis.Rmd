@@ -98,11 +98,13 @@ lm0 <-
       race +
       married + 
       year +
-      (1 + median_income_demo_scale|fips_code),
+      (1 + raw_income_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
     data = dfg_rs %>% filter(!is.na(median_income_demo_scale))
   )
+
+summary(lm0)
 
 
 lm1 <-
@@ -170,7 +172,7 @@ summary(lm2)
 ### Model comparison
 
 ```{r}
-anova(lm0, lm1, lm2)
+# anova(lm0, lm1, lm2)
 ```
 
 

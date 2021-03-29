@@ -14,7 +14,7 @@ library("lme4", lib.loc = "/home/djolear/R")
 ## Setup Parallel ##
 ####################
 
-plan(multicore, workers = 4)
+plan(multicore, workers = 2)
 
 ###############
 ## Functions ##
@@ -80,7 +80,57 @@ com_regression_function <- function(median_income_var_name, dfg) {
   
   master_df <- data.frame()
   
-  lm1b <-
+  lm1 <-
+    lmer(
+      COMMUNITY_scale ~
+        raw_income_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married +
+        year +
+        (1 + raw_income_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg
+    )
+  
+  df <-
+    tidy(lm1)
+  
+  fit_stats <-
+    glance(lm1) %>% 
+    mutate(
+      mod = "no_mi"
+    )
+  
+  df <-
+    df %>%
+    mutate(
+      median_income_var = median_income_var_name,
+      outcome = "COMMUNITY_scale",
+      mod = "no_mi"
+    ) %>% 
+    left_join(
+      fit_stats,
+      by = "mod"
+    )
+  
+  master_df <-
+    bind_rows(
+      master_df,
+      df
+    )
+  
+  gc()
+  
+  lm1 <-
     lmer(
       COMMUNITY_scale ~
         raw_income_scale +
@@ -95,6 +145,7 @@ com_regression_function <- function(median_income_var_name, dfg) {
         age_scale +
         race +
         married +
+        year +
         (1 + raw_income_scale|fips_code) +
         (1 + median_income_var_scale|fips_code),
       REML = FALSE,
@@ -103,25 +154,24 @@ com_regression_function <- function(median_income_var_name, dfg) {
     )
   
   df <-
-    tidy(lm1b)
+    tidy(lm1)
   
   fit_stats <-
-    glance(lm1b) %>% 
+    glance(lm1) %>% 
     mutate(
-      id_controls = "yes"
+      mod = "mi"
     )
   
   df <-
     df %>%
     mutate(
       median_income_var = median_income_var_name,
-      year = dfg$year[1],
       outcome = "COMMUNITY_scale",
-      id_controls = "yes"
+      mod = "mi"
     ) %>% 
     left_join(
       fit_stats,
-      by = "id_controls"
+      by = "mod"
     )
   
   master_df <-
@@ -130,7 +180,9 @@ com_regression_function <- function(median_income_var_name, dfg) {
       df
     )
   
-  lm1c <-
+  gc()
+  
+  lm1 <-
     lmer(
       COMMUNITY_scale ~
         median_income_var_scale * raw_income_scale +
@@ -140,6 +192,7 @@ com_regression_function <- function(median_income_var_name, dfg) {
         median_income_var_scale * age_scale +
         median_income_var_scale * race +
         median_income_var_scale * married +
+        median_income_var_scale * year +
         total_pop_county_scale +
         median_monthly_housing_cost_county_scale +
         land_area_2010_scale +
@@ -158,25 +211,24 @@ com_regression_function <- function(median_income_var_name, dfg) {
     )
   
   df <-
-    tidy(lm1c)
+    tidy(lm1)
   
   fit_stats <-
-    glance(lm1c) %>% 
+    glance(lm1) %>% 
     mutate(
-      id_controls = "yes_int"
+      mod = "mi_int"
     )
   
   df <-
     df %>%
     mutate(
       median_income_var = median_income_var_name,
-      year = dfg$year[1],
       outcome = "COMMUNITY_scale",
-      id_controls = "yes_int"
+      mod = "mi_int"
     ) %>% 
     left_join(
       fit_stats,
-      by = "id_controls"
+      by = "mod"
     )
   
   master_df <-
@@ -185,29 +237,21 @@ com_regression_function <- function(median_income_var_name, dfg) {
       df
     )
   
+  gc()
+  
   return(master_df)
 }
 
-data_path <- "/project/ourminsk/gallup/exports/for_regression_analyses/"
 
-file_list <- 
-  data.frame(
-    file_list = list.files(path = data_path)
-  )
-
-file_list <-
-  file_list %>% 
-  filter(
-    str_detect(file_list, ".csv")
-  ) %>% 
-  mutate(
-    year = as.numeric(str_extract(file_list, "[[:digit:]]+"))
-  ) %>% 
-  filter(year %in% c(2014:2017))
+data_path <- "/project/ourminsk/gallup/exports/dfg_rs.csv"
 
 master_function <- function(path) {
   dfg <- 
-    read_csv(paste0("/project/ourminsk/gallup/exports/for_regression_analyses/", path))
+    read_csv(path)
+  
+  dfg <- 
+    dfg %>% 
+    filter(year %in% c(2014:2017))
   
   med_inc_vars <-
     c("median_income_county_scale", "median_income_demo_scale")
@@ -215,8 +259,8 @@ master_function <- function(path) {
   res <- 
     future_map_dfr(.x = med_inc_vars, .f = com_regression_function, dfg = dfg)
   
-  write_csv(res, paste0("/home/djolear/gallup/relative_status/regressions/median_income_models/results/community_mi_", dfg$year[1], ".csv"))
+  write_csv(res, paste0("/home/djolear/gallup/relative_status/regressions/median_income_models/results/community_mi_all_years.csv"))
   
 }
 
-future_map(.x = file_list$file_list, .f = master_function)
+master_function(data_path)
