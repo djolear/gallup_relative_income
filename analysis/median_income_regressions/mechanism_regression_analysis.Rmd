@@ -32,13 +32,10 @@ machine_path <-
     "G:/My Drive/"
   )
 
-source(paste0(machine_path, "research/projects/gallup/gallup_analysis_1/relative_status_analysis/regression_results_munge.R"))
+source(paste0(machine_path, "research/projects/gallup_rs/analysis/median_income_regressions/health_behavior_regression_munge.R"))
 
 dfg_rs <-
   read_rds("D:/data/gallup/exports/dfg_rs.rds")
-
-dfg_rs <-
-  read_rds("/Users/djolear/Google Drive/research/projects/gallup/gallup_data/relative_status/dfg_rs.rds")
 
 dfg_rs <-
   dfg_rs %>% 
@@ -60,34 +57,6 @@ contrasts(dfg_rs$race) <- contr.sum(5)
 contrasts(dfg_rs$married) <- contr.sum(6)
 ```
 
-```{r}
-# c <- contr.treatment(2)
-# c
-# my.coding <- matrix(rep(1/2, 2), ncol = 1)
-# my.simple = c - my.coding
-# my.simple
-# 
-# contrasts(dfg_rs$sex) <- my.simple
-# contrasts(dfg_rs$employment_all) <- my.simple
-# 
-# 
-# c <- contr.treatment(5)
-# my.coding <- matrix(rep(1/5, 20), ncol = 4)
-# my.simple = c - my.coding
-# my.simple
-# 
-# contrasts(dfg_rs$race) <- my.simple
-# 
-# 
-# c <- contr.treatment(6)
-# my.coding <- matrix(rep(1/6, 30), ncol = 5)
-# my.simple = c - my.coding
-# my.simple
-# 
-# contrasts(dfg_rs$married) <- my.simple
-```
-
-
 # Analysis
 
 ## Purpose
@@ -97,8 +66,8 @@ contrasts(dfg_rs$married) <- contr.sum(6)
 ```{r}
 pur_terms %>% 
   filter(term == "median_income_var_scale") %>% 
-  mutate(median_income_var = factor(median_income_var, labels = c("demo", "geo"))) %>% 
-  mutate(id_controls = factor(id_controls, labels = c("no id controls", "id controls m.e.", "id controls int."))) %>% 
+  mutate(median_income_var = factor(median_income_var, labels = c("geo", "demo"))) %>% 
+  mutate(id_controls = factor(id_controls, labels = c("id controls m.e.", "id controls int."))) %>% 
   filter(id_controls != "no id controls") %>% 
   mutate(year = as.factor(year)) %>% 
   ggplot(aes(year, estimate)) +
@@ -194,8 +163,8 @@ plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
 ```{r}
 fin_terms %>% 
   filter(term == "median_income_var_scale") %>% 
-  mutate(median_income_var = factor(median_income_var, labels = c("demo", "geo"))) %>% 
-  mutate(id_controls = factor(id_controls, labels = c("no id controls", "id controls m.e.", "id controls int."))) %>% 
+  mutate(median_income_var = factor(median_income_var, labels = c("geo", "demo"))) %>% 
+  mutate(id_controls = factor(id_controls, labels = c("id controls m.e.", "id controls int."))) %>% 
   filter(id_controls != "no id controls") %>% 
   mutate(year = as.factor(year)) %>% 
   ggplot(aes(year, estimate)) +
@@ -291,8 +260,8 @@ plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
 ```{r}
 com_terms %>% 
   filter(term == "median_income_var_scale") %>% 
-  mutate(median_income_var = factor(median_income_var, labels = c("demo", "geo"))) %>% 
-  mutate(id_controls = factor(id_controls, labels = c("no id controls", "id controls m.e.", "id controls int."))) %>% 
+  mutate(median_income_var = factor(median_income_var, labels = c("geo", "demo"))) %>% 
+  mutate(id_controls = factor(id_controls, labels = c("id controls m.e.", "id controls int."))) %>% 
   filter(id_controls != "no id controls") %>% 
   mutate(year = as.factor(year)) %>% 
   ggplot(aes(year, estimate)) +
@@ -387,8 +356,8 @@ plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
 ```{r}
 soc_terms %>% 
   filter(term == "median_income_var_scale") %>% 
-  mutate(median_income_var = factor(median_income_var, labels = c("demo", "geo"))) %>% 
-  mutate(id_controls = factor(id_controls, labels = c("no id controls", "id controls m.e.", "id controls int."))) %>% 
+  mutate(median_income_var = factor(median_income_var, labels = c("geo", "demo"))) %>% 
+  mutate(id_controls = factor(id_controls, labels = c("id controls m.e.", "id controls int."))) %>% 
   filter(id_controls != "no id controls") %>% 
   mutate(year = as.factor(year)) %>% 
   ggplot(aes(year, estimate)) +
@@ -476,292 +445,3 @@ plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "age_scale"
 plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
 ```
 
-
-## Health outcomes
-
-### BMI
-
-```{r}
-lm1 <-
-  lm(
-    bmi_scale ~
-      raw_income_scale +
-      median_income_county_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs 
-  )
-
-summary(lm1)
-
-lm1 <-
-  lm(
-    bmi_scale ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs 
-  )
-
-summary(lm1)
-```
-
-
-### Diabetes
-
-```{r}
-lm1 <-
-  glm(
-    diabetes ~
-      raw_income_scale +
-      median_income_county_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    family = "binomial",
-    data = dfg_rs %>% mutate(diabetes = ifelse(diabetes == 1, 1, ifelse(diabetes == 2, 0, NA)))
-  )
-
-summary(lm1)
-
-lm1 <-
-  glm(
-    diabetes ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    family = "binomial",
-    data = dfg_rs %>% mutate(diabetes = ifelse(diabetes == 1, 1, ifelse(diabetes == 2, 0, NA)))
-  )
-
-summary(lm1)
-```
-
-
-### High blood pressure
-
-```{r}
-lm1 <-
-  glm(
-    hbp ~
-      raw_income_scale +
-      median_income_county_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    family = "binomial",
-    data = dfg_rs %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)))
-  )
-
-summary(lm1)
-
-lm1 <-
-  glm(
-    hbp ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    family = "binomial",
-    data = dfg_rs %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)))
-  )
-
-summary(lm1)
-```
-
-
-### Obesity
-
-```{r}
-lm1 <-
-  glm(
-    obese ~
-      raw_income_scale +
-      median_income_county_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    family = "binomial",
-    data = dfg_rs %>% mutate(obese = ifelse(obese == 1, 0, ifelse(obese == 0, 1, NA)))
-  )
-
-summary(lm1)
-
-lm1 <-
-  glm(
-    obese ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    family = "binomial",
-    data = dfg_rs %>% mutate(obese = ifelse(obese == 1, 0, ifelse(obese == 0, 1, NA)))
-  )
-
-summary(lm1)
-```
-
-
-### Self-reported health
-
-```{r}
-lm1 <-
-  lm(
-    scale(sr_health) ~
-      raw_income_scale +
-      median_income_county_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs %>% mutate(sr_health = ifelse(sr_health %in% c(1:5), 6 - sr_health, NA))
-  )
-
-summary(lm1)
-
-lm1 <-
-  lm(
-    scale(sr_health) ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs %>% mutate(sr_health = ifelse(sr_health %in% c(1:5), 6 - sr_health, NA))
-  )
-
-summary(lm1)
-```
-
-
-### Height
-
-```{r}
-lm1 <-
-  lm(
-    scale(HEIGHT) ~
-      raw_income_scale +
-      median_income_county_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs 
-  )
-
-summary(lm1)
-
-lm1 <-
-  lm(
-    scale(HEIGHT) ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year,
-    data = dfg_rs 
-  )
-
-summary(lm1)
-```
