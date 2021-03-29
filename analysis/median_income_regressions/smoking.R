@@ -80,7 +80,7 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
   
   master_df <- data.frame()
   
-  lm1b <-
+  lm1 <-
     glmer(
       smoke ~
         raw_income_scale +
@@ -95,17 +95,18 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
         age_scale +
         race +
         married +
-        (1 + median_income_var_scale|fips_code),
+        (1 + median_income_var_scale|fips_code) +
+        (1 + raw_income_scale|fips_code),      
       family = "binomial",
       control = glmerControl(optimizer = "bobyqa"),
       data = dfg
     )
   
   df <-
-    tidy(lm1b)
+    tidy(lm1)
   
   fit_stats <-
-    glance(lm1b) %>% 
+    glance(lm1) %>% 
     mutate(
       id_controls = "yes"
     )
@@ -129,7 +130,9 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
       df
     )
   
-  lm1c <-
+  gc()
+  
+  lm1 <-
     glmer(
       smoke ~
         median_income_var_scale * raw_income_scale +
@@ -157,10 +160,10 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
     )
   
   df <-
-    tidy(lm1c)
+    tidy(lm1)
   
   fit_stats <-
-    glance(lm1c) %>% 
+    glance(lm1) %>% 
     mutate(
       id_controls = "yes_int"
     )
@@ -183,6 +186,8 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
       master_df,
       df
     )
+  
+  gc()
   
   return(master_df)
 }
