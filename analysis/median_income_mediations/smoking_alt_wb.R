@@ -25,7 +25,7 @@ smoking_mediation1_function <- function(current_year, dfg){
   model <- 
     '
     # direct effect
-    fruits_veggies_scale ~ b1 * PURPOSE_scale + b2 * enough_money_scale + b3 * comp_satis_std_liv_scale + b4 * COMMUNITY_scale + b5 * SOCIAL_scale + c * median_income_demo_scale  + control2b * raw_income_scale + control3b * education_scale + control4b * median_monthly_housing_cost_county_scale + 
+    smoke ~ b1 * PURPOSE_scale + b2 * enough_money_scale + b3 * comp_satis_std_liv_scale + b4 * COMMUNITY_scale + b5 * SOCIAL_scale + c * median_income_demo_scale  + control2b * raw_income_scale + control3b * education_scale + control4b * median_monthly_housing_cost_county_scale + 
     control5b * total_pop_county_scale + control6b * land_area_2010_scale + control7b * sex_1 + control8b * race_1 + control9b * race_2 + control10b * race_3 + control11b * race_4 + 
     control12b * employment_all_1 + control13b * age_scale + control14b * physicians_scale + control15b * married_1 + control16b * married_2 + 
     control17b * married_3 + control18b * married_4 + control19b * married_5
