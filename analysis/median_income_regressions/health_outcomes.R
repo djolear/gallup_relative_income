@@ -77,7 +77,7 @@ health_regression_function <- function(median_income_var_name, dfg) {
     )
   
   lm1 <-
-    glm(
+    glmer(
       diabetes ~
         raw_income_scale +
         median_income_var_scale +
@@ -175,7 +175,7 @@ health_regression_function <- function(median_income_var_name, dfg) {
   
   
   lm1 <-
-    glm(
+    glmer(
       hbp ~
         raw_income_scale +
         median_income_var_scale +
@@ -272,7 +272,7 @@ health_regression_function <- function(median_income_var_name, dfg) {
     )
   
   lm1 <-
-    glm(
+    glmer(
       obese ~
         raw_income_scale +
         median_income_var_scale +
@@ -368,7 +368,7 @@ health_regression_function <- function(median_income_var_name, dfg) {
     )
   
   lm1 <-
-    glm(
+    glmer(
       depression ~
         raw_income_scale +
         median_income_var_scale +
