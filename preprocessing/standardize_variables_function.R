@@ -53,6 +53,7 @@ standardize_variables <- function(df) {
         fruits_veggies,
         num_alc,
         sr_health,
+        height,
         bmi,
         starts_with("ladder"),
         PURPOSE:little_pleasure,
