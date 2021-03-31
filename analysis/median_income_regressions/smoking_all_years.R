@@ -143,7 +143,7 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
         age_scale +
         race +
         married +
-        (1 + median_income_var_scale|fips_code)
+        (1 + median_income_var_scale|fips_code) +
         (1 + raw_income_scale|fips_code),
       family = "binomial",
       control = glmerControl(optimizer = "bobyqa"),

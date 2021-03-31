@@ -1,0 +1,822 @@
+---
+title: "Gallup - Assorted Regression Results"
+author: "Daniel O'Leary"
+date: "3/30/2021"
+output:
+  github_document:
+    toc: true
+    toc_depth: 5
+---
+
+```{r, include = FALSE}
+if (!require("pacman")) install.packages("pacman")
+
+pacman::p_load(
+  tidyverse, 
+  haven,
+  lme4,
+  lm.beta,
+  sjPlot,
+  stargazer,
+  broom,
+  broom.mixed
+)
+```
+
+```{r, include = FALSE}
+sinfo <- data.frame(Sys.info())
+machine <- sinfo$Sys.info..[4]
+
+machine_path <- 
+  ifelse(
+    machine %in% c("sussman-rp-mbpro.local", "sussman-rp-mbpro.lan"), 
+    "/Users/djolear/Google Drive/", 
+    "G:/My Drive/"
+  )
+
+dfg_rs <-
+  read_rds("D:/data/gallup/exports/dfg_rs.rds")
+
+dfg_rs <-
+  dfg_rs %>% 
+  mutate_at(
+    vars(
+      sex, 
+      employment_all,
+      race,
+      married
+    ),
+    as.factor
+  )
+```
+
+```{r}
+contrasts(dfg_rs$sex) <- contr.sum(2)
+contrasts(dfg_rs$employment_all) <- contr.sum(2)
+contrasts(dfg_rs$race) <- contr.sum(5)
+contrasts(dfg_rs$married) <- contr.sum(6)
+```
+
+
+## Demographic Median Income
+
+### Height
+
+```{r}
+  lm1 <-
+    lmer(
+      height_scale ~
+        raw_income_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+```{r}
+  lm1 <-
+    lmer(
+      height_scale ~
+        raw_income_scale +
+        median_income_demo_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_demo_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+```{r}
+  lm1 <-
+    lmer(
+      height_scale ~
+        median_income_demo_scale * raw_income_scale +
+        median_income_demo_scale * education_scale +
+        median_income_demo_scale * employment_all +
+        median_income_demo_scale * sex +
+        median_income_demo_scale * age_scale +
+        median_income_demo_scale * race +
+        median_income_demo_scale * married +
+        median_income_demo_scale * year +
+        median_income_demo_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_demo_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+### Self-reported health
+
+```{r}
+  lm1 <-
+    lmer(
+      sr_health_scale ~
+        raw_income_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+```{r}
+  lm1 <-
+    lmer(
+      sr_health_scale ~
+        raw_income_scale +
+        median_income_demo_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_demo_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+```{r}
+  lm1 <-
+    lmer(
+      sr_health_scale ~
+        median_income_demo_scale * raw_income_scale +
+        median_income_demo_scale * education_scale +
+        median_income_demo_scale * employment_all +
+        median_income_demo_scale * sex +
+        median_income_demo_scale * age_scale +
+        median_income_demo_scale * race +
+        median_income_demo_scale * married +
+        median_income_demo_scale * year +
+        median_income_demo_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_demo_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+### Life satisfaction
+
+```{r}
+  lm1 <-
+    lmer(
+      ladder_now_scale ~
+        raw_income_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+```{r}
+  lm1 <-
+    lmer(
+      ladder_now_scale ~
+        raw_income_scale +
+        median_income_demo_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_demo_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+```{r}
+  lm1 <-
+    lmer(
+      ladder_now_scale ~
+        median_income_demo_scale * raw_income_scale +
+        median_income_demo_scale * education_scale +
+        median_income_demo_scale * employment_all +
+        median_income_demo_scale * sex +
+        median_income_demo_scale * age_scale +
+        median_income_demo_scale * race +
+        median_income_demo_scale * married +
+        median_income_demo_scale * year +
+        median_income_demo_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_demo_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+### BMI
+
+```{r}
+  lm1 <-
+    lmer(
+      bmi_scale ~
+        raw_income_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+```{r}
+  lm1 <-
+    lmer(
+      bmi_scale ~
+        raw_income_scale +
+        median_income_demo_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_demo_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+```{r}
+  lm1 <-
+    lmer(
+      bmi_scale ~
+        median_income_demo_scale * raw_income_scale +
+        median_income_demo_scale * education_scale +
+        median_income_demo_scale * employment_all +
+        median_income_demo_scale * sex +
+        median_income_demo_scale * age_scale +
+        median_income_demo_scale * race +
+        median_income_demo_scale * married +
+        median_income_demo_scale * year +
+        median_income_demo_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_demo_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+## Geographic Median Income
+
+### Height
+
+```{r}
+  lm1 <-
+    lmer(
+      height_scale ~
+        raw_income_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+```{r}
+  lm1 <-
+    lmer(
+      height_scale ~
+        raw_income_scale +
+        median_income_county_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_county_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+```{r}
+  lm1 <-
+    lmer(
+      height_scale ~
+        median_income_county_scale * raw_income_scale +
+        median_income_county_scale * education_scale +
+        median_income_county_scale * employment_all +
+        median_income_county_scale * sex +
+        median_income_county_scale * age_scale +
+        median_income_county_scale * race +
+        median_income_county_scale * married +
+        median_income_county_scale * year +
+        median_income_county_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_county_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+### Self-reported health
+
+```{r}
+  lm1 <-
+    lmer(
+      sr_health_scale ~
+        raw_income_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+```{r}
+  lm1 <-
+    lmer(
+      sr_health_scale ~
+        raw_income_scale +
+        median_income_county_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_county_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+```{r}
+  lm1 <-
+    lmer(
+      sr_health_scale ~
+        median_income_county_scale * raw_income_scale +
+        median_income_county_scale * education_scale +
+        median_income_county_scale * employment_all +
+        median_income_county_scale * sex +
+        median_income_county_scale * age_scale +
+        median_income_county_scale * race +
+        median_income_county_scale * married +
+        median_income_county_scale * year +
+        median_income_county_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_county_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+### Life satisfaction
+
+```{r}
+  lm1 <-
+    lmer(
+      ladder_now_scale ~
+        raw_income_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+```{r}
+  lm1 <-
+    lmer(
+      ladder_now_scale ~
+        raw_income_scale +
+        median_income_county_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_county_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+```{r}
+  lm1 <-
+    lmer(
+      ladder_now_scale ~
+        median_income_county_scale * raw_income_scale +
+        median_income_county_scale * education_scale +
+        median_income_county_scale * employment_all +
+        median_income_county_scale * sex +
+        median_income_county_scale * age_scale +
+        median_income_county_scale * race +
+        median_income_county_scale * married +
+        median_income_county_scale * year +
+        median_income_county_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_county_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+### BMI
+
+```{r}
+  lm1 <-
+    lmer(
+      bmi_scale ~
+        raw_income_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+```{r}
+  lm1 <-
+    lmer(
+      bmi_scale ~
+        raw_income_scale +
+        median_income_county_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_county_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```
+
+
+```{r}
+  lm1 <-
+    lmer(
+      bmi_scale ~
+        median_income_county_scale * raw_income_scale +
+        median_income_county_scale * education_scale +
+        median_income_county_scale * employment_all +
+        median_income_county_scale * sex +
+        median_income_county_scale * age_scale +
+        median_income_county_scale * race +
+        median_income_county_scale * married +
+        median_income_county_scale * year +
+        median_income_county_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_county_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
+      data = dfg_rs
+    )
+
+summary(lm1)
+  
+tidy(lm1)
+
+glance(lm1)
+```

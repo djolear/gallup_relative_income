@@ -162,11 +162,11 @@ eh_regression_function <- function(median_income_var_name, dfg) {
     mutate(
       median_income_var = median_income_var_name,
       outcome = "eat_healthy",
-      mod = "yes"
+      mod = "mi"
     ) %>% 
     left_join(
       fit_stats,
-      by = "mi"
+      by = "mod"
     )
 
   master_df <-

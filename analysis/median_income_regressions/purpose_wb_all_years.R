@@ -73,10 +73,10 @@ pur_regression_function <- function(median_income_var_name, dfg) {
       as.factor
     )
   
-  contrasts(dfg$sex) <- contr.sum(2)
-  contrasts(dfg$employment_all) <- contr.sum(2)
-  contrasts(dfg$race) <- contr.sum(5)
-  contrasts(dfg$married) <- contr.sum(6)
+  # contrasts(dfg$sex) <- contr.sum(2)
+  # contrasts(dfg$employment_all) <- contr.sum(2)
+  # contrasts(dfg$race) <- contr.sum(5)
+  # contrasts(dfg$married) <- contr.sum(6)
   
   master_df <- data.frame()
   
