@@ -291,7 +291,7 @@ health_regression_function <- function(median_income_var_name, dfg) {
         (1 + median_income_var_scale|fips_code),
       family = "binomial",
       control = glmerControl(optimizer = "bobyqa"),
-      data = dfg_current %>% mutate(obese = ifelse(obese == 1, 1, ifelse(obese == 2, 0, NA)))
+      data = dfg_current %>% mutate(obese = ifelse(obese == 0, 1, ifelse(obese == 1, 0, NA)))
     )
   
   df <-
