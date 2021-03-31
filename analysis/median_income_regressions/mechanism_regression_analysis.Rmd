@@ -47,6 +47,27 @@ dfg_rs <-
       married
     ),
     as.factor
+  ) %>% 
+  filter_at(
+    vars(
+      median_income_demo_scale,
+      median_income_county_scale,
+      PURPOSE_scale,
+      raw_income_scale,
+      education_scale,
+      total_pop_county_scale,
+      median_monthly_housing_cost_county_scale,
+      land_area_2010_scale,
+      physicians_scale,
+      employment_all,
+      sex,
+      age_scale,
+      race,
+      married, 
+      year,
+      fips_code
+    ),
+    all_vars(!is.na(.))
   )
 ```
 
@@ -61,7 +82,7 @@ contrasts(dfg_rs$married) <- contr.sum(6)
 
 ## Purpose
 
-### Effect of median income
+### Effect of median income across the years
 
 ```{r}
 pur_terms %>% 
@@ -81,11 +102,41 @@ pur_terms %>%
 ```
 
 
-### Main effects model
+### Demographic median income - all years
+
+#### No median income model
+
+```{r}
+lm0 <-
+  lmer(
+    PURPOSE_scale ~
+      raw_income_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm0)
+```
+
+
+#### Main effects model
 
 ```{r}
 lm1 <-
-  lm(
+  lmer(
     PURPOSE_scale ~
       raw_income_scale +
       median_income_demo_scale +
@@ -99,7 +150,11 @@ lm1 <-
       age_scale +
       race +
       married + 
-      year,
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
     data = dfg_rs 
   )
 
@@ -107,11 +162,11 @@ summary(lm1)
 ```
 
 
-### Interactive model
+#### Interactive model
 
 ```{r}
-lm2 <-
-  lm(
+lm1 <-
+  lmer(
     PURPOSE_scale ~
       median_income_demo_scale * raw_income_scale +
       median_income_demo_scale * education_scale +
@@ -131,22 +186,18 @@ lm2 <-
       age_scale +
       race +
       married +
-      year,
-    data = dfg_rs
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
   )
 
-summary(lm2)
+summary(lm1)
 ```
 
-
-### Model comparison 
-
-```{r}
-# anova(lm1, lm2)
-```
-
-
-### Interaction plots
+##### Interaction plots
 
 ```{r}
 plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "education_scale"))
@@ -156,9 +207,105 @@ plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
 ```
 
 
+### Geographic median income - all years
+
+#### No median income model
+
+```{r}
+lm1 <-
+  lmer(
+    PURPOSE_scale ~
+      raw_income_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
+#### Main effects model
+
+```{r}
+lm1 <-
+  lmer(
+    PURPOSE_scale ~
+      raw_income_scale +
+      median_income_county_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_county_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
+#### Interactive model
+
+```{r}
+lm1 <-
+  lmer(
+    PURPOSE_scale ~
+      median_income_county_scale * raw_income_scale +
+      median_income_county_scale * education_scale +
+      median_income_county_scale * employment_all +
+      median_income_county_scale * sex +
+      median_income_county_scale * age_scale +
+      median_income_county_scale * race +
+      median_income_county_scale * married +
+      median_income_county_scale * year +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married +
+      year +
+      (1 + median_income_county_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
 ## Financial
 
-### Effect of median income
+### Effect of median income across the years
 
 ```{r}
 fin_terms %>% 
@@ -178,11 +325,41 @@ fin_terms %>%
 ```
 
 
-### Main effects model
+### Demographic median income - all years
+
+#### No median income model
 
 ```{r}
 lm1 <-
-  lm(
+  lmer(
+    FINANCIAL_scale ~
+      raw_income_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
+#### Main effects model
+
+```{r}
+lm1 <-
+  lmer(
     FINANCIAL_scale ~
       raw_income_scale +
       median_income_demo_scale +
@@ -196,7 +373,11 @@ lm1 <-
       age_scale +
       race +
       married + 
-      year,
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
     data = dfg_rs 
   )
 
@@ -204,11 +385,11 @@ summary(lm1)
 ```
 
 
-### Interactive model
+#### Interactive model
 
 ```{r}
-lm2 <-
-  lm(
+lm1 <-
+  lmer(
     FINANCIAL_scale ~
       median_income_demo_scale * raw_income_scale +
       median_income_demo_scale * education_scale +
@@ -228,22 +409,18 @@ lm2 <-
       age_scale +
       race +
       married +
-      year,
-    data = dfg_rs
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
   )
 
-summary(lm2)
+summary(lm1)
 ```
 
-
-### Model comparison 
-
-```{r}
-# anova(lm1, lm2)
-```
-
-
-### Interaction plots
+##### Interaction plots
 
 ```{r}
 plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "education_scale"))
@@ -253,9 +430,105 @@ plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
 ```
 
 
+### Geographic median income - all years
+
+#### No median income model
+
+```{r}
+lm1 <-
+  lmer(
+    FINANCIAL_scale ~
+      raw_income_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
+#### Main effects model
+
+```{r}
+lm1 <-
+  lmer(
+    FINANCIAL_scale ~
+      raw_income_scale +
+      median_income_county_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_county_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
+#### Interactive model
+
+```{r}
+lm1 <-
+  lmer(
+    FINANCIAL_scale ~
+      median_income_county_scale * raw_income_scale +
+      median_income_county_scale * education_scale +
+      median_income_county_scale * employment_all +
+      median_income_county_scale * sex +
+      median_income_county_scale * age_scale +
+      median_income_county_scale * race +
+      median_income_county_scale * married +
+      median_income_county_scale * year +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married +
+      year +
+      (1 + median_income_county_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
 ## Community
 
-### Effect of median income
+### Effect of median income across the years
 
 ```{r}
 com_terms %>% 
@@ -275,14 +548,16 @@ com_terms %>%
 ```
 
 
-### Main effects model
+### Demographic median income - all years
+
+#### No median income model
 
 ```{r}
 lm1 <-
-  lm(
+  lmer(
     COMMUNITY_scale ~
       raw_income_scale +
-      median_income_demo_scale +
+      physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
       land_area_2010_scale +
@@ -292,7 +567,10 @@ lm1 <-
       age_scale +
       race +
       married + 
-      year,
+      year +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
     data = dfg_rs 
   )
 
@@ -300,11 +578,41 @@ summary(lm1)
 ```
 
 
-### Interactive model
+#### Main effects model
 
 ```{r}
-lm2 <-
-  lm(
+lm1 <-
+  lmer(
+    COMMUNITY_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
+#### Interactive model
+
+```{r}
+lm1 <-
+  lmer(
     COMMUNITY_scale ~
       median_income_demo_scale * raw_income_scale +
       median_income_demo_scale * education_scale +
@@ -324,22 +632,18 @@ lm2 <-
       age_scale +
       race +
       married +
-      year,
-    data = dfg_rs
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
   )
 
-summary(lm2)
+summary(lm1)
 ```
 
-
-### Model comparison 
-
-```{r}
-# anova(lm1, lm2)
-```
-
-
-### Interaction plots
+##### Interaction plots
 
 ```{r}
 plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "education_scale"))
@@ -349,9 +653,105 @@ plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
 ```
 
 
+### Geographic median income - all years
+
+#### No median income model
+
+```{r}
+lm1 <-
+  lmer(
+    COMMUNITY_scale ~
+      raw_income_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
+#### Main effects model
+
+```{r}
+lm1 <-
+  lmer(
+    COMMUNITY_scale ~
+      raw_income_scale +
+      median_income_county_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_county_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
+#### Interactive model
+
+```{r}
+lm1 <-
+  lmer(
+    COMMUNITY_scale ~
+      median_income_county_scale * raw_income_scale +
+      median_income_county_scale * education_scale +
+      median_income_county_scale * employment_all +
+      median_income_county_scale * sex +
+      median_income_county_scale * age_scale +
+      median_income_county_scale * race +
+      median_income_county_scale * married +
+      median_income_county_scale * year +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married +
+      year +
+      (1 + median_income_county_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
 ## Social
 
-### Effect of median income
+### Effect of median income across the years
 
 ```{r}
 soc_terms %>% 
@@ -371,11 +771,41 @@ soc_terms %>%
 ```
 
 
-### Main effects model
+### Demographic median income - all years
+
+#### No median income model
 
 ```{r}
 lm1 <-
-  lm(
+  lmer(
+    SOCIAL_scale ~
+      raw_income_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
+#### Main effects model
+
+```{r}
+lm1 <-
+  lmer(
     SOCIAL_scale ~
       raw_income_scale +
       median_income_demo_scale +
@@ -389,7 +819,11 @@ lm1 <-
       age_scale +
       race +
       married + 
-      year,
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
     data = dfg_rs 
   )
 
@@ -397,11 +831,11 @@ summary(lm1)
 ```
 
 
-### Interactive model
+#### Interactive model
 
 ```{r}
-lm2 <-
-  lm(
+lm1 <-
+  lmer(
     SOCIAL_scale ~
       median_income_demo_scale * raw_income_scale +
       median_income_demo_scale * education_scale +
@@ -421,27 +855,119 @@ lm2 <-
       age_scale +
       race +
       married +
-      year,
-    data = dfg_rs
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
   )
 
-summary(lm2)
+summary(lm1)
 ```
 
-
-### Model comparison 
-
-```{r}
-# anova(lm1, lm2)
-```
-
-
-### Interaction plots
+##### Interaction plots
 
 ```{r}
 plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "education_scale"))
 plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "raw_income_scale"))
 plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "age_scale"))
 plot_model(lm1, type = "pred", terms = c("median_income_demo_scale", "sex"))
+```
+
+
+### Geographic median income - all years
+
+#### No median income model
+
+```{r}
+lm1 <-
+  lmer(
+    SOCIAL_scale ~
+      raw_income_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
+#### Main effects model
+
+```{r}
+lm1 <-
+  lmer(
+    SOCIAL_scale ~
+      raw_income_scale +
+      median_income_county_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_county_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
+#### Interactive model
+
+```{r}
+lm1 <-
+  lmer(
+    SOCIAL_scale ~
+      median_income_county_scale * raw_income_scale +
+      median_income_county_scale * education_scale +
+      median_income_county_scale * employment_all +
+      median_income_county_scale * sex +
+      median_income_county_scale * age_scale +
+      median_income_county_scale * race +
+      median_income_county_scale * married +
+      median_income_county_scale * year +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married +
+      year +
+      (1 + median_income_county_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
 ```
 
