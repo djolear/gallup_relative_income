@@ -97,7 +97,7 @@ data_path <- "/project/ourminsk/gallup/exports/dfg_rs.csv"
 master_function <- function(path) {
   dfg <- 
     read_csv(path) %>% 
-    fitler(year %in% c(2014:2017))
+    filter(year %in% c(2014:2017))
   
   res <- fv_mediation1_function(dfg)
   
