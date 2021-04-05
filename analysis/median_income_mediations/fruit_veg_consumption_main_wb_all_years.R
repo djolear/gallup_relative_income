@@ -91,12 +91,15 @@ fv_mediation1_function <- function(dfg){
   return(df)
 }
 
-data_path <- "/project/ourminsk/gallup/exports/dfg_rs.csv"
+data_path <- "/project/ourminsk/gallup/exports/for_mediation_analyses/dfg_rs_med_data_all_years.csv"
 
 
 master_function <- function(path) {
   dfg <- 
-    read_csv(path) %>% 
+    read_csv(
+      path,
+      col_types = c("dddddddddddddddddddddddddddddddddddd")
+    ) %>% 
     filter(year %in% c(2014:2017))
   
   res <- fv_mediation1_function(dfg)
