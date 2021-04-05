@@ -14,14 +14,14 @@ library("lme4", lib.loc = "/home/djolear/R")
 ## Setup Parallel ##
 ####################
 
-plan(multicore, workers = 4)
+plan(multicore, workers = 2)
 
 ###############
 ## Functions ##
 ###############
 
-fv_mediation1_function <- function(current_year, dfg){
-  print(current_year)
+fv_mediation1_function <- function(dfg){
+
   model <- 
     '
     # direct effect
@@ -96,13 +96,13 @@ data_path <- "/project/ourminsk/gallup/exports/dfg_rs.csv"
 
 master_function <- function(path) {
   dfg <- 
-    read_csv(paste0("/project/ourminsk/gallup/exports/for_mediation_analyses/", path))
+    read_csv(path) %>% 
+    fitler(year %in% c(2014:2017))
   
-  res <- fv_mediation1_function(dfg$year[1], dfg)
+  res <- fv_mediation1_function(dfg)
   
-  write_csv(res, paste0("/project/ourminsk/gallup/results/mediation/fv_mediation_main_wb_", dfg$year[1], ".csv"))
+  write_csv(res, paste0("/project/ourminsk/gallup/results/mediation/fv_mediation_main_wb_all_years.csv"))
   
 }
 
-future_map(.x = file_list$file_list, .f = master_function)
-
+master_function(data_path)
