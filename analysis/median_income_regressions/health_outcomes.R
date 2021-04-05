@@ -76,6 +76,14 @@ health_regression_function <- function(median_income_var_name, dfg) {
       as.factor
     )
   
+  contrasts(dfg$sex) <- contr.sum(2)
+  contrasts(dfg$employment_all) <- contr.sum(2)
+  contrasts(dfg$race) <- contr.sum(5)
+  contrasts(dfg$married) <- contr.sum(6)
+  
+  master_df <- data.frame()
+  
+  
   lm1 <-
     glmer(
       diabetes ~
@@ -99,6 +107,8 @@ health_regression_function <- function(median_income_var_name, dfg) {
       data = dfg_current %>% mutate(diabetes = ifelse(diabetes == 1, 1, ifelse(diabetes == 2, 0, NA)))
     )
   
+  
+  
   df <-
     tidy(lm1)
   
@@ -120,7 +130,11 @@ health_regression_function <- function(median_income_var_name, dfg) {
       by = "id_controls"
     )
   
-  
+  master_df <-
+    bind_rows(
+      master_df,
+      df
+    )
   
   dfg_current <-
     dfg %>% 
@@ -218,7 +232,11 @@ health_regression_function <- function(median_income_var_name, dfg) {
       by = "id_controls"
     )
   
-  
+  master_df <-
+    bind_rows(
+      master_df,
+      df
+    )
   
   dfg_current <-
     dfg %>% 
@@ -315,6 +333,11 @@ health_regression_function <- function(median_income_var_name, dfg) {
       by = "id_controls"
     )
   
+  master_df <-
+    bind_rows(
+      master_df,
+      df
+    )
   
   dfg_current <-
     dfg %>% 
@@ -409,6 +432,12 @@ health_regression_function <- function(median_income_var_name, dfg) {
     left_join(
       fit_stats,
       by = "id_controls"
+    )
+  
+  master_df <-
+    bind_rows(
+      master_df,
+      df
     )
   
   return(master_df)
