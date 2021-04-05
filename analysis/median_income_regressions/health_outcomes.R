@@ -23,7 +23,24 @@ plan(multicore, workers = 2)
 health_regression_function <- function(median_income_var_name, dfg) {
   
   # select data and set median income variable
- 
+  dfg <-
+    dfg %>% 
+    mutate_at(
+      vars(
+        employment_all,
+        sex,
+        race,
+        married,
+        year,
+        fips_code
+      ),
+      as.factor
+    )
+  
+  contrasts(dfg$sex) <- contr.sum(2)
+  contrasts(dfg$employment_all) <- contr.sum(2)
+  contrasts(dfg$race) <- contr.sum(5)
+  contrasts(dfg$married) <- contr.sum(6)
   
   dfg_current <-
     dfg %>% 
@@ -63,23 +80,9 @@ health_regression_function <- function(median_income_var_name, dfg) {
         fips_code
       ),
       all_vars(!is.na(.))
-    ) %>% 
-    mutate_at(
-      vars(
-        employment_all,
-        sex,
-        race,
-        married,
-        year,
-        fips_code
-      ),
-      as.factor
-    )
+    ) 
   
-  contrasts(dfg$sex) <- contr.sum(2)
-  contrasts(dfg$employment_all) <- contr.sum(2)
-  contrasts(dfg$race) <- contr.sum(5)
-  contrasts(dfg$married) <- contr.sum(6)
+
   
   master_df <- data.frame()
   
