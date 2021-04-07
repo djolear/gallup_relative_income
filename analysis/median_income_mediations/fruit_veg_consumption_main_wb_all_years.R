@@ -27,8 +27,7 @@ fv_mediation1_function <- function(dfg){
     # direct effect
     fruits_veggies_scale ~ b1 * PURPOSE_scale + b2 * FINANCIAL_scale + b3 * COMMUNITY_scale + b4 * SOCIAL_scale + c * median_income_demo_scale  + control2b * raw_income_scale + control3b * education_scale + control4b * median_monthly_housing_cost_county_scale + 
     control5b * total_pop_county_scale + control6b * land_area_2010_scale + control7b * sex_1 + control8b * race_1 + control9b * race_2 + control10b * race_3 + control11b * race_4 + 
-    control12b * employment_all_1 + control13b * age_scale + control14b * physicians_scale + control15b * married_1 + control16b * married_2 + 
-    control17b * married_3 + control18b * married_4 + control19b * married_5
+    control12b * employment_all_1 + control13b * age_scale + control14b * physicians_scale
     
     # mediators
     PURPOSE_scale ~ a1 * median_income_demo_scale + control2a * raw_income_scale + control3a * education_scale + 
@@ -72,11 +71,11 @@ fv_mediation1_function <- function(dfg){
   fit <- 
     lavaan::sem(
       model = model,
-      data = dfg,
+      data = data,
       ordered = c("eat_healthy", "sex_1", "race_1", "race_2", "race_3", "race_4", "employment_all_1", "married_1", "married_2", "married_3", "married_4", "married_5"),
-      se = "bootstrap",
-      bootstrap = 5000,
-      estimator = "DWLS"
+      # se = "bootstrap",
+      # bootstrap = 5000,
+      # estimator = "DWLS"
     )
 
   
