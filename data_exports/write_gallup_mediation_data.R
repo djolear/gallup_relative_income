@@ -84,6 +84,7 @@ data <-
   mutate(across(eat_healthy:land_area_2010_scale, as.numeric)) %>%
   dplyr::select(-c(sex, race, married))
 
+write_csv(data, paste0("D:/data/gallup/exports/for_mediation_analyses/dfg_rs_med_data_all_years.csv"))
 
 years <-
   data %>% 

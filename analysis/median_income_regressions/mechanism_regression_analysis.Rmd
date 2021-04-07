@@ -281,7 +281,7 @@ summary(lm1)
 #### Interactive model
 
 ```{r}
-lm1 <-
+lm2 <-
   lmer(
     PURPOSE_scale ~
       median_income_county_scale * raw_income_scale +
@@ -310,7 +310,7 @@ lm1 <-
     data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm2)
 ```
 
 #### Model comparison 
@@ -518,7 +518,7 @@ summary(lm1)
 #### Interactive model
 
 ```{r}
-lm1 <-
+lm2 <-
   lmer(
     FINANCIAL_scale ~
       median_income_county_scale * raw_income_scale +
@@ -547,7 +547,7 @@ lm1 <-
     data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm2)
 ```
 
 #### Model comparison 
@@ -755,7 +755,7 @@ summary(lm1)
 #### Interactive model
 
 ```{r}
-lm1 <-
+lm2 <-
   lmer(
     COMMUNITY_scale ~
       median_income_county_scale * raw_income_scale +
@@ -784,7 +784,7 @@ lm1 <-
     data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm2)
 ```
 
 #### Model comparison 
@@ -992,7 +992,7 @@ summary(lm1)
 #### Interactive model
 
 ```{r}
-lm1 <-
+lm2 <-
   lmer(
     SOCIAL_scale ~
       median_income_county_scale * raw_income_scale +
@@ -1021,7 +1021,7 @@ lm1 <-
     data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm2)
 ```
 
 #### Model comparison 

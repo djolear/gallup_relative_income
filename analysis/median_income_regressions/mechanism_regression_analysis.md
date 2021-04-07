@@ -630,7 +630,7 @@ summary(lm1)
 #### Interactive model
 
 ``` r
-lm1 <-
+lm2 <-
   lmer(
     PURPOSE_scale ~
       median_income_county_scale * raw_income_scale +
@@ -664,7 +664,7 @@ lm1 <-
     ## Model failed to converge with max|grad| = 0.0205333 (tol = 0.002, component 1)
 
 ``` r
-summary(lm1)
+summary(lm2)
 ```
 
     ## Linear mixed model fit by maximum likelihood  ['lmerMod']
@@ -759,28 +759,24 @@ anova(lm0, lm1, lm2)
     ## lm0:     median_monthly_housing_cost_county_scale + land_area_2010_scale + 
     ## lm0:     education_scale + employment_all + sex + age_scale + race + 
     ## lm0:     married + year + (1 + raw_income_scale | fips_code)
-    ## lm1: PURPOSE_scale ~ median_income_county_scale * raw_income_scale + 
-    ## lm1:     median_income_county_scale * education_scale + median_income_county_scale * 
-    ## lm1:     employment_all + median_income_county_scale * sex + median_income_county_scale * 
-    ## lm1:     age_scale + median_income_county_scale * race + median_income_county_scale * 
-    ## lm1:     married + median_income_county_scale * year + physicians_scale + 
-    ## lm1:     unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ## lm1: PURPOSE_scale ~ raw_income_scale + median_income_county_scale + 
+    ## lm1:     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
     ## lm1:     land_area_2010_scale + education_scale + employment_all + 
     ## lm1:     sex + age_scale + race + married + year + (1 + median_income_county_scale | 
     ## lm1:     fips_code) + (1 + raw_income_scale | fips_code)
-    ## lm2: PURPOSE_scale ~ median_income_demo_scale * raw_income_scale + 
-    ## lm2:     median_income_demo_scale * education_scale + median_income_demo_scale * 
-    ## lm2:     employment_all + median_income_demo_scale * sex + median_income_demo_scale * 
-    ## lm2:     age_scale + median_income_demo_scale * race + median_income_demo_scale * 
-    ## lm2:     married + median_income_demo_scale * year + physicians_scale + 
+    ## lm2: PURPOSE_scale ~ median_income_county_scale * raw_income_scale + 
+    ## lm2:     median_income_county_scale * education_scale + median_income_county_scale * 
+    ## lm2:     employment_all + median_income_county_scale * sex + median_income_county_scale * 
+    ## lm2:     age_scale + median_income_county_scale * race + median_income_county_scale * 
+    ## lm2:     married + median_income_county_scale * year + physicians_scale + 
     ## lm2:     unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
     ## lm2:     land_area_2010_scale + education_scale + employment_all + 
-    ## lm2:     sex + age_scale + race + married + year + (1 + median_income_demo_scale | 
+    ## lm2:     sex + age_scale + race + married + year + (1 + median_income_county_scale | 
     ## lm2:     fips_code) + (1 + raw_income_scale | fips_code)
     ##     npar     AIC     BIC  logLik deviance   Chisq Df Pr(>Chisq)    
     ## lm0   26 1563130 1563422 -781539  1563078                          
-    ## lm1   47 1562680 1563208 -781293  1562586  492.11 21  < 2.2e-16 ***
-    ## lm2   47 1558103 1558631 -779004  1558009 4577.25  0  < 2.2e-16 ***
+    ## lm1   30 1563137 1563474 -781538  1563077   1.366  4     0.8501    
+    ## lm2   47 1562680 1563208 -781293  1562586 490.739 17     <2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -1351,7 +1347,7 @@ summary(lm1)
 #### Interactive model
 
 ``` r
-lm1 <-
+lm2 <-
   lmer(
     FINANCIAL_scale ~
       median_income_county_scale * raw_income_scale +
@@ -1385,7 +1381,7 @@ lm1 <-
     ## Model failed to converge with max|grad| = 0.0188518 (tol = 0.002, component 1)
 
 ``` r
-summary(lm1)
+summary(lm2)
 ```
 
     ## Linear mixed model fit by maximum likelihood  ['lmerMod']
@@ -1480,28 +1476,24 @@ anova(lm0, lm1, lm2)
     ## lm0:     median_monthly_housing_cost_county_scale + land_area_2010_scale + 
     ## lm0:     education_scale + employment_all + sex + age_scale + race + 
     ## lm0:     married + year + (1 + raw_income_scale | fips_code)
-    ## lm1: FINANCIAL_scale ~ median_income_county_scale * raw_income_scale + 
-    ## lm1:     median_income_county_scale * education_scale + median_income_county_scale * 
-    ## lm1:     employment_all + median_income_county_scale * sex + median_income_county_scale * 
-    ## lm1:     age_scale + median_income_county_scale * race + median_income_county_scale * 
-    ## lm1:     married + median_income_county_scale * year + physicians_scale + 
-    ## lm1:     unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ## lm1: FINANCIAL_scale ~ raw_income_scale + median_income_county_scale + 
+    ## lm1:     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
     ## lm1:     land_area_2010_scale + education_scale + employment_all + 
     ## lm1:     sex + age_scale + race + married + year + (1 + median_income_county_scale | 
     ## lm1:     fips_code) + (1 + raw_income_scale | fips_code)
-    ## lm2: FINANCIAL_scale ~ median_income_demo_scale * raw_income_scale + 
-    ## lm2:     median_income_demo_scale * education_scale + median_income_demo_scale * 
-    ## lm2:     employment_all + median_income_demo_scale * sex + median_income_demo_scale * 
-    ## lm2:     age_scale + median_income_demo_scale * race + median_income_demo_scale * 
-    ## lm2:     married + median_income_demo_scale * year + physicians_scale + 
+    ## lm2: FINANCIAL_scale ~ median_income_county_scale * raw_income_scale + 
+    ## lm2:     median_income_county_scale * education_scale + median_income_county_scale * 
+    ## lm2:     employment_all + median_income_county_scale * sex + median_income_county_scale * 
+    ## lm2:     age_scale + median_income_county_scale * race + median_income_county_scale * 
+    ## lm2:     married + median_income_county_scale * year + physicians_scale + 
     ## lm2:     unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
     ## lm2:     land_area_2010_scale + education_scale + employment_all + 
-    ## lm2:     sex + age_scale + race + married + year + (1 + median_income_demo_scale | 
+    ## lm2:     sex + age_scale + race + married + year + (1 + median_income_county_scale | 
     ## lm2:     fips_code) + (1 + raw_income_scale | fips_code)
     ##     npar     AIC     BIC  logLik deviance  Chisq Df Pr(>Chisq)    
     ## lm0   26 1485119 1485411 -742534  1485067                         
-    ## lm1   47 1483672 1484200 -741789  1483578 1489.1 21  < 2.2e-16 ***
-    ## lm2   47 1478242 1478770 -739074  1478148 5430.0  0  < 2.2e-16 ***
+    ## lm1   30 1484316 1484653 -742128  1484256 811.12  4  < 2.2e-16 ***
+    ## lm2   47 1483672 1484200 -741789  1483578 677.94 17  < 2.2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -2065,7 +2057,7 @@ summary(lm1)
 #### Interactive model
 
 ``` r
-lm1 <-
+lm2 <-
   lmer(
     COMMUNITY_scale ~
       median_income_county_scale * raw_income_scale +
@@ -2099,7 +2091,7 @@ lm1 <-
     ## Model failed to converge with max|grad| = 0.00407843 (tol = 0.002, component 1)
 
 ``` r
-summary(lm1)
+summary(lm2)
 ```
 
     ## Linear mixed model fit by maximum likelihood  ['lmerMod']
@@ -2194,28 +2186,24 @@ anova(lm0, lm1, lm2)
     ## lm0:     median_monthly_housing_cost_county_scale + land_area_2010_scale + 
     ## lm0:     education_scale + employment_all + sex + age_scale + race + 
     ## lm0:     married + year + (1 + raw_income_scale | fips_code)
-    ## lm1: COMMUNITY_scale ~ median_income_county_scale * raw_income_scale + 
-    ## lm1:     median_income_county_scale * education_scale + median_income_county_scale * 
-    ## lm1:     employment_all + median_income_county_scale * sex + median_income_county_scale * 
-    ## lm1:     age_scale + median_income_county_scale * race + median_income_county_scale * 
-    ## lm1:     married + median_income_county_scale * year + physicians_scale + 
-    ## lm1:     unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ## lm1: COMMUNITY_scale ~ raw_income_scale + median_income_county_scale + 
+    ## lm1:     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
     ## lm1:     land_area_2010_scale + education_scale + employment_all + 
     ## lm1:     sex + age_scale + race + married + year + (1 + median_income_county_scale | 
     ## lm1:     fips_code) + (1 + raw_income_scale | fips_code)
-    ## lm2: COMMUNITY_scale ~ median_income_demo_scale * raw_income_scale + 
-    ## lm2:     median_income_demo_scale * education_scale + median_income_demo_scale * 
-    ## lm2:     employment_all + median_income_demo_scale * sex + median_income_demo_scale * 
-    ## lm2:     age_scale + median_income_demo_scale * race + median_income_demo_scale * 
-    ## lm2:     married + median_income_demo_scale * year + physicians_scale + 
+    ## lm2: COMMUNITY_scale ~ median_income_county_scale * raw_income_scale + 
+    ## lm2:     median_income_county_scale * education_scale + median_income_county_scale * 
+    ## lm2:     employment_all + median_income_county_scale * sex + median_income_county_scale * 
+    ## lm2:     age_scale + median_income_county_scale * race + median_income_county_scale * 
+    ## lm2:     married + median_income_county_scale * year + physicians_scale + 
     ## lm2:     unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
     ## lm2:     land_area_2010_scale + education_scale + employment_all + 
-    ## lm2:     sex + age_scale + race + married + year + (1 + median_income_demo_scale | 
+    ## lm2:     sex + age_scale + race + married + year + (1 + median_income_county_scale | 
     ## lm2:     fips_code) + (1 + raw_income_scale | fips_code)
-    ##     npar     AIC     BIC  logLik deviance   Chisq Df Pr(>Chisq)    
-    ## lm0   26 1541314 1541606 -770631  1541262                          
-    ## lm1   47 1540486 1541014 -770196  1540392  869.69 21  < 2.2e-16 ***
-    ## lm2   47 1538235 1538763 -769070  1538141 2251.11  0  < 2.2e-16 ***
+    ##     npar     AIC     BIC  logLik deviance  Chisq Df Pr(>Chisq)    
+    ## lm0   26 1541314 1541606 -770631  1541262                         
+    ## lm1   30 1541176 1541513 -770558  1541116 145.96  4  < 2.2e-16 ***
+    ## lm2   47 1540486 1541014 -770196  1540392 723.73 17  < 2.2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -2765,7 +2753,7 @@ summary(lm1)
 #### Interactive model
 
 ``` r
-lm1 <-
+lm2 <-
   lmer(
     SOCIAL_scale ~
       median_income_county_scale * raw_income_scale +
@@ -2798,7 +2786,7 @@ lm1 <-
     ## boundary (singular) fit: see ?isSingular
 
 ``` r
-summary(lm1)
+summary(lm2)
 ```
 
     ## Linear mixed model fit by maximum likelihood  ['lmerMod']
@@ -2893,27 +2881,23 @@ anova(lm0, lm1, lm2)
     ## lm0:     median_monthly_housing_cost_county_scale + land_area_2010_scale + 
     ## lm0:     education_scale + employment_all + sex + age_scale + race + 
     ## lm0:     married + year + (1 + raw_income_scale | fips_code)
-    ## lm1: SOCIAL_scale ~ median_income_county_scale * raw_income_scale + 
-    ## lm1:     median_income_county_scale * education_scale + median_income_county_scale * 
-    ## lm1:     employment_all + median_income_county_scale * sex + median_income_county_scale * 
-    ## lm1:     age_scale + median_income_county_scale * race + median_income_county_scale * 
-    ## lm1:     married + median_income_county_scale * year + physicians_scale + 
-    ## lm1:     unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ## lm1: SOCIAL_scale ~ raw_income_scale + median_income_county_scale + 
+    ## lm1:     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
     ## lm1:     land_area_2010_scale + education_scale + employment_all + 
     ## lm1:     sex + age_scale + race + married + year + (1 + median_income_county_scale | 
     ## lm1:     fips_code) + (1 + raw_income_scale | fips_code)
-    ## lm2: SOCIAL_scale ~ median_income_demo_scale * raw_income_scale + 
-    ## lm2:     median_income_demo_scale * education_scale + median_income_demo_scale * 
-    ## lm2:     employment_all + median_income_demo_scale * sex + median_income_demo_scale * 
-    ## lm2:     age_scale + median_income_demo_scale * race + median_income_demo_scale * 
-    ## lm2:     married + median_income_demo_scale * year + physicians_scale + 
+    ## lm2: SOCIAL_scale ~ median_income_county_scale * raw_income_scale + 
+    ## lm2:     median_income_county_scale * education_scale + median_income_county_scale * 
+    ## lm2:     employment_all + median_income_county_scale * sex + median_income_county_scale * 
+    ## lm2:     age_scale + median_income_county_scale * race + median_income_county_scale * 
+    ## lm2:     married + median_income_county_scale * year + physicians_scale + 
     ## lm2:     unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
     ## lm2:     land_area_2010_scale + education_scale + employment_all + 
-    ## lm2:     sex + age_scale + race + married + year + (1 + median_income_demo_scale | 
+    ## lm2:     sex + age_scale + race + married + year + (1 + median_income_county_scale | 
     ## lm2:     fips_code) + (1 + raw_income_scale | fips_code)
     ##     npar     AIC     BIC  logLik deviance   Chisq Df Pr(>Chisq)    
     ## lm0   26 1553314 1553607 -776631  1553262                          
-    ## lm1   47 1552987 1553516 -776447  1552893  368.92 21  < 2.2e-16 ***
-    ## lm2   47 1548700 1549228 -774303  1548606 4287.82  0  < 2.2e-16 ***
+    ## lm1   30 1553288 1553625 -776614  1553228  34.214  4  6.736e-07 ***
+    ## lm2   47 1552987 1553516 -776447  1552893 334.707 17  < 2.2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
