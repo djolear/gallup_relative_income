@@ -11,6 +11,11 @@ library("lme4", lib.loc = "/home/djolear/R")
 library("mediation", lib.loc = "/home/djolear/R")
 library("boot", lib.loc = "/home/djolear/R")
 
+####################
+## Setup Parallel ##
+####################
+
+plan(multicore, workers = 8)
 
 ###############
 ## Functions ##
@@ -40,17 +45,18 @@ indirect_effect <- function(dataset, indices){
         race +
         married + 
         year +
-      (1 + raw_income_scale|fips_code) +
-      (1 + median_income_demo_scale|fips_code),
-      REML = FALSE,
-      control = lmerControl(optimizer = "bobyqa"),
-      data = data 
+        # (1|fips_code),
+       (1 + raw_income_scale|fips_code) +
+       (1 + median_income_demo_scale|fips_code),
+     REML = FALSE,
+     control = lmerControl(optimizer = "bobyqa"),
+     data = data 
     )
   
   lm_out <- summary(lm_out)
   
   lm_med <-
-    lmer(
+    lm(
       PURPOSE_scale ~
         raw_income_scale +
         median_income_demo_scale +
@@ -65,9 +71,9 @@ indirect_effect <- function(dataset, indices){
         race +
         married + 
         year +
-        #(1|fips_code),
-      (1 + raw_income_scale|fips_code) +
-      (1 + median_income_demo_scale|fips_code),
+        # (1|fips_code),
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_demo_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
       data = data 
@@ -127,27 +133,38 @@ dfg <-
 ## Testing Mediation ##
 #######################
 
-boot_results <- boot::boot(data = dfg, statistic = indirect_effect, R = 1000, parallel = "multicore", ncpus = 6)
 
+boot_fn <- function(iter, data) {
+  indices <- sample(1:nrow(data), nrow(data), replace = T)
+  ie <- indirect_effect(data, indices)
+  gc()
+  return(data.frame(iter = iter, ie = ie))
+}
+
+ptm <- proc.time()
+
+boot_data <- future_map_dfr(.x = (1:50), .f = boot_fn, data = dfg)
+
+print(proc.time() - ptm)
 
 ##################
 ## Save Results ##
 ##################
 
-ci_results <- boot.ci(boot_results, type = "bca")
+# ci_results <- boot.ci(boot_results, type = "bca")
+# 
+# ci_results <- data.frame(ci_results$bca)
+# 
+# names(ci_results) <- c("x", "x", "x", "low", "high")
+# 
+# ci_results <- ci_results %>% dplyr::select(low, high)
+# 
+# res <-
+#   data.frame(
+#   ie = boot_results$t0,
+#   se = sd(boot_results$t),
+#   ci_results
+# )
 
-ci_results <- data.frame(ci_results$bca)
-
-names(ci_results) <- c("x", "x", "x", "low", "high")
-
-ci_results <- ci_results %>% dplyr::select(low, high)
-
-res <-
-  data.frame(
-  ie = boot_results$t0,
-  se = sd(boot_results$t),
-  ci_results
-)
-
-write_csv(res, paste0("/project/ourminsk/gallup/results/mediation/fv_pwb_mediation_bootpkg.csv"))
+write_csv(boot_data, paste0("/project/ourminsk/gallup/results/mediation/fv_pwb_mediation_boot.csv"))
 
