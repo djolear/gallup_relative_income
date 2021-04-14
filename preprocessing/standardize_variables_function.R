@@ -57,7 +57,8 @@ standardize_variables <- function(df) {
         bmi,
         starts_with("ladder"),
         PURPOSE:little_pleasure,
-        neg_aff
+        neg_aff,
+        want_to_wrk:wks_looking_for_wrk
       ),
       list(scale = scale2)
     ) %>% 

@@ -63,20 +63,33 @@ contrasts(dfg_rs$married) <- contr.sum(6)
 ### Effect of median income
 
 ```{r}
-fv_terms %>% 
+fv_yearly <-
+  fv_terms %>% 
   filter(term == "median_income_var_scale") %>% 
-  mutate(median_income_var = factor(median_income_var, labels = c("geo", "demo"))) %>% 
-  mutate(id_controls = factor(id_controls, labels = c("id controls m.e.", "id controls int."))) %>% 
-  filter(id_controls != "no id controls") %>% 
+  mutate(median_income_var = factor(median_income_var, labels = c("geographic reference", "demographic reference"))) %>% 
+  mutate(id_controls = factor(id_controls, labels = c("", "id controls int."))) %>% 
+  filter(id_controls != "no id controls" & id_controls != "id controls int.") %>% 
   mutate(year = as.factor(year)) %>% 
   ggplot(aes(year, estimate)) +
   geom_col() +
   geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error), width = 0.1) +
+  theme_bw() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
   labs(
-    y = "median income"
+    y = "effect of median income"
   ) +
-  facet_grid(id_controls ~ median_income_var)
+  facet_grid(. ~ median_income_var) 
+
+
+fv_yearly
+
+ggsave(
+  "G:/My Drive/research/projects/gallup_rs/plots/fv_yearly.png",
+  fv_yearly,
+  width = 8,
+  height = 6,
+  dpi = 500
+)
 ```
 
 
@@ -205,6 +218,35 @@ eh_terms %>%
     y = "median income"
   ) +
   facet_grid(id_controls ~ median_income_var)
+```
+
+```{r}
+eh_yearly <-
+  eh_terms %>% 
+  filter(term == "median_income_var_scale") %>% 
+  mutate(median_income_var = factor(median_income_var, labels = c("geographic reference", "demographic reference"))) %>% 
+  mutate(id_controls = factor(id_controls, labels = c("", "id controls int."))) %>% 
+  filter(id_controls != "no id controls" & id_controls != "id controls int.") %>% 
+  mutate(year = as.factor(year)) %>% 
+  ggplot(aes(year, estimate)) +
+  geom_col() +
+  geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error), width = 0.1) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  labs(
+    y = "standardized beta"
+  ) +
+  facet_grid(. ~ median_income_var) 
+
+eh_yearly
+
+ggsave(
+  "G:/My Drive/research/projects/gallup_rs/plots/eh_yearly.png",
+  eh_yearly,
+  width = 8,
+  height = 6,
+  dpi = 500
+)
 ```
 
 

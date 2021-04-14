@@ -95,6 +95,11 @@ select_variables <- function(df) {
       # PartyR,
       # PartyRR,
       
+      want_to_wrk,
+      hrs_wrk_wk,
+      looking_for_wrk,
+      wks_looking_for_wrk,
+      
       year, 
       STATE_NAME, 
       COMB_WEIGHT

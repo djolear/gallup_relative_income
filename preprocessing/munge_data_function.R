@@ -27,7 +27,11 @@ munge_data <- function(df) {
       HWB14 = ifelse(year %in% c(2014:2017), HWB14, NA),
       HWB15 = ifelse(year %in% c(2014:2017), HWB15, NA),
       HWB3 = ifelse(year %in% c(2014:2017), HWB3, NA),
-      HWB4 = ifelse(year %in% c(2014:2017), HWB4, NA)
+      HWB4 = ifelse(year %in% c(2014:2017), HWB4, NA),
+      want_to_wrk = ifelse(year %in% c(2010:2016), WP10229, NA),
+      hrs_wrk_wk = ifelse(year %in% c(2010:2016), WP10215, NA),
+      looking_for_wrk = ifelse(year %in% c(2013:2016), WP10208, NA),
+      wks_looking_for_wrk = ifelse(year %in% c(2013:2016), WP10983, NA)
     )
   
   df <-
