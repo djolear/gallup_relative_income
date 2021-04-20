@@ -180,13 +180,13 @@ results_purpose <-
         "race",
         "married",
         "year",
-        "FINANCIAL_scale",
+        "PURPOSE_scale",
         "COMMUNITY_scale",
         "SOCIAL_scale"
       ),
     parallel = "multicore",
     ncpus = 6,
-    sims = 10
+    sims = 1000
   )
 
 

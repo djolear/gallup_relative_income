@@ -74,9 +74,12 @@ fv_yearly <-
   geom_col() +
   geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error), width = 0.1) +
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  theme(
+    text = element_text(size = 17),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)
+  ) +
   labs(
-    y = "effect of median income"
+    y = "standardized beta for median income"
   ) +
   facet_grid(. ~ median_income_var) 
 
@@ -122,9 +125,9 @@ summary(lm0)
 
 lm1 <-
   lmer(
-    fruits_veggies_scale ~
+    ladder_now_scale ~
       raw_income_scale +
-      median_income_demo_scale +
+      median_income_county_scale +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
@@ -232,9 +235,12 @@ eh_yearly <-
   geom_col() +
   geom_errorbar(aes(ymin = estimate - std.error, ymax = estimate + std.error), width = 0.1) +
   theme_bw() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  theme(
+    text = element_text(size = 17),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)
+  ) +
   labs(
-    y = "standardized beta"
+    y = "standardized beta for median income"
   ) +
   facet_grid(. ~ median_income_var) 
 

@@ -42,6 +42,8 @@ health_regression_function <- function(median_income_var_name, dfg) {
   contrasts(dfg$race) <- contr.sum(5)
   contrasts(dfg$married) <- contr.sum(6)
   
+  ## Diabetes ##
+  
   dfg_current <-
     dfg %>% 
     select(
@@ -86,6 +88,55 @@ health_regression_function <- function(median_income_var_name, dfg) {
   
   master_df <- data.frame()
   
+  lm0 <-
+    glmer(
+      diabetes ~
+        raw_income_scale +
+        physicians_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code),
+      family = "binomial",
+      control = glmerControl(optimizer = "bobyqa"),
+      data = dfg_current %>% mutate(diabetes = ifelse(diabetes == 1, 1, ifelse(diabetes == 2, 0, NA)))
+    )
+  
+  
+  
+  df <-
+    tidy(lm0)
+  
+  fit_stats <-
+    glance(lm0) %>% 
+    mutate(
+      id_controls = "yes_base"
+    )
+  
+  df <-
+    df %>%
+    mutate(
+      median_income_var = median_income_var_name,
+      outcome = "diabetes",
+      id_controls = "yes_base"
+    ) %>% 
+    left_join(
+      fit_stats,
+      by = "id_controls"
+    )
+  
+  master_df <-
+    bind_rows(
+      master_df,
+      df
+    )
   
   lm1 <-
     glmer(
@@ -139,6 +190,60 @@ health_regression_function <- function(median_income_var_name, dfg) {
       df
     )
   
+  lm2 <-
+    glmer(
+      diabetes ~
+        median_income_var_scale * raw_income_scale +
+        median_income_var_scale * education_scale +
+        median_income_var_scale * employment_all +
+        median_income_var_scale * sex +
+        median_income_var_scale * age_scale +
+        median_income_var_scale * race +
+        median_income_var_scale * married +
+        physicians_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_var_scale|fips_code),
+      family = "binomial",
+      control = glmerControl(optimizer = "bobyqa"),
+      data = dfg_current %>% mutate(diabetes = ifelse(diabetes == 1, 1, ifelse(diabetes == 2, 0, NA)))
+    )
+  
+  
+  
+  df <-
+    tidy(lm2)
+  
+  fit_stats <-
+    glance(lm2) %>% 
+    mutate(
+      id_controls = "yes_int"
+    )
+  
+  df <-
+    df %>%
+    mutate(
+      median_income_var = median_income_var_name,
+      outcome = "diabetes",
+      id_controls = "yes_int"
+    ) %>% 
+    left_join(
+      fit_stats,
+      by = "id_controls"
+    )
+  
+  master_df <-
+    bind_rows(
+      master_df,
+      df
+    )
+  
+  
+  ## HBP ##
+  
   dfg_current <-
     dfg %>% 
     select(
@@ -188,6 +293,55 @@ health_regression_function <- function(median_income_var_name, dfg) {
         fips_code
       ),
       as.factor
+    )
+  
+  lm0 <-
+    glmer(
+      hbp ~
+        raw_income_scale +
+        physicians_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_var_scale|fips_code),
+      family = "binomial",
+      control = glmerControl(optimizer = "bobyqa"),
+      data = dfg_current %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)))
+    )
+  
+  df <-
+    tidy(lm0)
+  
+  fit_stats <-
+    glance(lm0) %>% 
+    mutate(
+      id_controls = "yes_base"
+    )
+  
+  df <-
+    df %>%
+    mutate(
+      median_income_var = median_income_var_name,
+      outcome = "hbp",
+      id_controls = "yes_base"
+    ) %>% 
+    left_join(
+      fit_stats,
+      by = "id_controls"
+    )
+  
+  master_df <-
+    bind_rows(
+      master_df,
+      df
     )
   
   
@@ -241,6 +395,59 @@ health_regression_function <- function(median_income_var_name, dfg) {
       df
     )
   
+  
+  lm2 <-
+    glmer(
+      hbp ~
+        median_income_var_scale * raw_income_scale +
+        median_income_var_scale * education_scale +
+        median_income_var_scale * employment_all +
+        median_income_var_scale * sex +
+        median_income_var_scale * age_scale +
+        median_income_var_scale * race +
+        median_income_var_scale * married +
+        physicians_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_var_scale|fips_code),
+      family = "binomial",
+      control = glmerControl(optimizer = "bobyqa"),
+      data = dfg_current %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)))
+    )
+  
+  df <-
+    tidy(lm2)
+  
+  fit_stats <-
+    glance(lm2) %>% 
+    mutate(
+      id_controls = "yes"
+    )
+  
+  df <-
+    df %>%
+    mutate(
+      median_income_var = median_income_var_name,
+      outcome = "hbp",
+      id_controls = "yes"
+    ) %>% 
+    left_join(
+      fit_stats,
+      by = "id_controls"
+    )
+  
+  master_df <-
+    bind_rows(
+      master_df,
+      df
+    )
+  
+  
+  ## Obesity ##
+  
   dfg_current <-
     dfg %>% 
     select(
@@ -290,6 +497,55 @@ health_regression_function <- function(median_income_var_name, dfg) {
         fips_code
       ),
       as.factor
+    )
+  
+  lm0 <-
+    glmer(
+      obese ~
+        raw_income_scale +
+        physicians_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_var_scale|fips_code),
+      family = "binomial",
+      control = glmerControl(optimizer = "bobyqa"),
+      data = dfg_current %>% mutate(obese = ifelse(obese == 0, 1, ifelse(obese == 1, 0, NA)))
+    )
+  
+  df <-
+    tidy(lm0)
+  
+  fit_stats <-
+    glance(lm0) %>% 
+    mutate(
+      id_controls = "yes_base"
+    )
+  
+  df <-
+    df %>%
+    mutate(
+      median_income_var = median_income_var_name,
+      outcome = "obesity",
+      id_controls = "yes_base"
+    ) %>% 
+    left_join(
+      fit_stats,
+      by = "id_controls"
+    )
+  
+  master_df <-
+    bind_rows(
+      master_df,
+      df
     )
   
   lm1 <-
@@ -342,6 +598,58 @@ health_regression_function <- function(median_income_var_name, dfg) {
       df
     )
   
+  lm2 <-
+    glmer(
+      obese ~
+        median_income_var_scale * raw_income_scale +
+        median_income_var_scale * education_scale +
+        median_income_var_scale * employment_all +
+        median_income_var_scale * sex +
+        median_income_var_scale * age_scale +
+        median_income_var_scale * race +
+        median_income_var_scale * married +
+        physicians_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_var_scale|fips_code),
+      family = "binomial",
+      control = glmerControl(optimizer = "bobyqa"),
+      data = dfg_current %>% mutate(obese = ifelse(obese == 0, 1, ifelse(obese == 1, 0, NA)))
+    )
+  
+  df <-
+    tidy(lm2)
+  
+  fit_stats <-
+    glance(lm2) %>% 
+    mutate(
+      id_controls = "yes_int"
+    )
+  
+  df <-
+    df %>%
+    mutate(
+      median_income_var = median_income_var_name,
+      outcome = "obesity",
+      id_controls = "yes_int"
+    ) %>% 
+    left_join(
+      fit_stats,
+      by = "id_controls"
+    )
+  
+  master_df <-
+    bind_rows(
+      master_df,
+      df
+    )
+  
+  
+  ## Depression ##
+  
   dfg_current <-
     dfg %>% 
     select(
@@ -393,6 +701,54 @@ health_regression_function <- function(median_income_var_name, dfg) {
       as.factor
     )
   
+  lm0 <-
+    glmer(
+      depression ~
+        raw_income_scale +
+        physicians_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year +
+        (1 + raw_income_scale|fips_code),
+      family = "binomial",
+      control = glmerControl(optimizer = "bobyqa"),
+      data = dfg_current %>% mutate(depression = ifelse(depression == 1, 1, ifelse(depression == 2, 0, NA)))
+    )
+  
+  df <-
+    tidy(lm0)
+  
+  fit_stats <-
+    glance(lm0) %>% 
+    mutate(
+      id_controls = "yes_base"
+    )
+  
+  df <-
+    df %>%
+    mutate(
+      median_income_var = median_income_var_name,
+      outcome = "depression",
+      id_controls = "yes_base"
+    ) %>% 
+    left_join(
+      fit_stats,
+      by = "id_controls"
+    )
+  
+  master_df <-
+    bind_rows(
+      master_df,
+      df
+    )
+  
   lm1 <-
     glmer(
       depression ~
@@ -431,6 +787,56 @@ health_regression_function <- function(median_income_var_name, dfg) {
       median_income_var = median_income_var_name,
       outcome = "depression",
       id_controls = "yes"
+    ) %>% 
+    left_join(
+      fit_stats,
+      by = "id_controls"
+    )
+  
+  master_df <-
+    bind_rows(
+      master_df,
+      df
+    )
+  
+  
+  lm2 <-
+    glmer(
+      depression ~
+        median_income_var_scale * raw_income_scale +
+        median_income_var_scale * education_scale +
+        median_income_var_scale * employment_all +
+        median_income_var_scale * sex +
+        median_income_var_scale * age_scale +
+        median_income_var_scale * race +
+        median_income_var_scale * married +
+        physicians_scale +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_var_scale|fips_code),
+      family = "binomial",
+      control = glmerControl(optimizer = "bobyqa"),
+      data = dfg_current %>% mutate(depression = ifelse(depression == 1, 1, ifelse(depression == 2, 0, NA)))
+    )
+  
+  df <-
+    tidy(lm2)
+  
+  fit_stats <-
+    glance(lm2) %>% 
+    mutate(
+      id_controls = "yes_int"
+    )
+  
+  df <-
+    df %>%
+    mutate(
+      median_income_var = median_income_var_name,
+      outcome = "depression",
+      id_controls = "yes_int"
     ) %>% 
     left_join(
       fit_stats,
