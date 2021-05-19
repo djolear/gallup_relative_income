@@ -10,12 +10,19 @@ library("broom.mixed", lib.loc = "/home/djolear/R")
 library("lme4", lib.loc = "/home/djolear/R")
 library("mediation", lib.loc = "/home/djolear/R")
 library("boot", lib.loc = "/home/djolear/R")
+library("foreach", lib.loc = "/home/djolear/R")
+library("doParallel", lib.loc = "/home/djolear/R")
 
 ####################
 ## Setup Parallel ##
 ####################
 
-plan(multicore, workers = 8)
+# plan(multicore, workers = 8)
+
+cores = detectCores()
+cl <- makeCluster(cores[1])
+registerDoParallel(cl)
+
 
 ###############
 ## Functions ##
@@ -81,6 +88,8 @@ indirect_effect <- function(dataset, indices){
   
   ie = lm_out$coefficients[4] * lm_med$coefficients[3]
   
+  gc()
+  
   return(ie)
   
 }
@@ -131,17 +140,31 @@ dfg <-
 ## Testing Mediation ##
 #######################
 
-
-boot_fn <- function(iter, data) {
-  indices <- sample(1:nrow(data), nrow(data), replace = T)
-  ie <- indirect_effect(data, indices)
-  gc()
-  return(data.frame(iter = iter, ie = ie))
-}
+# 
+# boot_fn <- function(iter, data) {
+#   indices <- sample(1:nrow(data), nrow(data), replace = T)
+#   ie <- indirect_effect(data, indices)
+#   gc()
+#   return(data.frame(iter = iter, ie = ie))
+# }
+# 
+# ptm <- proc.time()
+# 
+# boot_data <- future_map_dfr(.x = (1:50), .f = boot_fn, data = dfg)
+# 
+# print(proc.time() - ptm)
 
 ptm <- proc.time()
 
-boot_data <- future_map_dfr(.x = (1:50), .f = boot_fn, data = dfg)
+
+boot_data <- foreach(i= 1:50000, .combine = cbind) %dopar% {
+  indices <- sample(1:nrow(dfg), nrow(dfg), replace = T)
+  ie <- indirect_effect(dfg, indices) #calling a function
+  ie 
+  gc()
+}
+#stop cluster
+stopCluster(cl)
 
 print(proc.time() - ptm)
 
