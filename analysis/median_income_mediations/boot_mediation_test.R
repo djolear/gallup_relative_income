@@ -157,7 +157,7 @@ dfg <-
 ptm <- proc.time()
 
 
-boot_data <- foreach(i= 1:50000, .combine = cbind) %dopar% {
+boot_data <- foreach(i= 1:5000, .combine = cbind) %dopar% {
   indices <- sample(1:nrow(dfg), nrow(dfg), replace = T)
   ie <- indirect_effect(dfg, indices) #calling a function
   ie 
