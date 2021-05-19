@@ -27,7 +27,7 @@ indirect_effect <- function(dataset, indices){
   
   lm_out <-
     lm(
-      fruits_veggies_scale ~
+      smoke ~
         raw_income_scale +
         median_income_demo_scale +
         PURPOSE_scale +
@@ -44,20 +44,19 @@ indirect_effect <- function(dataset, indices){
         age_scale +
         race +
         married + 
-        year,
-        # (1|fips_code),
-     #   (1 + raw_income_scale|fips_code) +
-     #   (1 + median_income_demo_scale|fips_code),
-     # REML = FALSE,
-     # control = lmerControl(optimizer = "bobyqa"),
-     data = dfg 
+        year +
+       (1 + raw_income_scale|fips_code) +
+       (1 + median_income_demo_scale|fips_code),
+     REML = FALSE,
+     control = lmerControl(optimizer = "bobyqa"),
+     data = dfg_rs 
     )
   
   lm_out <- summary(lm_out)
   
   lm_med <-
     lm(
-      FINANCIAL_scale ~
+      PURPOSE_scale ~
         raw_income_scale +
         median_income_demo_scale +
         total_pop_county_scale +
@@ -70,12 +69,11 @@ indirect_effect <- function(dataset, indices){
         age_scale +
         race +
         married + 
-        year,
-        # (1|fips_code),
-      #   (1 + raw_income_scale|fips_code) +
-      #   (1 + median_income_demo_scale|fips_code),
-      # REML = FALSE,
-      # control = lmerControl(optimizer = "bobyqa"),
+        year +
+        (1 + raw_income_scale|fips_code) +
+        (1 + median_income_demo_scale|fips_code),
+      REML = FALSE,
+      control = lmerControl(optimizer = "bobyqa"),
       data = dfg 
     )
   
