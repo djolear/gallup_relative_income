@@ -56,7 +56,7 @@ indirect_effect <- function(dataset, indices){
        (1 + median_income_demo_scale|fips_code),
      REML = FALSE,
      control = lmerControl(optimizer = "bobyqa"),
-     data = dfg_rs 
+     data = data 
     )
   
   lm_out <- summary(lm_out)
@@ -81,7 +81,7 @@ indirect_effect <- function(dataset, indices){
         (1 + median_income_demo_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
-      data = dfg 
+      data = data 
     )
   
   lm_med <- summary(lm_med)
@@ -187,5 +187,5 @@ print(proc.time() - ptm)
 #   ci_results
 # )
 
-write_csv(boot_data, paste0("/project/ourminsk/gallup/results/mediation/fv_pwb_mediation_boot.csv"))
+write_csv(boot_data, paste0("/project/ourminsk/gallup/results/mediation/sm_pwb_mediation_boot.csv"))
 
