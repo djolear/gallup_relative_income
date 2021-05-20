@@ -1,5 +1,5 @@
 ---
-title: "Gallup - Relative Income - Mediation Analysis"
+title: "Gallup - Relative Income - Mediation Analysis (Traditional Regression)"
 author: "Daniel O'Leary"
 date: "5/20/2021"
 output:
@@ -237,7 +237,7 @@ calculate_indirect_effects_med2 <- function(lm, coef_pur, coef_em, coef_cs, coef
 
 ```{r}
 lm_pur <-
-  lmer(
+  lm(
     PURPOSE_scale ~
       raw_income_scale +
       median_income_demo_scale +
@@ -251,16 +251,12 @@ lm_pur <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
+      year,
     data = data 
   )
 
 lm_fin <-
-  lmer(
+  lm(
     FINANCIAL_scale ~
       raw_income_scale +
       median_income_demo_scale +
@@ -274,16 +270,12 @@ lm_fin <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
+      year,
     data = data 
   )
 
 lm_com <-
-  lmer(
+  lm(
     COMMUNITY_scale ~
       raw_income_scale +
       median_income_demo_scale +
@@ -297,16 +289,12 @@ lm_com <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
+      year,
     data = data 
   )
 
 lm_soc <-
-  lmer(
+  lm(
     SOCIAL_scale ~
       raw_income_scale +
       median_income_demo_scale +
@@ -320,11 +308,7 @@ lm_soc <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
+      year,
     data = data 
   )
 ```
@@ -336,7 +320,7 @@ lm_soc <-
 
 ```{r}
 lm_fv <-
-  lmer(
+  lm(
     fruits_veggies_scale ~
       PURPOSE_scale +
       FINANCIAL_scale + 
@@ -354,11 +338,7 @@ lm_fv <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
+      year,
     data = data 
   )
 ```
@@ -368,7 +348,7 @@ lm_fv <-
 
 ```{r}
 lm_eh <-
-  lmer(
+  lm(
     eat_healthy ~
       PURPOSE_scale +
       FINANCIAL_scale + 
@@ -386,11 +366,7 @@ lm_eh <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
+      year,
     data = data 
   )
 ```
@@ -400,7 +376,7 @@ lm_eh <-
 
 ```{r}
 lm_sm <-
-  lmer(
+  lm(
     smoke ~
       PURPOSE_scale +
       FINANCIAL_scale + 
@@ -418,11 +394,7 @@ lm_sm <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
+      year,
     data = data 
   )
 ```
@@ -441,7 +413,7 @@ summary(lm_fv)
 
 ```{r}
 lma_eh <-
-  glmer(
+  glm(
     eat_healthy ~
       PURPOSE_scale +
       FINANCIAL_scale + 
@@ -459,11 +431,7 @@ lma_eh <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = glmerControl(optimizer = "bobyqa"),
+      year,
     family = "binomial",
     data = data 
   )
@@ -476,7 +444,7 @@ summary(lma_eh)
 
 ```{r}
 lma_sm <-
-  glmer(
+  glm(
     smoke ~
       PURPOSE_scale +
       FINANCIAL_scale + 
@@ -494,11 +462,7 @@ lma_sm <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = glmerControl(optimizer = "bobyqa"),
+      year,
     family = "binomial",
     data = data 
   )
@@ -547,7 +511,7 @@ sm_ie
 
 ```{r}
 lm_em <-
-  lmer(
+  lm(
     enough_money_scale ~
       raw_income_scale +
       median_income_demo_scale +
@@ -561,16 +525,12 @@ lm_em <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
+      year,
     data = data 
   )
 
 lm_cs <-
-  lmer(
+  lm(
     comp_satis_std_liv_scale ~
       raw_income_scale +
       median_income_demo_scale +
@@ -584,16 +544,12 @@ lm_cs <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
+      year,
     data = data 
   )
 
 lm_soc <-
-  lmer(
+  lm(
     social_subset_scale ~
       raw_income_scale +
       median_income_demo_scale +
@@ -607,11 +563,7 @@ lm_soc <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
+      year,
     data = data 
   ) 
 ```
@@ -623,7 +575,7 @@ lm_soc <-
 
 ```{r}
 lm_fv <-
-  lmer(
+  lm(
     fruits_veggies_scale ~
       PURPOSE_scale +
       enough_money_scale + 
@@ -642,11 +594,7 @@ lm_fv <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
+      year,
     data = data 
   )
 ```
@@ -656,7 +604,7 @@ lm_fv <-
 
 ```{r}
 lm_eh <-
-  lmer(
+  lm(
     eat_healthy ~
       PURPOSE_scale +
       enough_money_scale + 
@@ -675,11 +623,7 @@ lm_eh <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
+      year,
     data = data 
   )
 ```
@@ -689,7 +633,7 @@ lm_eh <-
 
 ```{r}
 lm_sm <-
-  lmer(
+  lm(
     smoke ~
       PURPOSE_scale +
       enough_money_scale + 
@@ -708,11 +652,7 @@ lm_sm <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
+      year,
     data = data 
   )
 ```
@@ -731,7 +671,7 @@ summary(lm_fv)
 
 ```{r}
 lma_eh <-
-  glmer(
+  glm(
     eat_healthy ~
       PURPOSE_scale +
       enough_money_scale + 
@@ -750,11 +690,7 @@ lma_eh <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = glmerControl(optimizer = "bobyqa"),
+      year,
     family = "binomial",
     data = data 
   )
@@ -765,7 +701,7 @@ lma_eh <-
 
 ```{r}
 lma_sm <-
-  glmer(
+  glm(
     smoke ~
       PURPOSE_scale +
       enough_money_scale + 
@@ -784,11 +720,7 @@ lma_sm <-
       age_scale +
       race +
       married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = glmerControl(optimizer = "bobyqa"),
+      year,
     family = "binomial",
     data = data 
   )
