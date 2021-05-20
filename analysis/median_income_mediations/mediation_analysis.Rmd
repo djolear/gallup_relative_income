@@ -161,6 +161,31 @@ extract_outcome_coefs <- function(lm) {
   # return values
   return(coefs)
 }
+
+calculate_indirect_effects_main <- function(lm, coef_pur, coef_fin, coef_com, coef_soc) {
+  coefs_out <- extract_outcome_coefs(lm)
+
+  ie_pur <- coefs_out$PURPOSE_scale * coef_pur
+  ie_fin <- coefs_out$FINANCIAL_scale * coef_fin
+  ie_com <- coefs_out$COMMUNITY_scale * coef_com
+  ie_soc <- coefs_out$SOCIAL_scale * coef_soc
+
+  total_effect = ie_pur + ie_fin + ie_com + ie_soc + coefs_out$median_income_demo_scale
+
+  res <-
+    data.frame(
+      "mediatior" = c("purpose", "financial", "community", "social"),
+      "indirect_effects" = c(ie_pur, ie_fin, ie_com, ie_soc)
+    )
+
+  res <-
+    res %>% 
+    mutate(
+      prop_mediated = indirect_effects / total_effect
+    )
+  
+  return(res)
+}
 ```
 
 
@@ -375,15 +400,7 @@ coef_soc <- extract_med_coef(lm_soc)
 ### Fruit and vegetable consumption
 
 ```{r}
-coefs_fv <- extract_outcome_coefs(lm_fv)
-
-total_effect <- rowSums(coefs_fv)
-
-ie_pur <- coefs_fv$PURPOSE_scale * coef_pur
-ie_fin <- coefs_fv$FINANCIAL_scale * coef_fin
-ie_com <- coefs_fv$COMMUNITY_scale * coef_com
-ie_soc <- coefs_fv$SOCIAL_scale * coef_soc
-
+calculate_indirect_effects_main(lm_fv, coef_pur, coef_fin, coef_com, coef_soc)
 ```
 
 
