@@ -147,7 +147,7 @@ extract_med_coef <- function(lm) {
   return(ri_coef)
 }
 
-extract_outcome_coefs <- function(lm) {
+extract_outcome_coefs_med1 <- function(lm) {
     
   # save lm object to variable
   coefs <- summary(lm)
@@ -162,20 +162,36 @@ extract_outcome_coefs <- function(lm) {
   return(coefs)
 }
 
-calculate_indirect_effects_main <- function(lm, coef_pur, coef_fin, coef_com, coef_soc) {
-  coefs_out <- extract_outcome_coefs(lm)
+extract_outcome_coefs_med2 <- function(lm) {
+    
+  # save lm object to variable
+  coefs <- summary(lm)
+  
+  # extract coefficients
+  coefs <- coefs$coefficients
+  
+  # select coefficients for mediators
+  coefs <- data.frame(t(coefs[2:7, 1]))
+  
+  # return values
+  return(coefs)
+}
+
+calculate_indirect_effects_med2 <- function(lm, coef_pur, coef_em, coef_cs, coef_com, coef_soc) {
+  coefs_out <- extract_outcome_coefs_med2(lm)
 
   ie_pur <- coefs_out$PURPOSE_scale * coef_pur
-  ie_fin <- coefs_out$FINANCIAL_scale * coef_fin
+  ie_em <- coefs_out$enough_money_scale * coef_em
+  ie_cs <- coefs_out$comp_satis_std_liv_scale * coef_cs
   ie_com <- coefs_out$COMMUNITY_scale * coef_com
-  ie_soc <- coefs_out$SOCIAL_scale * coef_soc
+  ie_soc <- coefs_out$social_subset_scale * coef_soc
 
-  total_effect = ie_pur + ie_fin + ie_com + ie_soc + coefs_out$median_income_demo_scale
+  total_effect = ie_pur + ie_em + ie_cs + ie_com + ie_soc + coefs_out$median_income_demo_scale
 
   res <-
     data.frame(
-      "mediatior" = c("purpose", "financial", "community", "social"),
-      "indirect_effects" = c(ie_pur, ie_fin, ie_com, ie_soc)
+      "mediatior" = c("purpose", "enough_money", "comp_satis_living", "community", "social_subset"),
+      "indirect_effects" = c(ie_pur, ie_em, ie_cs, ie_com, ie_soc)
     )
 
   res <-
@@ -192,7 +208,9 @@ calculate_indirect_effects_main <- function(lm, coef_pur, coef_fin, coef_com, co
 
 # Analysis
 
-## Mediator models
+## Mediation Analysis 1: Well-Being Composites
+
+### Mediator models
 
 ```{r}
 lm_pur <-
@@ -289,9 +307,9 @@ lm_soc <-
 ```
 
 
-## Outcome models
+### Outcome models
 
-### Fruit and vegetable consumption
+#### Fruit and vegetable consumption
 
 ```{r}
 lm_fv <-
@@ -323,7 +341,7 @@ lm_fv <-
 ```
 
 
-### Eat healthy all day yesterday
+#### Eat healthy all day yesterday
 
 ```{r}
 lm_eh <-
@@ -355,7 +373,7 @@ lm_eh <-
 ```
 
 
-### Smoking
+#### Smoking
 
 ```{r}
 lm_sm <-
@@ -387,7 +405,7 @@ lm_sm <-
 ```
 
 
-## Indirect effects
+### Indirect effects
 
 ```{r}
 coef_pur <- extract_med_coef(lm_pur)
@@ -397,10 +415,283 @@ coef_soc <- extract_med_coef(lm_soc)
 ```
 
 
-### Fruit and vegetable consumption
+#### Fruit and vegetable consumption
 
 ```{r}
-calculate_indirect_effects_main(lm_fv, coef_pur, coef_fin, coef_com, coef_soc)
+fv_ie <- calculate_indirect_effects_med1(lm_fv, coef_pur, coef_fin, coef_com, coef_soc)
+fv_ie
 ```
 
 
+#### Eat healthy all day yesterday
+
+```{r}
+eh_ie <- calculate_indirect_effects_med1(lm_eh, coef_pur, coef_fin, coef_com, coef_soc)
+eh_ie
+```
+
+
+#### Smoking
+
+```{r}
+sm_ie <- calculate_indirect_effects_med1(lm_sm, coef_pur, coef_fin, coef_com, coef_soc)
+sm_ie
+```
+
+
+## Mediation Analysis 2: Well-Being Composites with Financial and Social Subsets
+
+### Mediator models
+
+```{r}
+lm_pur <-
+  lmer(
+    PURPOSE_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+
+lm_em <-
+  lmer(
+    enough_money_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+
+lm_cs <-
+  lmer(
+    comp_satis_std_liv_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+
+lm_com <-
+  lmer(
+    COMMUNITY_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+
+lm_soc <-
+  lmer(
+    social_subset_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+```
+
+
+### Outcome models
+
+#### Fruit and vegetable consumption
+
+```{r}
+lm_fv <-
+  lmer(
+    fruits_veggies_scale ~
+      PURPOSE_scale +
+      enough_money_scale + 
+      comp_satis_std_liv_scale
+      COMMUNITY_scale +
+      social_subset_scale +
+      median_income_demo_scale +
+      raw_income_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+```
+
+
+#### Eat healthy all day yesterday
+
+```{r}
+lm_eh <-
+  lmer(
+    eat_healthy ~
+      PURPOSE_scale +
+      enough_money_scale + 
+      comp_satis_std_liv_scale
+      COMMUNITY_scale +
+      social_subset_scale +
+      median_income_demo_scale +
+      raw_income_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+```
+
+
+#### Smoking
+
+```{r}
+lm_sm <-
+  lmer(
+    smoke ~
+      PURPOSE_scale +
+      enough_money_scale + 
+      comp_satis_std_liv_scale
+      COMMUNITY_scale +
+      social_subset_scale +
+      median_income_demo_scale +
+      raw_income_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+```
+
+
+### Indirect effects
+
+```{r}
+coef_pur <- extract_med_coef(lm_pur)
+coef_em <- extract_med_coef(lm_em)
+coef_cs <- extract_med_coef(lm_cs)
+coef_com <- extract_med_coef(lm_com)
+coef_soc <- extract_med_coef(lm_soc)
+```
+
+
+#### Fruit and vegetable consumption
+
+```{r}
+fv_ie <- calculate_indirect_effects_med2(lm_fv, coef_pur, coef_em, coef_cs, coef_com, coef_soc)
+fv_ie
+```
+
+
+#### Eat healthy all day yesterday
+
+```{r}
+eh_ie <- calculate_indirect_effects_med2(lm_eh, coef_pur, coef_em, coef_cs, coef_com, coef_soc)
+eh_ie
+```
+
+
+#### Smoking
+
+```{r}
+sm_ie <- calculate_indirect_effects_med2(lm_sm, coef_pur, coef_em, coef_cs, coef_com, coef_soc)
+sm_ie
+```
