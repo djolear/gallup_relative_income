@@ -1,0 +1,58 @@
+---
+title: "Gallup - Relative Income - Mediation Analysis"
+author: "Daniel O'Leary"
+date: "5/20/2021"
+output:
+  github_document:
+    toc: true
+    toc_depth: 5
+---
+
+```{r, include = FALSE}
+if (!require("pacman")) install.packages("pacman")
+
+pacman::p_load(
+  tidyverse, 
+  haven,
+  lme4,
+  lm.beta,
+  sjPlot,
+  stargazer,
+  broom,
+  broom.mixed
+)
+```
+
+```{r, include = FALSE}
+sinfo <- data.frame(Sys.info())
+machine <- sinfo$Sys.info..[4]
+
+machine_path <- 
+  ifelse(
+    machine %in% c("sussman-rp-mbpro.local", "sussman-rp-mbpro.lan"), 
+    "/Users/djolear/Google Drive/", 
+    "G:/My Drive/"
+  )
+
+dfg_rs <-
+  read_rds("D:/data/gallup/exports/dfg_rs.rds")
+
+dfg_rs <-
+  dfg_rs %>% 
+  mutate_at(
+    vars(
+      sex, 
+      employment_all,
+      race,
+      married
+    ),
+    as.factor
+  )
+```
+
+```{r}
+contrasts(dfg_rs$sex) <- contr.sum(2)
+contrasts(dfg_rs$employment_all) <- contr.sum(2)
+contrasts(dfg_rs$race) <- contr.sum(5)
+contrasts(dfg_rs$married) <- contr.sum(6)
+```
