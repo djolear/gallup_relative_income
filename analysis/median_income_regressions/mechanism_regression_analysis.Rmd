@@ -1029,3 +1029,98 @@ summary(lm2)
 ```{r}
 anova(lm0, lm1, lm2)
 ```
+
+
+### Enough money
+
+#### Main effects model
+
+```{r}
+lm1 <-
+  lmer(
+    enough_money_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+
+### Social Comparison
+
+#### Main effects model
+
+```{r}
+lm1 <-
+  lmer(
+    comp_satis_std_liv_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+### Social subset
+
+#### Main effects model
+
+```{r}
+lm1 <-
+  lmer(
+    social_subset_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
