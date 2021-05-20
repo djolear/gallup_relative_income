@@ -79,10 +79,9 @@ data <-
       FINANCIAL_scale,
       SOCIAL_scale,
       PHYSICAL_scale,
-      # neg_aff_scale,
       enough_money_scale,
       comp_satis_std_liv_scale,
-      # bmi_scale,
+      social_subset_scale,
       total_pop_county_scale,
       land_area_2010_scale,
       race,
@@ -109,10 +108,9 @@ data <-
     FINANCIAL_scale,
     SOCIAL_scale,
     PHYSICAL_scale,
-    # neg_aff_scale,
     enough_money_scale,
     comp_satis_std_liv_scale,
-    # bmi_scale,
+    social_subset_scale,
     total_pop_county_scale,
     land_area_2010_scale,
     age_scale,
@@ -307,7 +305,7 @@ lm_soc <-
 ```
 
 
-### Outcome models
+### Linear Outcome models
 
 #### Fruit and vegetable consumption
 
@@ -405,6 +403,85 @@ lm_sm <-
 ```
 
 
+### Actual Outcome models
+
+#### Fruit and vegetable consumption
+
+```{r}
+summary(lm_fv)
+```
+
+
+#### Eat healthy all day yesterday
+
+```{r}
+lma_eh <-
+  glmer(
+    eat_healthy ~
+      PURPOSE_scale +
+      FINANCIAL_scale + 
+      COMMUNITY_scale +
+      SOCIAL_scale +
+      median_income_demo_scale +
+      raw_income_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = glmerControl(optimizer = "bobyqa"),
+    family = "binomial",
+    data = data 
+  )
+
+summary(lma_eh)
+```
+
+
+#### Smoking
+
+```{r}
+lma_sm <-
+  glmer(
+    smoke ~
+      PURPOSE_scale +
+      FINANCIAL_scale + 
+      COMMUNITY_scale +
+      SOCIAL_scale +
+      median_income_demo_scale +
+      raw_income_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = glmerControl(optimizer = "bobyqa"),
+    family = "binomial",
+    data = data 
+  )
+
+summary(lma_sm)
+```
+
+
 ### Indirect effects
 
 ```{r}
@@ -444,29 +521,6 @@ sm_ie
 ### Mediator models
 
 ```{r}
-lm_pur <-
-  lmer(
-    PURPOSE_scale ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      total_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
-    data = data 
-  )
-
 lm_em <-
   lmer(
     enough_money_scale ~
@@ -513,29 +567,6 @@ lm_cs <-
     data = data 
   )
 
-lm_com <-
-  lmer(
-    COMMUNITY_scale ~
-      raw_income_scale +
-      median_income_demo_scale +
-      physicians_scale +
-      total_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
-      land_area_2010_scale +
-      education_scale +
-      employment_all +
-      sex +
-      age_scale +
-      race +
-      married + 
-      year +
-      (1 + median_income_demo_scale | fips_code) +
-      (1 + raw_income_scale | fips_code),
-    REML = FALSE,
-    control = lmerControl(optimizer = "bobyqa"),
-    data = data 
-  )
-
 lm_soc <-
   lmer(
     social_subset_scale ~
@@ -557,11 +588,11 @@ lm_soc <-
     REML = FALSE,
     control = lmerControl(optimizer = "bobyqa"),
     data = data 
-  )
+  ) 
 ```
 
 
-### Outcome models
+### Linear Outcome models
 
 #### Fruit and vegetable consumption
 
@@ -571,7 +602,7 @@ lm_fv <-
     fruits_veggies_scale ~
       PURPOSE_scale +
       enough_money_scale + 
-      comp_satis_std_liv_scale
+      comp_satis_std_liv_scale +
       COMMUNITY_scale +
       social_subset_scale +
       median_income_demo_scale +
@@ -604,7 +635,7 @@ lm_eh <-
     eat_healthy ~
       PURPOSE_scale +
       enough_money_scale + 
-      comp_satis_std_liv_scale
+      comp_satis_std_liv_scale +
       COMMUNITY_scale +
       social_subset_scale +
       median_income_demo_scale +
@@ -637,7 +668,7 @@ lm_sm <-
     smoke ~
       PURPOSE_scale +
       enough_money_scale + 
-      comp_satis_std_liv_scale
+      comp_satis_std_liv_scale +
       COMMUNITY_scale +
       social_subset_scale +
       median_income_demo_scale +
@@ -659,6 +690,85 @@ lm_sm <-
     control = lmerControl(optimizer = "bobyqa"),
     data = data 
   )
+```
+
+
+### Actual Outcome models
+
+#### Fruit and vegetable consumption
+
+```{r}
+summary(lm_fv)
+```
+
+
+#### Eat healthy all day yesterday
+
+```{r}
+lma_eh <-
+  glmer(
+    eat_healthy ~
+      PURPOSE_scale +
+      enough_money_scale + 
+      comp_satis_std_liv_scale +
+      COMMUNITY_scale +
+      social_subset_scale +
+      median_income_demo_scale +
+      raw_income_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = glmerControl(optimizer = "bobyqa"),
+    family = "binomial",
+    data = data 
+  )
+```
+
+
+#### Smoking
+
+```{r}
+lma_sm <-
+  glmer(
+    smoke ~
+      PURPOSE_scale +
+      enough_money_scale + 
+      comp_satis_std_liv_scale +
+      COMMUNITY_scale +
+      social_subset_scale +
+      median_income_demo_scale +
+      raw_income_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = glmerControl(optimizer = "bobyqa"),
+    family = "binomial",
+    data = data 
+  )
+
+summary(lma_sm)
 ```
 
 
