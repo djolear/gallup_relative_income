@@ -68,6 +68,12 @@ Daniel O’Leary
               - [Main effects model](#main-effects-model-7)
               - [Interactive model](#interactive-model-7)
               - [Model comparison](#model-comparison-7)
+          - [Enough money](#enough-money)
+              - [Main effects model](#main-effects-model-8)
+          - [Social Comparison](#social-comparison)
+              - [Main effects model](#main-effects-model-9)
+          - [Social subset](#social-subset)
+              - [Main effects model](#main-effects-model-10)
 
 ``` r
 contrasts(dfg_rs$sex) <- contr.sum(2)
@@ -2901,3 +2907,281 @@ anova(lm0, lm1, lm2)
     ## lm2   47 1552987 1553516 -776447  1552893 334.707 17  < 2.2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+### Enough money
+
+#### Main effects model
+
+``` r
+lm1 <-
+  lmer(
+    enough_money_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+```
+
+    ## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+    ## Model failed to converge with max|grad| = 0.00335748 (tol = 0.002, component 1)
+
+``` r
+summary(lm1)
+```
+
+    ## Linear mixed model fit by maximum likelihood  ['lmerMod']
+    ## Formula: enough_money_scale ~ raw_income_scale + median_income_demo_scale +  
+    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale +  
+    ##     land_area_2010_scale + education_scale + employment_all +  
+    ##     sex + age_scale + race + married + year + (1 + median_income_demo_scale |  
+    ##     fips_code) + (1 + raw_income_scale | fips_code)
+    ##    Data: dfg_rs
+    ## Control: lmerControl(optimizer = "bobyqa")
+    ## 
+    ##       AIC       BIC    logLik  deviance  df.resid 
+    ## 1481538.8 1481876.1 -740739.4 1481478.8    563792 
+    ## 
+    ## Scaled residuals: 
+    ##     Min      1Q  Median      3Q     Max 
+    ## -3.2160 -0.7647  0.0726  0.7781  2.8693 
+    ## 
+    ## Random effects:
+    ##  Groups      Name                     Variance  Std.Dev. Corr 
+    ##  fips_code   (Intercept)              0.0021947 0.04685       
+    ##              median_income_demo_scale 0.0002766 0.01663  -0.41
+    ##  fips_code.1 (Intercept)              0.0010709 0.03272       
+    ##              raw_income_scale         0.0012352 0.03515  -1.00
+    ##  Residual                             0.8077834 0.89877       
+    ## Number of obs: 563822, groups:  fips_code, 3028
+    ## 
+    ## Fixed effects:
+    ##                                           Estimate Std. Error t value
+    ## (Intercept)                              -0.091496   0.004607 -19.860
+    ## raw_income_scale                          0.355491   0.001919 185.263
+    ## median_income_demo_scale                 -0.152633   0.002575 -59.283
+    ## physicians_scale                          0.024506   0.002211  11.085
+    ## unweighted_pop_county_scale              -0.011896   0.004697  -2.533
+    ## median_monthly_housing_cost_county_scale -0.021338   0.002397  -8.902
+    ## land_area_2010_scale                      0.003894   0.002229   1.747
+    ## education_scale                           0.185186   0.002375  77.985
+    ## employment_all1                           0.024574   0.001457  16.861
+    ## sex1                                      0.028254   0.001364  20.711
+    ## age_scale                                 0.179255   0.001599 112.117
+    ## race1                                    -0.028050   0.003074  -9.125
+    ## race2                                    -0.087512   0.007917 -11.053
+    ## race3                                    -0.157883   0.004189 -37.690
+    ## race4                                     0.182009   0.006677  27.260
+    ## married1                                  0.121810   0.003240  37.594
+    ## married2                                  0.042424   0.002584  16.415
+    ## married3                                 -0.218010   0.007329 -29.748
+    ## married4                                 -0.120883   0.003593 -33.647
+    ## married5                                  0.190417   0.004236  44.947
+    ## year2015                                  0.064568   0.003458  18.671
+    ## year2016                                  0.084298   0.003581  23.541
+    ## year2017                                  0.036308   0.003637   9.983
+
+    ## 
+    ## Correlation matrix not shown by default, as p = 23 > 12.
+    ## Use print(x, correlation=TRUE)  or
+    ##     vcov(x)        if you need it
+
+    ## convergence code: 0
+    ## Model failed to converge with max|grad| = 0.00335748 (tol = 0.002, component 1)
+
+### Social Comparison
+
+#### Main effects model
+
+``` r
+lm1 <-
+  lmer(
+    comp_satis_std_liv_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+
+summary(lm1)
+```
+
+    ## Linear mixed model fit by maximum likelihood  ['lmerMod']
+    ## Formula: 
+    ## comp_satis_std_liv_scale ~ raw_income_scale + median_income_demo_scale +  
+    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale +  
+    ##     land_area_2010_scale + education_scale + employment_all +  
+    ##     sex + age_scale + race + married + year + (1 + median_income_demo_scale |  
+    ##     fips_code) + (1 + raw_income_scale | fips_code)
+    ##    Data: dfg_rs
+    ## Control: lmerControl(optimizer = "bobyqa")
+    ## 
+    ##       AIC       BIC    logLik  deviance  df.resid 
+    ## 1537514.6 1537851.8 -768727.3 1537454.6    562454 
+    ## 
+    ## Scaled residuals: 
+    ##     Min      1Q  Median      3Q     Max 
+    ## -4.1949 -0.5073  0.1989  0.7454  2.2984 
+    ## 
+    ## Random effects:
+    ##  Groups      Name                     Variance  Std.Dev. Corr 
+    ##  fips_code   (Intercept)              0.0011754 0.03428       
+    ##              median_income_demo_scale 0.0005141 0.02267  0.02 
+    ##  fips_code.1 (Intercept)              0.0020966 0.04579       
+    ##              raw_income_scale         0.0018214 0.04268  -1.00
+    ##  Residual                             0.8977467 0.94749       
+    ## Number of obs: 562484, groups:  fips_code, 3028
+    ## 
+    ## Fixed effects:
+    ##                                           Estimate Std. Error t value
+    ## (Intercept)                              -0.100960   0.004695 -21.504
+    ## raw_income_scale                          0.263951   0.002095 125.992
+    ## median_income_demo_scale                 -0.179315   0.002767 -64.814
+    ## physicians_scale                          0.006193   0.002230   2.777
+    ## unweighted_pop_county_scale              -0.029462   0.004104  -7.178
+    ## median_monthly_housing_cost_county_scale -0.038823   0.002346 -16.552
+    ## land_area_2010_scale                      0.008583   0.002216   3.873
+    ## education_scale                           0.126968   0.002508  50.634
+    ## employment_all1                          -0.027062   0.001538 -17.591
+    ## sex1                                     -0.005670   0.001440  -3.937
+    ## age_scale                                 0.119984   0.001687  71.111
+    ## race1                                    -0.046079   0.003241 -14.215
+    ## race2                                    -0.069510   0.008355  -8.320
+    ## race3                                    -0.043958   0.004418  -9.949
+    ## race4                                     0.009905   0.007050   1.405
+    ## married1                                  0.039395   0.003421  11.516
+    ## married2                                  0.137703   0.002728  50.484
+    ## married3                                 -0.254690   0.007737 -32.917
+    ## married4                                 -0.154853   0.003793 -40.828
+    ## married5                                  0.160676   0.004471  35.934
+    ## year2015                                  0.055175   0.003645  15.136
+    ## year2016                                  0.089235   0.003775  23.637
+    ## year2017                                  0.035001   0.003843   9.107
+
+    ## 
+    ## Correlation matrix not shown by default, as p = 23 > 12.
+    ## Use print(x, correlation=TRUE)  or
+    ##     vcov(x)        if you need it
+
+### Social subset
+
+#### Main effects model
+
+``` r
+lm1 <-
+  lmer(
+    social_subset_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = dfg_rs 
+  )
+```
+
+    ## Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv, :
+    ## Model failed to converge with max|grad| = 0.00444441 (tol = 0.002, component 1)
+
+``` r
+summary(lm1)
+```
+
+    ## Linear mixed model fit by maximum likelihood  ['lmerMod']
+    ## Formula: social_subset_scale ~ raw_income_scale + median_income_demo_scale +  
+    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale +  
+    ##     land_area_2010_scale + education_scale + employment_all +  
+    ##     sex + age_scale + race + married + year + (1 + median_income_demo_scale |  
+    ##     fips_code) + (1 + raw_income_scale | fips_code)
+    ##    Data: dfg_rs
+    ## Control: lmerControl(optimizer = "bobyqa")
+    ## 
+    ##       AIC       BIC    logLik  deviance  df.resid 
+    ## 1508985.7 1509322.6 -754462.8 1508925.7    558043 
+    ## 
+    ## Scaled residuals: 
+    ##     Min      1Q  Median      3Q     Max 
+    ## -4.1079 -0.5962  0.1366  0.7558  2.5759 
+    ## 
+    ## Random effects:
+    ##  Groups      Name                     Variance  Std.Dev. Corr 
+    ##  fips_code   (Intercept)              0.0006319 0.02514       
+    ##              median_income_demo_scale 0.0003034 0.01742  -0.08
+    ##  fips_code.1 (Intercept)              0.0012144 0.03485       
+    ##              raw_income_scale         0.0012743 0.03570  -1.00
+    ##  Residual                             0.8724957 0.93407       
+    ## Number of obs: 558073, groups:  fips_code, 3028
+    ## 
+    ## Fixed effects:
+    ##                                           Estimate Std. Error t value
+    ## (Intercept)                              -0.187252   0.004441 -42.162
+    ## raw_income_scale                          0.192373   0.001977  97.308
+    ## median_income_demo_scale                 -0.131865   0.002690 -49.022
+    ## physicians_scale                          0.006737   0.002004   3.361
+    ## unweighted_pop_county_scale              -0.010025   0.003216  -3.117
+    ## median_monthly_housing_cost_county_scale -0.022058   0.002046 -10.779
+    ## land_area_2010_scale                      0.004289   0.001976   2.171
+    ## education_scale                           0.120453   0.002480  48.576
+    ## employment_all1                          -0.034382   0.001522 -22.597
+    ## sex1                                     -0.020664   0.001424 -14.510
+    ## age_scale                                 0.044961   0.001669  26.943
+    ## race1                                    -0.051271   0.003194 -16.052
+    ## race2                                    -0.034259   0.008255  -4.150
+    ## race3                                    -0.013341   0.004351  -3.066
+    ## race4                                     0.026373   0.006948   3.796
+    ## married1                                 -0.005380   0.003393  -1.586
+    ## married2                                  0.378418   0.002698 140.245
+    ## married3                                 -0.463517   0.007667 -60.452
+    ## married4                                 -0.194304   0.003770 -51.534
+    ## married5                                  0.040844   0.004478   9.122
+    ## year2015                                  0.032192   0.003614   8.908
+    ## year2016                                  0.058421   0.003741  15.618
+    ## year2017                                 -0.014309   0.003797  -3.769
+
+    ## 
+    ## Correlation matrix not shown by default, as p = 23 > 12.
+    ## Use print(x, correlation=TRUE)  or
+    ##     vcov(x)        if you need it
+
+    ## convergence code: 0
+    ## Model failed to converge with max|grad| = 0.00444441 (tol = 0.002, component 1)

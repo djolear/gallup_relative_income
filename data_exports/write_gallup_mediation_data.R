@@ -17,7 +17,7 @@ machine_path <-
   )
 
 dfg_rs <-
-  read_rds(paste0(machine_path, "research/projects/gallup/gallup_data/relative_status/dfg_rs.rds"))
+  read_rds("D:/data/gallup/exports/dfg_rs.rds")
 
 data <-
   dfg_rs %>%
@@ -73,17 +73,18 @@ data <-
     # bmi_scale,
     total_pop_county_scale,
     land_area_2010_scale,
+    age_scale,
     race,
     sex,
-    age_scale,
     married,
     employment_all,
-    year
+    year,
+    fips_code
   ) %>%
-  dummy_cols(., select_columns = c("sex", "race", "married", "employment_all")) %>%
+  #dummy_cols(., select_columns = c("sex", "race", "married", "employment_all")) %>%
   mutate(across(eat_healthy:land_area_2010_scale, as.numeric)) %>%
-  dplyr::select(-c(sex, race, married))
-
+  mutate(across(sex:year, as.factor)) 
+  
 write_csv(data, paste0("D:/data/gallup/exports/for_mediation_analyses/dfg_rs_med_data_all_years.csv"))
 
 years <-

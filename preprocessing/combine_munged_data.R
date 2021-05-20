@@ -108,5 +108,3 @@ dfg_rs <- standardize_variables(dfg_rs)
 
 write_rds(dfg_rs, paste0("D:/data/gallup/exports/", "dfg_rs.rds"))
 write_csv(dfg_rs, paste0("D:/data/gallup/exports/", "dfg_rs.csv"))
-
-          
