@@ -8,6 +8,10 @@ output:
     toc_depth: 5
 ---
 
+# Setup
+
+## Load pacakges
+
 ```{r, include = FALSE}
 if (!require("pacman")) install.packages("pacman")
 
@@ -22,6 +26,9 @@ pacman::p_load(
   broom.mixed
 )
 ```
+
+
+## Load data
 
 ```{r, include = FALSE}
 sinfo <- data.frame(Sys.info())
@@ -50,9 +57,333 @@ dfg_rs <-
   )
 ```
 
+
+## Select relevant data
+
 ```{r}
-contrasts(dfg_rs$sex) <- contr.sum(2)
-contrasts(dfg_rs$employment_all) <- contr.sum(2)
-contrasts(dfg_rs$race) <- contr.sum(5)
-contrasts(dfg_rs$married) <- contr.sum(6)
+data <-
+  dfg_rs %>%
+  filter_at(
+    vars(
+      eat_healthy,
+      fruits_veggies_scale,
+      smoke,
+      median_income_demo_scale,
+      education_scale,
+      raw_income_scale,
+      median_home_value_county_scale,
+      median_monthly_housing_cost_county_scale,
+      physicians_scale,
+      PURPOSE_scale,
+      COMMUNITY_scale,
+      FINANCIAL_scale,
+      SOCIAL_scale,
+      PHYSICAL_scale,
+      # neg_aff_scale,
+      enough_money_scale,
+      comp_satis_std_liv_scale,
+      # bmi_scale,
+      total_pop_county_scale,
+      land_area_2010_scale,
+      race,
+      sex,
+      age_scale,
+      married,
+      employment_all,
+      year
+    ),
+    all_vars(!is.na(.))
+  ) %>%
+  dplyr::select(
+    eat_healthy,
+    fruits_veggies_scale,
+    smoke,
+    median_income_demo_scale,
+    education_scale,
+    raw_income_scale,
+    median_home_value_county_scale,
+    median_monthly_housing_cost_county_scale,
+    physicians_scale,
+    PURPOSE_scale,
+    COMMUNITY_scale,
+    FINANCIAL_scale,
+    SOCIAL_scale,
+    PHYSICAL_scale,
+    # neg_aff_scale,
+    enough_money_scale,
+    comp_satis_std_liv_scale,
+    # bmi_scale,
+    total_pop_county_scale,
+    land_area_2010_scale,
+    age_scale,
+    race,
+    sex,
+    married,
+    employment_all,
+    year,
+    fips_code
+  ) %>%
+  #dummy_cols(., select_columns = c("sex", "race", "married", "employment_all")) %>%
+  mutate(across(eat_healthy:land_area_2010_scale, as.numeric)) %>%
+  mutate(across(sex:year, as.factor)) 
 ```
+
+
+## Functions
+
+```{r}
+extract_med_coef <- function(lm) {
+  
+  # save lm object to variable
+  coefs <- summary(lm)
+  
+  # extract coefficients
+  coefs <- coefs$coefficients
+  
+  # select coefficient for relative income
+  ri_coef <- coefs[3, 1]
+  
+  # return value
+  return(ri_coef)
+}
+
+extract_outcome_coefs <- function(lm) {
+    
+  # save lm object to variable
+  coefs <- summary(lm)
+  
+  # extract coefficients
+  coefs <- coefs$coefficients
+  
+  # select coefficients for mediators
+  coefs <- data.frame(t(coefs[2:6, 1]))
+  
+  # return values
+  return(coefs)
+}
+```
+
+
+
+# Analysis
+
+## Mediator models
+
+```{r}
+lm_pur <-
+  lmer(
+    PURPOSE_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+
+lm_fin <-
+  lmer(
+    FINANCIAL_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+
+lm_com <-
+  lmer(
+    COMMUNITY_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+
+lm_soc <-
+  lmer(
+    SOCIAL_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+```
+
+
+## Outcome models
+
+### Fruit and vegetable consumption
+
+```{r}
+lm_fv <-
+  lmer(
+    fruits_veggies_scale ~
+      PURPOSE_scale +
+      FINANCIAL_scale + 
+      COMMUNITY_scale +
+      SOCIAL_scale +
+      median_income_demo_scale +
+      raw_income_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+```
+
+
+### Eat healthy all day yesterday
+
+```{r}
+lm_eh <-
+  lmer(
+    eat_healthy ~
+      PURPOSE_scale +
+      FINANCIAL_scale + 
+      COMMUNITY_scale +
+      SOCIAL_scale +
+      median_income_demo_scale +
+      raw_income_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+```
+
+
+### Smoking
+
+```{r}
+lm_sm <-
+  lmer(
+    smoke ~
+      PURPOSE_scale +
+      FINANCIAL_scale + 
+      COMMUNITY_scale +
+      SOCIAL_scale +
+      median_income_demo_scale +
+      raw_income_scale +
+      physicians_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year +
+      (1 + median_income_demo_scale | fips_code) +
+      (1 + raw_income_scale | fips_code),
+    REML = FALSE,
+    control = lmerControl(optimizer = "bobyqa"),
+    data = data 
+  )
+```
+
+
+## Indirect effects
+
+```{r}
+coef_pur <- extract_med_coef(lm_pur)
+coef_fin <- extract_med_coef(lm_fin)
+coef_com <- extract_med_coef(lm_com)
+coef_soc <- extract_med_coef(lm_soc)
+```
+
+
+### Fruit and vegetable consumption
+
+```{r}
+coefs_fv <- extract_outcome_coefs(lm_fv)
+
+total_effect <- rowSums(coefs_fv)
+
+ie_pur <- coefs_fv$PURPOSE_scale * coef_pur
+ie_fin <- coefs_fv$FINANCIAL_scale * coef_fin
+ie_com <- coefs_fv$COMMUNITY_scale * coef_com
+ie_soc <- coefs_fv$SOCIAL_scale * coef_soc
+
+```
+
+
