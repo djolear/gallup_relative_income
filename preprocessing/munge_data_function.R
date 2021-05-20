@@ -39,12 +39,12 @@ munge_data <- function(df) {
     mutate(
       
       # Psychological
-      comp_satis_std_liv = ifelse(year %in% c(2014:2017), HWB17, NA),
+      comp_satis_std_liv = ifelse(year %in% c(2014:2017) & HWB17 %in% c(1:5), HWB17, NA),
       std_living = WP30,
       econ = M30,
       sr_health = H36,
-      enough_money = ifelse(year %in% c(2014:2017), HWB5, NA),
-      goals = ifelse(year %in% c(2014:2017), HWB20, NA),
+      enough_money = ifelse(year %in% c(2014:2017) & HWB5 %in% c(1:5), HWB5, NA),
+      goals = ifelse(year %in% c(2014:2017)  & HWB20 %in% c(1:5), HWB20, NA),
       little_pleasure = ifelse(year %in% c(2014:2017), H45, NA),
       active_prod = ifelse(year %in% c(2014:2017), HWB7, NA),
       drugs_relax = ifelse(year %in% c(2014:2016), H46, NA),
@@ -62,6 +62,10 @@ munge_data <- function(df) {
       PHYSICAL = ifelse(year %in% c(2014:2018), PHYSICAL, NA),
       FINANCIAL = ifelse(year %in% c(2014:2018), FINANCIAL, NA),
       SOCIAL = ifelse(year %in% c(2014:2018), SOCIAL, NA),
+      HWB14 = ifelse(year %in% c(2014:2017) & HWB14 %in% c(1:5), HWB14, NA),
+      HWB15 = ifelse(year %in% c(2014:2017) & HWB15 %in% c(1:5), HWB15, NA),
+      HWB4 = ifelse(year %in% c(2014:2017) & HWB4 %in% c(1:5), HWB4, NA),
+      social_subset = HWB14 + HWB15 + HWB4,
       WELL_BEING_INDEX = ifelse(year %in% c(2014:2018), WELL_BEING_INDEX, NA),
       BAI = ifelse(year %in% c(2008:2013), BAI, NA),
       EHI = ifelse(year %in% c(2008:2013), EHI, NA),

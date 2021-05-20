@@ -58,7 +58,8 @@ standardize_variables <- function(df) {
         starts_with("ladder"),
         PURPOSE:little_pleasure,
         neg_aff,
-        want_to_wrk:wks_looking_for_wrk
+        want_to_wrk:wks_looking_for_wrk,
+        social_subset
       ),
       list(scale = scale2)
     ) %>% 

@@ -1,6 +1,14 @@
 calculate_median_income <- function(df){
   med_inc_gallup <-
     df %>% 
+    dplyr::select(
+      income,
+      age,
+      sex,
+      education,
+      COMB_WEIGHT
+    ) %>% 
+    filter_all(all_vars(!is.na(.))) %>% 
     mutate(
       age_dec = round(age, digits = -1)
     ) %>% 
@@ -10,10 +18,11 @@ calculate_median_income <- function(df){
       education
     ) %>% 
     summarise(
-      median_income_demo = matrixStats::weightedMedian(income, w = COMB_WEIGHT, na.rm = TRUE)
+      mean_income_demo = matrixStats::weightedMean(income, w = COMB_WEIGHT, na.rm = TRUE),
+      median_income_demo = matrixStats::weightedMedian(income, w = COMB_WEIGHT, na.rm = TRUE),
+      gini_demo = reldist::gini(income, w = COMB_WEIGHT)
     ) %>% 
-    ungroup() %>% 
-    filter_all(all_vars(!is.na(.)))
+    ungroup()
   
   df <-
     df %>% 

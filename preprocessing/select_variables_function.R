@@ -46,6 +46,7 @@ select_variables <- function(df) {
       PHYSICAL,
       FINANCIAL,
       SOCIAL,
+      social_subset,
       WELL_BEING_INDEX,
       BAI,
       EHI,
