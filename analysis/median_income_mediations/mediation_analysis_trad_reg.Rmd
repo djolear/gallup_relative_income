@@ -694,6 +694,8 @@ lma_eh <-
     family = "binomial",
     data = data 
   )
+
+summary(lma_eh)
 ```
 
 
