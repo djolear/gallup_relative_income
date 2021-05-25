@@ -1,0 +1,331 @@
+---
+title: "Gallup Relative Income Coefficient Figure"
+author: "Daniel O'Leary"
+date: "5/24/2021"
+output:
+  github_document:
+    toc: true
+    toc_depth: 5
+---
+
+```{r, include = FALSE}
+if (!require("pacman")) install.packages("pacman")
+
+pacman::p_load(
+  tidyverse, 
+  haven,
+  lme4,
+  lm.beta,
+  sjPlot,
+  stargazer
+)
+```
+
+```{r, include = FALSE}
+sinfo <- data.frame(Sys.info())
+machine <- sinfo$Sys.info..[4]
+
+machine_path <- 
+  ifelse(
+    machine %in% c("sussman-rp-mbpro.local", "sussman-rp-mbpro.lan"), 
+    "/Users/djolear/Google Drive/", 
+    "G:/My Drive/"
+  )
+
+source(paste0(machine_path, "research/projects/gallup/gallup_analysis_1/relative_status_analysis/regression_results_munge.R"))
+
+dfg_rs <-
+  read_rds("D:/data/gallup/exports/dfg_rs.rds")
+
+dfg_rs <-
+  dfg_rs %>% 
+  mutate_at(
+    vars(
+      sex, 
+      employment_all,
+      race,
+      married
+    ),
+    as.factor
+  )
+```
+
+```{r}
+contrasts(dfg_rs$sex) <- contr.sum(2)
+contrasts(dfg_rs$employment_all) <- contr.sum(2)
+contrasts(dfg_rs$race) <- contr.sum(5)
+contrasts(dfg_rs$married) <- contr.sum(6)
+```
+
+```{r}
+# c <- contr.treatment(2)
+# c
+# my.coding <- matrix(rep(1/2, 2), ncol = 1)
+# my.simple = c - my.coding
+# my.simple
+# 
+# contrasts(dfg_rs$sex) <- my.simple
+# contrasts(dfg_rs$employment_all) <- my.simple
+# 
+# 
+# c <- contr.treatment(5)
+# my.coding <- matrix(rep(1/5, 20), ncol = 4)
+# my.simple = c - my.coding
+# my.simple
+# 
+# contrasts(dfg_rs$race) <- my.simple
+# 
+# 
+# c <- contr.treatment(6)
+# my.coding <- matrix(rep(1/6, 30), ncol = 5)
+# my.simple = c - my.coding
+# my.simple
+# 
+# contrasts(dfg_rs$married) <- my.simple
+```
+
+
+# Analysis
+
+```{r}
+lm_fv_demo <-
+  lm(
+    fruits_veggies_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year,
+    data = dfg_rs 
+  )
+
+summary(lm_fv_demo)
+
+lm_fv_geo <-
+  lm(
+    fruits_veggies_scale ~
+      raw_income_scale +
+      median_income_county_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year,
+    data = dfg_rs 
+  )
+
+summary(lm_fv_geo)
+```
+
+
+```{r}
+lm_sm_demo <-
+  glm(
+    smoke ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year,
+    family = "binomial",
+    data = dfg_rs 
+  )
+
+summary(lm_sm_demo)
+
+lm_sm_geo <-
+  glm(
+    smoke ~
+      raw_income_scale +
+      median_income_county_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year,
+    family = "binomial",
+    data = dfg_rs 
+  )
+
+summary(lm_sm_geo)
+```
+
+
+### High blood pressure
+
+```{r}
+lm_hbp_geo <-
+  glm(
+    hbp ~
+      raw_income_scale +
+      median_income_county_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year,
+    family = "binomial",
+    data = dfg_rs %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)))
+  )
+
+summary(lm_hbp_geo)
+
+lm_hbp_demo <-
+  glm(
+    hbp ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year,
+    family = "binomial",
+    data = dfg_rs %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)))
+  )
+
+summary(lm_hbp_demo)
+```
+
+
+```{r}
+lm_pwb_demo <-
+  lm(
+    PURPOSE_scale ~
+      raw_income_scale +
+      median_income_demo_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year,
+    data = dfg_rs 
+  )
+
+summary(lm_pwb_demo)
+
+lm_pwb_geo <-
+  lm(
+    PURPOSE_scale ~
+      raw_income_scale +
+      median_income_county_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year,
+    data = dfg_rs 
+  )
+
+summary(lm_pwb_geo)
+```
+
+
+```{r}
+demo_coefs <-
+  bind_rows(
+    tidy(lm_fv_demo) %>% 
+      mutate(
+        outcome = "fruits/veggies"
+      ),
+    tidy(lm_sm_demo) %>% 
+      mutate(
+        outcome = "smoking"
+      ),
+    tidy(lm_hbp_demo) %>% 
+      mutate(
+        outcome = "high\n blood pressure"
+      ),
+    tidy(lm_pwb_demo) %>% 
+      mutate(
+        outcome = "purpose in life"
+      )
+  )
+
+
+```
+
+```{r}
+demo_coefs %>% 
+  filter(term %in% c("raw_income_scale", "median_income_demo_scale", "education_scale")) %>% 
+  mutate(
+    term = 
+      case_when(
+        term == "raw_income_scale" ~ "own income",
+        term == "median_income_demo_scale" ~ "demographic\n reference income",
+        term == "education_scale" ~ "education"
+      ),
+    outcome = factor(as.factor(outcome), levels = c( "fruits/veggies", "purpose in life", "smoking", "high\n blood pressure"))
+  ) %>% 
+  ggplot(aes(term, estimate, color = term)) +
+  geom_point(size = 2) +
+  geom_errorbar(aes(ymin = estimate - 1.96 * std.error, ymax = estimate + 1.96 * std.error), width = 0) +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  coord_flip()  +
+  labs(
+    y = "standardized beta",
+    x = "variable"
+  ) +
+  theme_bw() +
+  theme(
+    text = element_text(size = 15),
+    plot.title = element_text(hjust = 0.5),
+    legend.position = "none",
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  ) +
+  facet_grid(. ~ outcome, scales = "free")
+```
+
+
