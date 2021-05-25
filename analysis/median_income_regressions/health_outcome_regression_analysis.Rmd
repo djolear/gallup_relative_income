@@ -93,7 +93,7 @@ contrasts(dfg_rs$married) <- contr.sum(6)
 ### BMI
 
 ```{r}
-lm1 <-
+lm_bmi_geo <-
   lm(
     bmi_scale ~
       raw_income_scale +
@@ -112,9 +112,9 @@ lm1 <-
     data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm_bmi_geo)
 
-lm1 <-
+lm_bmi_demo <-
   lm(
     bmi_scale ~
       raw_income_scale +
@@ -133,14 +133,14 @@ lm1 <-
     data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm_bmi_demo)
 ```
 
 
 ### Diabetes
 
 ```{r}
-lm1 <-
+lm_diab_geo <-
   glm(
     diabetes ~
       raw_income_scale +
@@ -160,18 +160,18 @@ lm1 <-
     data = dfg_rs %>% mutate(diabetes = ifelse(diabetes == 1, 1, ifelse(diabetes == 2, 0, NA)))
   )
 
-summary(lm1)
+summary(lm_diab_geo)
 
-lm1 <-
+lm_diab_demo <-
   glm(
-    diabetes ~
+    eat_healthy ~
       raw_income_scale +
       median_income_demo_scale +
       physicians_scale +
       unweighted_pop_county_scale +
       median_monthly_housing_cost_county_scale +
       land_area_2010_scale +
-      #education_scale +
+      education_scale +
       employment_all +
       sex +
       age_scale +
@@ -182,14 +182,14 @@ lm1 <-
     data = dfg_rs %>% mutate(diabetes = ifelse(diabetes == 1, 1, ifelse(diabetes == 2, 0, NA)))
   )
 
-summary(lm1)
+summary(lm_diab_demo)
 ```
 
 
 ### High blood pressure
 
 ```{r}
-lm1 <-
+lm_hbp_geo <-
   glm(
     hbp ~
       raw_income_scale +
@@ -209,9 +209,9 @@ lm1 <-
     data = dfg_rs %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)))
   )
 
-summary(lm1)
+summary(lm_hbp_geo)
 
-lm1 <-
+lm_hbp_demo <-
   glm(
     hbp ~
       raw_income_scale +
@@ -231,14 +231,14 @@ lm1 <-
     data = dfg_rs %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)))
   )
 
-summary(lm1)
+summary(lm_hbp_demo)
 ```
 
 
 ### Depression
 
 ```{r}
-lm1 <-
+lm_dep_geo <-
   glm(
     depression ~
       raw_income_scale +
@@ -258,9 +258,9 @@ lm1 <-
     data = dfg_rs %>% mutate(depression = ifelse(depression == 1, 1, ifelse(depression == 2, 0, NA)))
   )
 
-summary(lm1)
+summary(lm_dep_geo)
 
-lm1 <-
+lm_dep_demo <-
   glm(
     depression ~
       raw_income_scale +
@@ -280,7 +280,7 @@ lm1 <-
     data = dfg_rs %>% mutate(depression = ifelse(depression == 1, 1, ifelse(depression == 2, 0, NA)))
   )
 
-summary(lm1)
+summary(lm_dep_demo)
 ```
 
 
@@ -288,7 +288,7 @@ summary(lm1)
 ### Obesity
 
 ```{r}
-lm1 <-
+lm_obe_geo <-
   glm(
     obese ~
       raw_income_scale +
@@ -308,11 +308,11 @@ lm1 <-
     data = dfg_rs %>% mutate(obese = ifelse(obese == 1, 0, ifelse(obese == 0, 1, NA)))
   )
 
-summary(lm1)
+summary(lm_obe_geo)
 
-lm1 <-
+lm_obe_demo <-
   glm(
-    obese ~
+    smoke ~
       raw_income_scale +
       median_income_demo_scale +
       physicians_scale +
@@ -327,17 +327,17 @@ lm1 <-
       married + 
       year,
     family = "binomial",
-    data = dfg_rs %>% mutate(obese = ifelse(obese == 1, 0, ifelse(obese == 0, 1, NA)))
+    data = dfg_rs %>% mutate(obese = ifelse(obese == 1, 0, ifelse(obese == 0, 1, NA))) 
   )
 
-summary(lm1)
+summary(lm_obe_demo)
 ```
 
 
 ### Self-reported health
 
 ```{r}
-lm1 <-
+lm_srh_geo <-
   lm(
     scale(sr_health) ~
       raw_income_scale +
@@ -356,9 +356,9 @@ lm1 <-
     data = dfg_rs %>% mutate(sr_health = ifelse(sr_health %in% c(1:5), 6 - sr_health, NA))
   )
 
-summary(lm1)
+summary(lm_srh_geo)
 
-lm1 <-
+lm_srh_demo <-
   lm(
     scale(sr_health) ~
       raw_income_scale +
@@ -377,14 +377,14 @@ lm1 <-
     data = dfg_rs %>% mutate(sr_health = ifelse(sr_health %in% c(1:5), 6 - sr_health, NA))
   )
 
-summary(lm1)
+summary(lm_srh_demo)
 ```
 
 
 ### Height
 
 ```{r}
-lm1 <-
+lm_ht_geo <-
   lm(
     scale(HEIGHT) ~
       raw_income_scale +
@@ -403,9 +403,9 @@ lm1 <-
     data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm_ht_geo)
 
-lm1 <-
+lm_ht_demo <-
   lm(
     scale(HEIGHT) ~
       raw_income_scale +
@@ -424,5 +424,30 @@ lm1 <-
     data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm_ht_demo)
 ```
+
+
+## Regression tables
+
+```{r}
+stargazer(
+  lm_diab_demo, lm_hbp_demo, lm_obe_demo, lm_bmi_demo, lm_dep_demo, lm_srh_demo,
+  ci = TRUE,
+  type = "latex", digits = 2,
+  out = "regression_table_health_outcomes_demo.doc",
+  dep.var.labels = c("diabetes", "high blood pressure", "obesity", "BMI", "depression", "self-reported health"),
+  # covariate.labels =
+  #   c(
+  #     "job loss due to COVID-19",
+  #     "income",
+  #     "education",
+  #     "subjective social status",
+  #     "employment status"
+  #   ),
+  star.char = c("*", "**", "***"),
+  star.cutoffs = c(0.05, 0.01, 0.001),
+  notes = c("* p<0.05; ** p<0.01; *** p<0.001")
+)
+```
+
