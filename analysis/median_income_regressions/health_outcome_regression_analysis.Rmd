@@ -164,7 +164,7 @@ summary(lm_diab_geo)
 
 lm_diab_demo <-
   glm(
-    eat_healthy ~
+    diabetes ~
       raw_income_scale +
       median_income_demo_scale +
       physicians_scale +
@@ -430,21 +430,77 @@ summary(lm_ht_demo)
 
 ## Regression tables
 
+### Demographic reference
+
 ```{r}
 stargazer(
   lm_diab_demo, lm_hbp_demo, lm_obe_demo, lm_bmi_demo, lm_dep_demo, lm_srh_demo,
   ci = TRUE,
-  type = "latex", digits = 2,
+  type = "html", digits = 2,
   out = "regression_table_health_outcomes_demo.doc",
   dep.var.labels = c("diabetes", "high blood pressure", "obesity", "BMI", "depression", "self-reported health"),
-  # covariate.labels =
-  #   c(
-  #     "job loss due to COVID-19",
-  #     "income",
-  #     "education",
-  #     "subjective social status",
-  #     "employment status"
-  #   ),
+  covariate.labels =
+    c(
+      "own income",
+      "demographic reference \n median income",
+      "ratio of physicians",
+      "population",
+      "housing cost",
+      "land area",
+      "education",
+      "employment = employed",
+      "sex = male",
+      "age",
+      "race = white",
+      "race = African American",
+      "race = Asian",
+      "race = American Indian \n Alaska native",
+      "marital status = single",
+      "marital status = married",
+      "marital status = separated",
+      "marital status = divorced",
+      "marital status = widowed"
+    ),
+  omit = c("year"),
+  star.char = c("*", "**", "***"),
+  star.cutoffs = c(0.05, 0.01, 0.001),
+  notes = c("* p<0.05; ** p<0.01; *** p<0.001")
+)
+```
+
+
+### Geographic reference
+
+```{r}
+stargazer(
+  lm_diab_geo, lm_hbp_geo, lm_obe_geo, lm_bmi_geo, lm_dep_geo, lm_srh_geo,
+  ci = TRUE,
+  type = "html", digits = 2,
+  out = "regression_table_health_outcomes_geo.doc",
+  dep.var.labels = c("diabetes", "high blood pressure", "obesity", "BMI", "depression", "self-reported health"),
+  covariate.labels =
+    c(
+      "own income",
+      "geographic reference \n median income",
+      "ratio of physicians",
+      "population",
+      "housing cost",
+      "land area",
+      "education",
+      "employment = employed",
+      "sex = male",
+      "age",
+      "race = white",
+      "race = African American",
+      "race = Asian",
+      "race = American Indian \n Alaska native",
+      "marital status = single",
+      "marital status = married",
+      "marital status = separated",
+      "marital status = divorced",
+      "marital status = widowed"
+    ),
+  omit = c("year"),
   star.char = c("*", "**", "***"),
   star.cutoffs = c(0.05, 0.01, 0.001),
   notes = c("* p<0.05; ** p<0.01; *** p<0.001")
