@@ -125,7 +125,7 @@ summary(lm0)
 
 lm1 <-
   lmer(
-    ladder_now_scale ~
+    fruits_veggies_scale ~
       raw_income_scale +
       median_income_county_scale +
       physicians_scale +

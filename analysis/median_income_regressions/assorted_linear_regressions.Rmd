@@ -19,7 +19,7 @@ pacman::p_load(
   sjPlot,
   stargazer,
   broom,
-  broom.mixed
+  broom.mixed,
   gbm
 )
 ```
