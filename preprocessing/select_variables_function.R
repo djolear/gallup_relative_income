@@ -103,6 +103,7 @@ select_variables <- function(df) {
       
       year, 
       STATE_NAME, 
+      census_region,
       COMB_WEIGHT
     )
   
