@@ -1,0 +1,192 @@
+---
+title: "Gallup - Comparing Demographic Reference Median Incomes"
+author: "Daniel O'Leary"
+date: "5/28/2021"
+output:
+  github_document:
+    toc: true
+    toc_depth: 5
+---
+
+```{r, include = FALSE}
+if (!require("pacman")) install.packages("pacman")
+
+pacman::p_load(
+  tidyverse, 
+  haven,
+  lme4,
+  lm.beta,
+  sjPlot,
+  stargazer,
+  broom
+)
+```
+
+```{r, include = FALSE}
+linear_models_outcomes_wc <- 
+  read_csv("D:/data/gallup/results/many_models_reference_income/linear_models_outcomes_wc.csv") %>% 
+  mutate(
+    cov = "yes"
+  )
+
+linear_models_outcomes_woc <- 
+  read_csv("D:/data/gallup/results/many_models_reference_income/linear_models_outcomes_woc.csv") %>% 
+  mutate(
+    cov = "no"
+  )
+
+linear_models_outcomes <-
+  linear_models_outcomes_wc %>% 
+  left_join(
+    linear_models_outcomes_woc,
+    by = c("mi_var", "outcome_key")
+  ) %>% 
+  mutate(
+    mi_value_diff = `scale(mi_value).x` - `scale(mi_value).y`
+  )
+```
+
+```{r, include = FALSE}
+linear_models_mediators_wc <- 
+  read_csv("D:/data/gallup/results/many_models_reference_income/linear_models_mediators_wc.csv") %>% 
+  mutate(
+    cov = "yes"
+  )
+
+linear_models_mediators_woc <- 
+  read_csv("D:/data/gallup/results/many_models_reference_income/linear_models_mediators_woc.csv") %>% 
+  mutate(
+    cov = "no"
+  )
+
+linear_models_mediators <-
+  linear_models_mediators_wc %>% 
+  left_join(
+    linear_models_mediators_woc,
+    by = c("mi_var", "outcome_key")
+  ) %>% 
+  mutate(
+    mi_value_diff = `scale(mi_value).x` - `scale(mi_value).y`
+  )
+```
+
+
+```{r, include = FALSE}
+logistic_models_outcomes_wc <- 
+  read_csv("D:/data/gallup/results/many_models_reference_income/logistic_models_outcomes_wc.csv") %>% 
+  mutate(
+    cov = "yes"
+  )
+
+logistic_models_outcomes_woc <- 
+  read_csv("D:/data/gallup/results/many_models_reference_income/logistic_models_outcomes_woc.csv") %>% 
+  mutate(
+    cov = "no"
+  )
+
+logistic_models_outcomes <-
+  logistic_models_outcomes_wc %>% 
+  left_join(
+    logistic_models_outcomes_woc,
+    by = c("mi_var", "outcome_key")
+  ) %>% 
+  mutate(
+    mi_value_diff = `scale(mi_value).x` - `scale(mi_value).y`
+  )
+```
+
+```{r}
+source("G:/My Drive/research/projects/gallup_rs/analysis/median_income_regressions/comparing demographic reference incomes/comparing_demographic_reference_incomes_plot_functions.R")
+```
+
+
+# Analysis
+
+## Correlations among reference incomes
+
+```{r}
+dfg_rs %>% 
+  dplyr::select(
+    age_scale,
+    education_scale,
+    sex,
+    starts_with("median_income_demo")
+  ) %>% 
+  dplyr::select(age_scale, education_scale, sex, median_income_demo_sa_scale:median_income_demo_esaiq_scale) %>% 
+  cor(., use = "pairwise.complete.obs") %>% 
+  round(., 2)
+```
+
+## Linear models for focal outcomes
+
+### Coefficients with covariates
+
+```{r}
+coef_plot("scale(mi_value)", linear_models_outcomes_wc)
+```
+
+
+### Coefficients w/o covariates
+
+```{r}
+coef_plot("scale(mi_value)", linear_models_outcomes_woc)
+```
+
+
+### Difference in coefficients
+
+```{r}
+coef_diff_plot("mi_value_diff", linear_models_outcomes)
+```
+
+
+## Logistic models for focal outcomes
+
+### Coefficients with covariates
+
+```{r}
+coef_plot("scale(mi_value)", logistic_models_outcomes_wc)
+```
+
+
+### Coefficients w/o covariates
+
+```{r}
+coef_plot("scale(mi_value)", logistic_models_outcomes_woc)
+```
+
+
+### Difference in coefficients
+
+```{r}
+coef_diff_plot("mi_value_diff", logistic_models_outcomes)
+```
+
+
+## Linear models for mediators
+
+### Coefficients with covariates
+
+```{r}
+coef_plot("scale(mi_value)", linear_models_mediators_wc)
+```
+
+
+### Coefficients w/o covariates
+
+```{r}
+coef_plot("scale(mi_value)", linear_models_mediators_woc)
+```
+
+
+### Difference in coefficients
+
+```{r}
+coef_diff_plot("mi_value_diff", linear_models_mediators)
+```
+
+
+
+
+
+
