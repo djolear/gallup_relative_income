@@ -18,8 +18,36 @@ pacman::p_load(
   lm.beta,
   sjPlot,
   stargazer,
-  broom
+  broom,
+  regclass
 )
+```
+
+```{r, include = FALSE}
+sinfo <- data.frame(Sys.info())
+machine <- sinfo$Sys.info..[4]
+
+machine_path <- 
+  ifelse(
+    machine %in% c("sussman-rp-mbpro.local", "sussman-rp-mbpro.lan"), 
+    "/Users/djolear/Google Drive/", 
+    "G:/My Drive/"
+  )
+
+dfg_rs <-
+  read_rds("D:/data/gallup/exports/dfg_rs.rds")
+
+dfg_rs <-
+  dfg_rs %>% 
+  mutate_at(
+    vars(
+      sex, 
+      employment_all,
+      race,
+      married
+    ),
+    as.factor
+  )
 ```
 
 ```{r, include = FALSE}
@@ -112,6 +140,7 @@ dfg_rs %>%
     sex,
     starts_with("median_income_demo")
   ) %>% 
+  mutate_all(as.numeric) %>% 
   dplyr::select(age_scale, education_scale, sex, median_income_demo_sa_scale:median_income_demo_esaiq_scale) %>% 
   cor(., use = "pairwise.complete.obs") %>% 
   round(., 2)
@@ -183,6 +212,368 @@ coef_plot("scale(mi_value)", linear_models_mediators_woc)
 
 ```{r}
 coef_diff_plot("mi_value_diff", linear_models_mediators)
+```
+
+
+## Median differences in coefficients
+
+### Linear models for focal outcomes
+
+```{r}
+linear_models_outcomes %>% 
+  group_by(mi_var) %>% 
+  summarise(
+    median_coef_diff = median(mi_value_diff)
+  )
+```
+
+
+### Logistic models for focal outcomes
+
+```{r}
+logistic_models_outcomes %>% 
+  group_by(mi_var) %>% 
+  summarise(
+    median_coef_diff = round(median(mi_value_diff), 2)
+  )
+```
+
+### Linear models for mediators
+
+```{r}
+linear_models_mediators %>% 
+  group_by(mi_var) %>% 
+  summarise(
+    median_coef_diff = round(median(mi_value_diff), 2)
+  )
+```
+
+
+## And this
+
+```{r}
+lm1 <-
+  lm(
+    fruits_veggies_scale ~
+      scale(income) +
+      median_income_demo_esa_scale,
+    dfg_rs
+  )
+
+summary(lm1)
+VIF(lm1)
+
+lm1 <-
+  lm(
+    fruits_veggies_scale ~
+      scale(income) +
+      median_income_demo_esa_scale +
+      education_scale,
+    dfg_rs
+  )
+
+summary(lm1)
+VIF(lm1)
+
+lm1 <-
+  lm(
+    fruits_veggies_scale ~
+      scale(income) +
+      median_income_demo_esa_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year,
+    dfg_rs
+  )
+
+summary(lm1)
+VIF(lm1)
+
+lm1 <-
+  lm(
+    fruits_veggies_scale ~
+      scale(income) +
+      median_income_demo_esa_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year,
+    dfg_rs
+  )
+
+summary(lm1)
+VIF(lm1)
+```
+
+
+## What happens when we don't control for only demographics that are used in the reference income
+
+### Fruits \ veggies
+
+```{r}
+lm1 <-
+  lm(
+    fruits_veggies_scale ~
+      scale(income) +
+      median_income_demo_esa_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      education_scale +
+      employment_all +
+      race +
+      married + 
+      year,
+    dfg_rs
+  )
+
+summary(lm1)
+VIF(lm1)
+
+
+lm1 <-
+  lm(
+    fruits_veggies_scale ~
+      scale(income) +
+      median_income_demo_sar_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      education_scale +
+      employment_all +
+      education_scale +
+      married + 
+      year,
+    dfg_rs
+  )
+
+summary(lm1)
+VIF(lm1)
+
+lm1 <-
+  lm(
+    fruits_veggies_scale ~
+      scale(income) +
+      median_income_demo_esar_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      employment_all +
+      married + 
+      year,
+    dfg_rs
+  )
+
+summary(lm1)
+VIF(lm1)
+```
+
+
+### Cantril ladder
+
+```{r}
+lm1 <-
+  lm(
+    ladder_now_scale ~
+      scale(income) +
+      median_income_demo_esa_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      employment_all +
+      race +
+      married + 
+      year,
+    dfg_rs
+  )
+
+summary(lm1)
+VIF(lm1)
+
+
+lm1 <-
+  lm(
+    ladder_now_scale ~
+      scale(income) +
+      median_income_demo_sar_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      employment_all +
+      education_scale +
+      married + 
+      year,
+    dfg_rs
+  )
+
+summary(lm1)
+VIF(lm1)
+
+lm1 <-
+  lm(
+    ladder_now_scale ~
+      scale(income) +
+      median_income_demo_esar_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      employment_all +
+      married + 
+      year,
+    dfg_rs
+  )
+
+summary(lm1)
+VIF(lm1)
+```
+
+
+### Sense of purpose
+
+```{r}
+lm1 <-
+  lm(
+    PURPOSE_scale ~
+      scale(income) +
+      median_income_demo_esa_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      employment_all +
+      race +
+      married + 
+      year,
+    dfg_rs
+  )
+
+summary(lm1)
+VIF(lm1)
+
+
+lm1 <-
+  lm(
+    PURPOSE_scale ~
+      scale(income) +
+      median_income_demo_sar_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      education_scale +
+      employment_all +
+      married + 
+      year,
+    dfg_rs
+  )
+
+summary(lm1)
+VIF(lm1)
+
+lm1 <-
+  lm(
+    PURPOSE_scale ~
+      scale(income) +
+      median_income_demo_esar_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      employment_all +
+      married + 
+      year,
+    dfg_rs
+  )
+
+summary(lm1)
+VIF(lm1)
+```
+
+
+### Smoking
+
+```{r}
+lm1 <-
+  glm(
+    smoke ~
+      scale(income) +
+      median_income_demo_esa_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      employment_all +
+      race +
+      married + 
+      year,
+    dfg_rs,
+    family = "binomial"
+  )
+
+summary(lm1)
+VIF(lm1)
+
+
+lm1 <-
+  glm(
+    smoke ~
+      scale(income) +
+      median_income_demo_sar_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      education_scale +
+      employment_all +
+      education_scale +
+      married + 
+      year,
+    dfg_rs,
+    family = "binomial"
+  )
+
+summary(lm1)
+VIF(lm1)
+
+lm1 <-
+  glm(
+    smoke ~
+      scale(income) +
+      median_income_demo_esar_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      employment_all +
+      education_scale +
+      married + 
+      year,
+    dfg_rs,
+    family = "binomial"
+  )
+
+summary(lm1)
+VIF(lm1)
 ```
 
 
