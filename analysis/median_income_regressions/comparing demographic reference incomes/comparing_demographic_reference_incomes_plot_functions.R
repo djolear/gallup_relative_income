@@ -7,7 +7,7 @@ coef_plot <- function(outcome, data){
       outcome_key
     ) %>% 
     mutate(
-      outcome = abs(outcome),
+      #outcome = abs(outcome),
       mi_var =
         case_when(
           mi_var == "median_income_demo_esa_scale" ~ "age, sex, educ",
@@ -60,7 +60,7 @@ coef_diff_plot <- function(outcome, data){
       outcome_key
     ) %>% 
     mutate(
-      outcome = abs(outcome),
+      #outcome = abs(outcome),
       mi_var =
         case_when(
           mi_var == "median_income_demo_esa_scale" ~ "age, sex, educ",

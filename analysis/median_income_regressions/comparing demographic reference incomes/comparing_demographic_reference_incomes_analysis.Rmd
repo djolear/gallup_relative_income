@@ -625,7 +625,7 @@ lm1 <-
   glm(
     diabetes ~
       scale(income) +
-      median_income_demo_sar_scale +
+      median_income_demo_sa_scale +
       total_pop_county_scale +
       median_monthly_housing_cost_county_scale +
       land_area_2010_scale +
