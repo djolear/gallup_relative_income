@@ -565,7 +565,96 @@ lm1 <-
       land_area_2010_scale +
       physicians_scale +
       employment_all +
+      married + 
+      year,
+    dfg_rs,
+    family = "binomial"
+  )
+
+summary(lm1)
+VIF(lm1)
+```
+
+
+### Diabetes
+
+```{r}
+lm1 <-
+  glm(
+    diabetes ~
+      scale(income) +
+      median_income_demo_esa_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      employment_all +
+      race +
+      married + 
+      year,
+    dfg_rs,
+    family = "binomial"
+  )
+
+summary(lm1)
+VIF(lm1)
+
+
+lm1 <-
+  glm(
+    diabetes ~
+      scale(income) +
+      median_income_demo_sar_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
       education_scale +
+      employment_all +
+      education_scale +
+      married + 
+      year,
+    dfg_rs,
+    family = "binomial"
+  )
+
+summary(lm1)
+VIF(lm1)
+
+lm1 <-
+  glm(
+    diabetes ~
+      scale(income) +
+      median_income_demo_sar_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      education_scale +
+      employment_all +
+      education_scale +
+      married + 
+      sex + 
+      age_scale +
+      race +
+      year,
+    dfg_rs,
+    family = "binomial"
+  )
+
+summary(lm1)
+VIF(lm1)
+
+lm1 <-
+  glm(
+    diabetes ~
+      scale(income) +
+      median_income_demo_esar_scale +
+      total_pop_county_scale +
+      median_monthly_housing_cost_county_scale +
+      land_area_2010_scale +
+      physicians_scale +
+      employment_all +
       married + 
       year,
     dfg_rs,
