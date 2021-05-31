@@ -97,7 +97,11 @@ dfg_rs <-
     happiness = ifelse(happiness == 1,- 1, ifelse(happiness == 2, 1, NA)),
     stress = ifelse(stress == 1, 1, ifelse(stress == 2, -1, NA)),
     worry = ifelse(worry == 1, 1, ifelse(worry == 2, -1, NA)),
-    sadness = ifelse(sadness == 1, 1, ifelse(sadness == 2, -1, NA))
+    sadness = ifelse(sadness == 1, 1, ifelse(sadness == 2, -1, NA)),
+    diabetes = ifelse(diabetes == 1, 1, ifelse(diabetes == 2, 0, NA)),
+    hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)),
+    depression = ifelse(depression == 1, 1, ifelse(depression == 2, 0, NA)),
+    obese = ifelse(obese == 1, 0, ifelse(obese == 0, 1, NA))
   ) %>% 
   mutate(
     neg_aff = enjoyment + happiness + stress + worry + sadness
