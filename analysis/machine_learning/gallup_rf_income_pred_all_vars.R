@@ -68,8 +68,7 @@ data <-
       income_scale
     ),
     all_vars(!is.na(.))
-  ) %>% 
-  sample_n(50000)
+  ) 
 
 
 ## Set up Tune Grid ##
