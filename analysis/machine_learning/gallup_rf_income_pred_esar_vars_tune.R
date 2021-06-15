@@ -14,6 +14,7 @@ library("ranger", lib.loc = "/home/djolear/R")
 library("caret", lib.loc = "/home/djolear/R")
 
 
+
 ## Functions ##
 
 get_best_result = function(caret_fit) {
@@ -91,25 +92,41 @@ tgrid <-
   )
 
 
-data_train <-
-  data %>% 
-  dplyr::select(
-    age_scale,
-    sex,
-    race,
-    education_scale,
-    income_scale
-  )
+## Parallelize ##
 
+# cl <- makePSOCKcluster(8)
+# registerDoParallel(cl)
 
-rf <-
-  ranger(
-    income_scale ~ .,
-    data = data_train,
+## Tune Model ##
+
+model_caret <- 
+  train(
+    income_scale  ~ ., 
+    data = data,
+    method = "ranger",
+    trControl = 
+      trainControl(
+        method="cv", 
+        number = 5, 
+        verboseIter = T,
+        allowParallel = TRUE
+      ),
+    tuneGrid = tgrid,
+    num.trees = 100,
+    importance = "permutation",
     num.threads = 8
   )
 
+# stopCluster(cl)
+
 ## Export Results ##
+
+results <- 
+  get_best_result(model_caret)
+
+write_csv(results, "/project/ourminsk/gallup/results/ml/results_rf_income_esar_vars.csv")
+
+
 
 preds <- predict(model_caret, data_train)
 
@@ -120,22 +137,8 @@ data <-
   ) %>% 
   dplyr::select(
     subid,
-    income_demo_ranger_all_vars_scale
+    income_demo_ranger_esar_vars_scale
   )
 
-## Export Results ##
-
-preds <- predict(model_caret, data_train)
-
-data <-
-  bind_cols(
-    data,
-    income_demo_ranger_all_vars_scale = scale(preds)
-  ) %>% 
-  dplyr::select(
-    subid,
-    income_demo_ranger_sar_vars_scale
-  )
-
-write_csv(data, "/project/ourminsk/gallup/results/ml/preds_rf_income_sar_vars.csv")
+write_csv(data, "/project/ourminsk/gallup/results/ml/preds_rf_income_esar_vars.csv")
 

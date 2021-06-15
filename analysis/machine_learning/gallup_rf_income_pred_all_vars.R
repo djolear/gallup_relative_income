@@ -6,29 +6,22 @@ library("tidyverse", lib.loc = "/home/djolear/R")
 library("lavaan", lib.loc = "/home/djolear/R")
 library("furrr", lib.loc = "/home/djolear/R")
 library("broom", lib.loc = "/home/djolear/R")
-library("broom.mixed", lib.loc = "/home/djolear/R")
-library("lme4", lib.loc = "/home/djolear/R")
-library("caret", lib.loc = "/home/djolear/R")
 library("glmnet", lib.loc = "/home/djolear/R")
 library("randomForest", lib.loc = "/home/djolear/R")
 library("ranger", lib.loc = "/home/djolear/R")
+# library("foreach", lib.loc = "/home/djolear/R")
+# library("doParallel", lib.loc = "/home/djolear/R")
+library("caret", lib.loc = "/home/djolear/R")
 
 
-## Functions ##
 
-get_best_result = function(caret_fit) {
-  best = which(rownames(caret_fit$results) == rownames(caret_fit$bestTune))
-  best_result = caret_fit$results[best, ]
-  rownames(best_result) = NULL
-  best_result
-}
 
 ## Load Data ##
 
 data_path <- "/project/ourminsk/gallup/exports/dfg_rs.rds"
 
 data <- 
-  read_rds(path)
+  read_rds(data_path)
 
 data <-
   data %>% 
@@ -71,43 +64,15 @@ data <-
   ) 
 
 
-## Set up Tune Grid ##
-
-tgrid <-
-  expand.grid(
-    mtry = 3:6,
-    splitrule = "variance",
-    min.node.size = c(10, 20)
-  )
-
-
-## Tune Model ##
-
-model_caret <- 
-  train(
-    income_scale  ~ ., 
+rf <-
+  ranger(
+    income_scale ~ .,
     data = data,
-    method = "ranger",
-    trControl = 
-      trainControl(
-        method="cv", 
-        number = 5, 
-        verboseIter = T
-      ),
-    tuneGrid = tgrid,
-    num.trees = 100,
-    importance = "permutation"
+    num.threads = 8,
+    verbose = TRUE
   )
-
 
 ## Export Results ##
-
-results <- 
-  get_best_result(model_caret)
-
-write_csv(results, "/project/ourminsk/gallup/results/ml/results_rf_income_all_vars.csv")
-
-
 
 preds <- predict(model_caret, data_train)
 

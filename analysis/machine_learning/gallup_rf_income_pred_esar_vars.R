@@ -6,12 +6,13 @@ library("tidyverse", lib.loc = "/home/djolear/R")
 library("lavaan", lib.loc = "/home/djolear/R")
 library("furrr", lib.loc = "/home/djolear/R")
 library("broom", lib.loc = "/home/djolear/R")
-library("broom.mixed", lib.loc = "/home/djolear/R")
-library("lme4", lib.loc = "/home/djolear/R")
-library("caret", lib.loc = "/home/djolear/R")
 library("glmnet", lib.loc = "/home/djolear/R")
 library("randomForest", lib.loc = "/home/djolear/R")
 library("ranger", lib.loc = "/home/djolear/R")
+# library("foreach", lib.loc = "/home/djolear/R")
+# library("doParallel", lib.loc = "/home/djolear/R")
+library("caret", lib.loc = "/home/djolear/R")
+
 
 
 ## Functions ##
@@ -81,43 +82,28 @@ data_train <-
   )
 
 
-## Set up Tune Grid ##
-
-tgrid <-
-  expand.grid(
-    mtry = 3:6,
-    splitrule = "variance",
-    min.node.size = c(10, 20)
-  )
-
-
-## Tune Model ##
-
-model_caret <- 
-  train(
-    income_scale  ~ ., 
+rf <-
+  ranger(
+    income_scale ~ .,
     data = data_train,
-    method = "ranger",
-    trControl = 
-      trainControl(
-        method="cv", 
-        number = 5, 
-        verboseIter = T
-      ),
-    tuneGrid = tgrid,
-    num.trees = 100,
-    importance = "permutation"
+    num.threads = 8
   )
-
 
 ## Export Results ##
 
-results <- 
-  get_best_result(model_caret)
+preds <- predict(model_caret, data_train)
 
-write_csv(results, "/project/ourminsk/gallup/results/ml/results_rf_income_esar_vars.csv")
+data <-
+  bind_cols(
+    data,
+    income_demo_ranger_all_vars_scale = scale(preds)
+  ) %>% 
+  dplyr::select(
+    subid,
+    income_demo_ranger_all_vars_scale
+  )
 
-
+## Export Results ##
 
 preds <- predict(model_caret, data_train)
 

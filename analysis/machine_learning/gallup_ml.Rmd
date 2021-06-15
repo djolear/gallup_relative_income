@@ -57,3 +57,155 @@ contrasts(dfg_rs$employment_all) <- contr.sum(2)
 contrasts(dfg_rs$race) <- contr.sum(5)
 contrasts(dfg_rs$married) <- contr.sum(6)
 ```
+
+```{r}
+data_train <-
+  dfg_rs %>% 
+  mutate(income_scale = scale(income)) %>% 
+  dplyr::select(
+    ladder_now_scale, # our outcome
+      
+      median_income_demo_esa_scale,
+      median_income_demo_esar_scale,
+      median_income_demo_sar_scale,
+      median_income_demo_sariq_scale,
+      median_income_demo_esaiq_scale,
+      
+      education_scale,
+      income_scale,
+      median_home_value_county_scale,
+      median_monthly_housing_cost_county_scale,
+      physicians_scale,
+      total_pop_county_scale,
+      land_area_2010_scale,
+      race,
+      sex,
+      age_scale,
+      married,
+      employment_all,
+      year
+  )  %>%
+  filter_at(
+    vars(
+      ladder_now_scale, 
+      
+      median_income_demo_esa_scale,
+      median_income_demo_esar_scale,
+      median_income_demo_sar_scale,
+      median_income_demo_sariq_scale,
+      median_income_demo_esaiq_scale,
+      
+      education_scale,
+      income_scale,
+      median_home_value_county_scale,
+      median_monthly_housing_cost_county_scale,
+      physicians_scale,
+      total_pop_county_scale,
+      land_area_2010_scale,
+      race,
+      sex,
+      age_scale,
+      married,
+      employment_all,
+      year
+    ),
+    all_vars(!is.na(.))
+  ) %>% 
+  sample_n(50000)
+
+outcome_train <-
+  data_train %>% 
+  dplyr::select(
+    ladder_now_scale
+  )
+
+x_train <-
+  data_train %>% 
+  dplyr::select(
+    -ladder_now_scale
+  ) 
+
+x_train <- model.matrix( ~ .-1, x_train)
+```
+
+
+```{r}
+cv_5 = trainControl(method = "cv", number = 5)
+
+hit_elnet = train(
+  x = x_train, 
+  y = outcome_train$ladder_now_scale,
+  method = "glmnet",
+  trControl = cv_5
+)
+
+get_best_result = function(caret_fit) {
+  best = which(rownames(caret_fit$results) == rownames(caret_fit$bestTune))
+  best_result = caret_fit$results[best, ]
+  rownames(best_result) = NULL
+  best_result
+}
+
+get_best_result(hit_elnet)
+
+varImp(hit_elnet)
+
+coef(hit_elnet$finalModel, hit_elnet$finalModel$lambdaOpt)
+```
+
+```{r}
+rf <-
+  ranger(
+    ladder_now_scale ~ .,
+    data = data_train
+  )
+```
+
+```{r}
+new_data <-
+  data_train %>% 
+  dplyr::slice(6) %>% 
+  dplyr::select(-ladder_now_scale)
+
+new_data <-
+  bind_rows(
+    new_data,
+    new_data,
+    new_data
+  )
+
+new_data <-
+  new_data %>% 
+  mutate(median_income_demo_sar_scale = c(-1, 0, 1))
+
+preds <- predict(rf, new_data)
+
+preds$predictions
+```
+
+
+
+```{r}
+cv_5 = trainControl(method = "cv", number = 5)
+
+hit_elnet = train(
+  x = x_train, 
+  y = outcome_train$ladder_now_scale,
+  method = "glmnet",
+  trControl = cv_5
+)
+
+get_best_result = function(caret_fit) {
+  best = which(rownames(caret_fit$results) == rownames(caret_fit$bestTune))
+  best_result = caret_fit$results[best, ]
+  rownames(best_result) = NULL
+  best_result
+}
+
+get_best_result(hit_elnet)
+
+varImp(hit_elnet)
+
+coef(hit_elnet$finalModel, hit_elnet$finalModel$lambdaOpt)
+```
+
