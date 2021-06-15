@@ -154,10 +154,60 @@ coef(hit_elnet$finalModel, hit_elnet$finalModel$lambdaOpt)
 ```
 
 ```{r}
+data_train <-
+  dfg_rs %>% 
+  mutate(income_scale = scale(income)) %>% 
+  dplyr::select(
+    ladder_now_scale, # our outcome
+
+    median_income_demo_sar_scale,
+
+    education_scale,
+    income_scale,
+    median_home_value_county_scale,
+    median_monthly_housing_cost_county_scale,
+    physicians_scale,
+    total_pop_county_scale,
+    land_area_2010_scale,
+    race,
+    sex,
+    age_scale,
+    married,
+    employment_all,
+    year
+  )  %>%
+  filter_at(
+    vars(
+      ladder_now_scale, 
+
+      median_income_demo_sar_scale,
+
+      education_scale,
+      income_scale,
+      median_home_value_county_scale,
+      median_monthly_housing_cost_county_scale,
+      physicians_scale,
+      total_pop_county_scale,
+      land_area_2010_scale,
+      race,
+      sex,
+      age_scale,
+      married,
+      employment_all,
+      year
+    ),
+    all_vars(!is.na(.))
+  ) %>% 
+  sample_n(50000)
+```
+
+
+```{r}
 rf <-
   ranger(
     ladder_now_scale ~ .,
-    data = data_train
+    data = data_train,
+    importance = "impurity"
   )
 ```
 

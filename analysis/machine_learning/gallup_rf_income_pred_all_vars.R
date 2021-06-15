@@ -74,7 +74,7 @@ rf <-
 
 ## Export Results ##
 
-preds <- predict(model_caret, data_train)
+preds <- predict(rf, data_train)
 
 data <-
   bind_cols(

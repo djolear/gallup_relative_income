@@ -28,7 +28,7 @@ get_best_result = function(caret_fit) {
 data_path <- "/project/ourminsk/gallup/exports/dfg_rs.rds"
 
 data <- 
-  read_rds(path)
+  read_rds(data_path)
 
 data <-
   data %>% 
@@ -125,7 +125,8 @@ data <-
 
 ## Export Results ##
 
-preds <- predict(model_caret, data_train)
+preds <- predict(rf, data_train)
+
 
 data <-
   bind_cols(
