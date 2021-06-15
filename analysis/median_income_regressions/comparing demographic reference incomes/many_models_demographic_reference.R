@@ -641,10 +641,10 @@ write_csv(linear_models_mediators_wc, "D:/data/gallup/results/many_models_refere
 linear_models_mediators_woc <- many_models_demographic_reference_mediators_wo_covariates(c("PURPOSE_scale", "FINANCIAL_scale", "COMMUNITY_scale", "SOCIAL_scale"), dfg_rs)
 write_csv(linear_models_mediators_woc, "D:/data/gallup/results/many_models_reference_income/linear_models_mediators_woc.csv")
 
-logistic_models_outcomes_wc <- many_models_demographic_reference_glm_w_covariates(c("eat_healthy", "smoke", "diabetes", "hbp"), dfg_rs)
+logistic_models_outcomes_wc <- many_models_demographic_reference_glm_w_covariates(c("obese", "depression"), dfg_rs)
 write_csv(logistic_models_outcomes_wc, "D:/data/gallup/results/many_models_reference_income/logistic_models_outcomes_wc.csv")
 
-logistic_models_outcomes_woc <- many_models_demographic_reference_glm_wo_covariates(c("eat_healthy", "smoke", "diabetes", "hbp"), dfg_rs)
+logistic_models_outcomes_woc <- many_models_demographic_reference_glm_wo_covariates(c("obese", "depression"), dfg_rs)
 write_csv(logistic_models_outcomes_woc, "D:/data/gallup/results/many_models_reference_income/logistic_models_outcomes_woc.csv")
 
 
