@@ -104,7 +104,9 @@ select_variables <- function(df) {
       year, 
       STATE_NAME, 
       census_region,
-      COMB_WEIGHT
+      COMB_WEIGHT,
+      
+      subid = MOTHERLODE_ID
     )
   
   return(df)
