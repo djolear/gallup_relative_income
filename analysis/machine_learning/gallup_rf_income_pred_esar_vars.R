@@ -91,26 +91,12 @@ rf <-
 
 ## Export Results ##
 
-preds <- predict(model_caret, data_train)
-
-data <-
-  bind_cols(
-    data,
-    income_demo_ranger_all_vars_scale = scale(preds)
-  ) %>% 
-  dplyr::select(
-    subid,
-    income_demo_ranger_all_vars_scale
-  )
-
-## Export Results ##
-
 preds <- predict(rf, data_train)
 
 data <-
   bind_cols(
     data,
-    income_demo_ranger_all_vars_scale = scale(preds)
+    income_demo_ranger_esar_vars_scale = scale(preds$predictions)
   ) %>% 
   dplyr::select(
     subid,

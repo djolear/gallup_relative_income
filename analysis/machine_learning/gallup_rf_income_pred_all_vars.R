@@ -74,12 +74,12 @@ rf <-
 
 ## Export Results ##
 
-preds <- predict(rf, data_train)
+preds <- predict(rf, data)
 
 data <-
   bind_cols(
     data,
-    income_demo_ranger_all_vars_scale = scale(preds)
+    income_demo_ranger_all_vars_scale = scale(preds$predictions)
   ) %>% 
   dplyr::select(
     subid,

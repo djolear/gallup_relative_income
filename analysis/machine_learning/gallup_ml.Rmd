@@ -49,6 +49,27 @@ dfg_rs <-
     ),
     as.factor
   )
+
+income_preds_sar <-
+  read_csv("D:/data/gallup/exports/preds_rf_income_sar_vars.csv")
+
+income_preds_esar <-
+  read_csv("D:/data/gallup/exports/preds_rf_income_esar_vars.csv")
+
+income_preds_all <-
+  read_csv("D:/data/gallup/exports/preds_rf_income_all_vars.csv")
+
+dfg_rs <-
+  dfg_rs %>% 
+  left_join(
+    income_preds_sar
+  ) %>% 
+  left_join(
+    income_preds_esar
+  ) %>% 
+  left_join(
+    income_preds_all
+  )
 ```
 
 ```{r}
@@ -59,41 +80,115 @@ contrasts(dfg_rs$married) <- contr.sum(6)
 ```
 
 ```{r}
-data_train <-
-  dfg_rs %>% 
+dfg_rs %>% 
   mutate(income_scale = scale(income)) %>% 
   dplyr::select(
-    ladder_now_scale, # our outcome
+    income_scale,
+    age_scale,
+    education_scale,
+    income_demo_ranger_sar_vars_scale,
+    income_demo_ranger_esar_vars_scale,
+    income_demo_ranger_all_vars_scale,
+    median_income_demo_sar_scale,
+    median_income_demo_esa_scale
+  ) %>% 
+  cor(., use = "pairwise.complete.obs") %>% 
+  round(., 2)
+```
+
+```{r}
+  lm1 <-
+    lm(
+      PURPOSE_scale ~
+        raw_income_scale +
+        income_demo_ranger_sar_vars_scale           +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married + 
+        year,
+      data = dfg_rs
+    )
+
+summary(lm1)
+```
+
+
+```{r}
+  lm1 <-
+    glm(
+      smoke ~
+        raw_income_scale +
+        income_demo_ranger_sar_vars_scale.y +
+        total_pop_county_scale +
+        median_monthly_housing_cost_county_scale +
+        land_area_2010_scale +
+        physicians_scale +
+        education_scale +
+        employment_all +
+        sex +
+        age_scale +
+        race +
+        married +
+        year,
+      family = "binomial",
+      data = dfg_rs
+    )
+
+summary(lm1)
+regclass::VIF(lm1)
+```
+
+
+
+```{r}
+data_train <-
+  dfg_rs %>% 
+  mutate(income_scale = scale(income), smoke = as.factor(smoke)) %>% 
+  dplyr::select(
+    smoke, # our outcome
       
-      median_income_demo_esa_scale,
-      median_income_demo_esar_scale,
-      median_income_demo_sar_scale,
-      median_income_demo_sariq_scale,
-      median_income_demo_esaiq_scale,
-      
-      education_scale,
-      income_scale,
-      median_home_value_county_scale,
-      median_monthly_housing_cost_county_scale,
-      physicians_scale,
-      total_pop_county_scale,
-      land_area_2010_scale,
-      race,
-      sex,
-      age_scale,
-      married,
-      employment_all,
-      year
+    median_income_demo_esa_scale,
+    median_income_demo_esar_scale,
+    income_demo_ranger_sar_vars_scale.y,
+    median_income_demo_sariq_scale,
+    median_income_demo_esaiq_scale,
+    # income_demo_ranger_sar_vars_scale,
+    income_demo_ranger_esar_vars_scale,
+    median_income_county_scale,
+    
+    education_scale,
+    income_scale,
+    median_home_value_county_scale,
+    median_monthly_housing_cost_county_scale,
+    physicians_scale,
+    total_pop_county_scale,
+    land_area_2010_scale,
+    race,
+    sex,
+    age_scale,
+    married,
+    employment_all,
+    year
   )  %>%
   filter_at(
     vars(
-      ladder_now_scale, 
+      smoke, 
       
       median_income_demo_esa_scale,
       median_income_demo_esar_scale,
-      median_income_demo_sar_scale,
+      income_demo_ranger_sar_vars_scale.y,
       median_income_demo_sariq_scale,
       median_income_demo_esaiq_scale,
+      # income_demo_ranger_sar_vars_scale,
+      income_demo_ranger_esar_vars_scale,
+      median_income_county_scale,
       
       education_scale,
       income_scale,
@@ -111,18 +206,19 @@ data_train <-
     ),
     all_vars(!is.na(.))
   ) %>% 
-  sample_n(50000)
+  sample_n(100000)
 
 outcome_train <-
   data_train %>% 
+  mutate(smoke = as.factor(smoke)) %>% 
   dplyr::select(
-    ladder_now_scale
+    smoke
   )
 
 x_train <-
   data_train %>% 
   dplyr::select(
-    -ladder_now_scale
+    -smoke
   ) 
 
 x_train <- model.matrix( ~ .-1, x_train)
@@ -134,7 +230,7 @@ cv_5 = trainControl(method = "cv", number = 5)
 
 hit_elnet = train(
   x = x_train, 
-  y = outcome_train$ladder_now_scale,
+  y = outcome_train$smoke,
   method = "glmnet",
   trControl = cv_5
 )
@@ -145,7 +241,7 @@ get_best_result = function(caret_fit) {
   rownames(best_result) = NULL
   best_result
 }
-
+ 
 get_best_result(hit_elnet)
 
 varImp(hit_elnet)
@@ -165,7 +261,6 @@ data_train <-
     education_scale,
     income_scale,
     median_home_value_county_scale,
-    median_monthly_housing_cost_county_scale,
     physicians_scale,
     total_pop_county_scale,
     land_area_2010_scale,
@@ -185,7 +280,6 @@ data_train <-
       education_scale,
       income_scale,
       median_home_value_county_scale,
-      median_monthly_housing_cost_county_scale,
       physicians_scale,
       total_pop_county_scale,
       land_area_2010_scale,
@@ -198,7 +292,7 @@ data_train <-
     ),
     all_vars(!is.na(.))
   ) %>% 
-  sample_n(50000)
+  sample_n(500000)
 ```
 
 
@@ -210,6 +304,11 @@ rf <-
     importance = "impurity"
   )
 ```
+
+```{r}
+importance(rf)
+```
+
 
 ```{r}
 new_data <-
