@@ -76,7 +76,6 @@ data_train <-
     age_scale,
     sex,
     race,
-    education_scale,
     income_scale
   )
 
@@ -85,9 +84,9 @@ data_train <-
 
 tgrid <-
   expand.grid(
-    mtry = 3:6,
+    mtry = 1:2,
     splitrule = "variance",
-    min.node.size = c(10, 20)
+    min.node.size = c(5, 10)
   )
 
 
@@ -111,7 +110,7 @@ model_caret <-
         allowParallel = TRUE
       ),
     tuneGrid = tgrid,
-    num.trees = 100,
+    num.trees = 500,
     importance = "permutation",
     num.threads = 8
   )
