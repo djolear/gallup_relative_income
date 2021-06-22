@@ -2,12 +2,12 @@
 ## Load Packages ##
 ###################
 
-library("tidyverse", lib.loc = "/home/djolear/R")
-library("lavaan", lib.loc = "/home/djolear/R")
-library("furrr", lib.loc = "/home/djolear/R")
-library("broom", lib.loc = "/home/djolear/R")
-library("broom.mixed", lib.loc = "/home/djolear/R")
-library("lme4", lib.loc = "/home/djolear/R")
+library("tidyverse", lib.loc = "/home/djolear/Rpackages")
+library("lavaan", lib.loc = "/home/djolear/Rpackages")
+library("furrr", lib.loc = "/home/djolear/Rpackages")
+library("broom", lib.loc = "/home/djolear/Rpackages")
+library("broom.mixed", lib.loc = "/home/djolear/Rpackages")
+library("lme4", lib.loc = "/home/djolear/Rpackages")
 
 
 ####################
@@ -26,13 +26,25 @@ fv_regression_function <- function(median_income_var_name, dfg) {
   
   dfg <-
     dfg %>% 
+    mutate(
+      income_scale = 
+        ifelse(
+          median_income_var_name == "income_demo_ranger_sar_vars_scale",
+          scale(income),
+          ifelse(
+            median_income_var_name == "income_demo_ranger_sar_vars_scale",
+            raw_income_scale,
+            NA
+          )
+        )
+    ) %>% 
     select(
       median_income_var_scale = !!enquo(median_income_var_name),
       fruits_veggies_scale,
-      raw_income_scale,
+      income_scale,
       education_scale,
       total_pop_county_scale,
-      median_monthly_housing_cost_county_scale,
+      median_home_value_county_scale,
       land_area_2010_scale,
       physicians_scale,
       employment_all,
@@ -47,10 +59,10 @@ fv_regression_function <- function(median_income_var_name, dfg) {
       vars(
         median_income_var_scale,
         fruits_veggies_scale,
-        raw_income_scale,
+        income_scale,
         education_scale,
         total_pop_county_scale,
-        median_monthly_housing_cost_county_scale,
+        median_home_value_county_scale,
         land_area_2010_scale,
         physicians_scale,
         employment_all,
@@ -88,9 +100,9 @@ fv_regression_function <- function(median_income_var_name, dfg) {
   lm1 <-
     lmer(
       fruits_veggies_scale ~
-        raw_income_scale +
+        income_scale +
         total_pop_county_scale +
-        median_monthly_housing_cost_county_scale +
+        median_home_value_county_scale +
         land_area_2010_scale +
         physicians_scale +
         education_scale +
@@ -100,7 +112,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
         race +
         married +
         year +
-        (1 + raw_income_scale|fips_code),
+        (1 + income_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
       data = dfg
@@ -139,10 +151,10 @@ fv_regression_function <- function(median_income_var_name, dfg) {
   lm1 <-
     lmer(
       fruits_veggies_scale ~
-        raw_income_scale +
+        income_scale +
         median_income_var_scale +
         total_pop_county_scale +
-        median_monthly_housing_cost_county_scale +
+        median_home_value_county_scale +
         land_area_2010_scale +
         physicians_scale +
         education_scale +
@@ -152,7 +164,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
         race +
         married +
         year +
-        (1 + raw_income_scale|fips_code) +
+        (1 + income_scale|fips_code) +
         (1 + median_income_var_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
@@ -192,7 +204,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
   lm1 <-
     lmer(
       fruits_veggies_scale ~
-        median_income_var_scale * raw_income_scale +
+        median_income_var_scale * income_scale +
         median_income_var_scale * education_scale +
         median_income_var_scale * employment_all +
         median_income_var_scale * sex +
@@ -201,7 +213,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
         median_income_var_scale * married +
         median_income_var_scale * year +
         total_pop_county_scale +
-        median_monthly_housing_cost_county_scale +
+        median_home_value_county_scale +
         land_area_2010_scale +
         physicians_scale +
         education_scale +
@@ -210,7 +222,7 @@ fv_regression_function <- function(median_income_var_name, dfg) {
         age_scale +
         race +
         married +
-        (1 + raw_income_scale|fips_code) +
+        (1 + income_scale|fips_code) +
         (1 + median_income_var_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
@@ -247,20 +259,20 @@ fv_regression_function <- function(median_income_var_name, dfg) {
   return(master_df)
 }
 
-data_path <- "/project/ourminsk/gallup/exports/dfg_rs.csv"
+data_path <- "/project/ourminsk/gallup/exports/dfg_rs.rds"
 
 
 master_function <- function(path) {
   dfg <- 
-    read_csv(path)
+    read_rds(path)
   
   med_inc_vars <-
-    c("median_income_county_scale", "median_income_demo_scale")
+    c("median_income_county_scale", "income_demo_ranger_sar_vars_scale")
   
   res <- 
     future_map_dfr(.x = med_inc_vars, .f = fv_regression_function, dfg = dfg)
   
-  write_csv(res, paste0("/home/djolear/gallup/relative_status/regressions/median_income_models/results/fv_mi_all_years.csv"))
+  write_csv(res, paste0("/project/ourminsk/gallup/results/regression/fv_mi_all_years.csv"))
   
 }
 

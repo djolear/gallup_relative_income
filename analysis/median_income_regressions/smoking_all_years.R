@@ -2,12 +2,12 @@
 ## Load Packages ##
 ###################
 
-library("tidyverse", lib.loc = "/home/djolear/R")
-library("lavaan", lib.loc = "/home/djolear/R")
-library("furrr", lib.loc = "/home/djolear/R")
-library("broom", lib.loc = "/home/djolear/R")
-library("broom.mixed", lib.loc = "/home/djolear/R")
-library("lme4", lib.loc = "/home/djolear/R")
+library("tidyverse", lib.loc = "/home/djolear/Rpackages")
+library("lavaan", lib.loc = "/home/djolear/Rpackages")
+library("furrr", lib.loc = "/home/djolear/Rpackages")
+library("broom", lib.loc = "/home/djolear/Rpackages")
+library("broom.mixed", lib.loc = "/home/djolear/Rpackages")
+library("lme4", lib.loc = "/home/djolear/Rpackages")
 
 
 ####################
@@ -24,13 +24,25 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
   
   dfg <-
     dfg %>% 
+    mutate(
+      income_scale = 
+        ifelse(
+          median_income_var_name == "income_demo_ranger_sar_vars_scale",
+          scale(income),
+          ifelse(
+            median_income_var_name == "income_demo_ranger_sar_vars_scale",
+            raw_income_scale,
+            NA
+          )
+        )
+    ) %>% 
     select(
       median_income_var_scale = !!enquo(median_income_var_name),
       smoke,
       raw_income_scale,
       education_scale,
       total_pop_county_scale,
-      median_monthly_housing_cost_county_scale,
+      median_home_value_county_scale,
       land_area_2010_scale,
       physicians_scale,
       employment_all,
@@ -48,7 +60,7 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
         raw_income_scale,
         education_scale,
         total_pop_county_scale,
-        median_monthly_housing_cost_county_scale,
+        median_home_value_county_scale,
         land_area_2010_scale,
         physicians_scale,
         employment_all,
@@ -85,7 +97,7 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
       smoke ~
         raw_income_scale +
         total_pop_county_scale +
-        median_monthly_housing_cost_county_scale +
+        median_home_value_county_scale +
         land_area_2010_scale +
         physicians_scale +
         education_scale +
@@ -134,7 +146,7 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
         raw_income_scale +
         median_income_var_scale +
         total_pop_county_scale +
-        median_monthly_housing_cost_county_scale +
+        median_home_value_county_scale +
         land_area_2010_scale +
         physicians_scale +
         education_scale +
@@ -188,7 +200,7 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
         median_income_var_scale * race +
         median_income_var_scale * married +
         total_pop_county_scale +
-        median_monthly_housing_cost_county_scale +
+        median_home_value_county_scale +
         land_area_2010_scale +
         physicians_scale +        
         education_scale +
@@ -235,21 +247,21 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
 }
 
 
-data_path <- "/project/ourminsk/gallup/exports/dfg_rs.csv"
+data_path <- "/project/ourminsk/gallup/exports/dfg_rs.rds"
 
 
 master_function <- function(path) {
   dfg <- 
-    read_csv(path)
+    read_rds(path)
   
   med_inc_vars <-
-    c("median_income_county_scale", "median_income_demo_scale")
+    c("median_income_county_scale", "income_demo_ranger_sar_vars_scale")
   
   res <- 
-    future_map_dfr(.x = med_inc_vars, .f = smoke_regression_function, dfg = dfg)
+    future_map_dfr(.x = med_inc_vars, .f = fv_regression_function, dfg = dfg)
   
-  write_csv(res, paste0("/home/djolear/gallup/relative_status/regressions/median_income_models/results/smoking_mi_all_years.csv"))
-  
+  write_csv(res, paste0("/project/ourminsk/gallup/results/regression/smoking_mi_all_years.csv"))
+
 }
 
 master_function(data_path)
