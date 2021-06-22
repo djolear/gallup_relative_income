@@ -24,13 +24,25 @@ pur_regression_function <- function(median_income_var_name, dfg) {
   
   dfg <-
     dfg %>% 
+    mutate(
+      income_scale = 
+        ifelse(
+          median_income_var_name == "income_demo_ranger_sar_vars_scale",
+          scale(income),
+          ifelse(
+            median_income_var_name == "median_income_county_scale",
+            raw_income_scale,
+            NA
+          )
+        )
+    ) %>% 
     select(
       median_income_var_scale = !!enquo(median_income_var_name),
       PURPOSE_scale,
-      raw_income_scale,
+      income_scale,
       education_scale,
       total_pop_county_scale,
-      median_monthly_housing_cost_county_scale,
+      median_home_value_county_scale,
       land_area_2010_scale,
       physicians_scale,
       employment_all,
@@ -45,10 +57,10 @@ pur_regression_function <- function(median_income_var_name, dfg) {
       vars(
         median_income_var_scale,
         PURPOSE_scale,
-        raw_income_scale,
+        income_scale,
         education_scale,
         total_pop_county_scale,
-        median_monthly_housing_cost_county_scale,
+        median_home_value_county_scale,
         land_area_2010_scale,
         physicians_scale,
         employment_all,
@@ -83,9 +95,9 @@ pur_regression_function <- function(median_income_var_name, dfg) {
   lm1 <-
     lmer(
       PURPOSE_scale ~
-        raw_income_scale +
+        income_scale +
         total_pop_county_scale +
-        median_monthly_housing_cost_county_scale +
+        median_home_value_county_scale +
         land_area_2010_scale +
         physicians_scale +
         education_scale +
@@ -95,7 +107,7 @@ pur_regression_function <- function(median_income_var_name, dfg) {
         race +
         married +
         year +
-        (1 + raw_income_scale|fips_code),
+        (1 + income_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
       data = dfg
@@ -133,10 +145,10 @@ pur_regression_function <- function(median_income_var_name, dfg) {
   lm1 <-
     lmer(
       PURPOSE_scale ~
-        raw_income_scale +
+        income_scale +
         median_income_var_scale +
         total_pop_county_scale +
-        median_monthly_housing_cost_county_scale +
+        median_home_value_county_scale +
         land_area_2010_scale +
         physicians_scale +
         education_scale +
@@ -146,7 +158,7 @@ pur_regression_function <- function(median_income_var_name, dfg) {
         race +
         married +
         year +
-        (1 + raw_income_scale|fips_code) +
+        (1 + income_scale|fips_code) +
         (1 + median_income_var_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
@@ -185,7 +197,7 @@ pur_regression_function <- function(median_income_var_name, dfg) {
   lm1 <-
     lmer(
       PURPOSE_scale ~
-        median_income_var_scale * raw_income_scale +
+        median_income_var_scale * income_scale +
         median_income_var_scale * education_scale +
         median_income_var_scale * employment_all +
         median_income_var_scale * sex +
@@ -194,7 +206,7 @@ pur_regression_function <- function(median_income_var_name, dfg) {
         median_income_var_scale * married +
         median_income_var_scale * year +
         total_pop_county_scale +
-        median_monthly_housing_cost_county_scale +
+        median_home_value_county_scale +
         land_area_2010_scale +
         physicians_scale +
         education_scale +
@@ -203,7 +215,7 @@ pur_regression_function <- function(median_income_var_name, dfg) {
         age_scale +
         race +
         married +
-        (1 + raw_income_scale|fips_code) +
+        (1 + income_scale|fips_code) +
         (1 + median_income_var_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
@@ -243,18 +255,18 @@ pur_regression_function <- function(median_income_var_name, dfg) {
 }
 
 
-data_path <- "/project/ourminsk/gallup/exports/dfg_rs.csv"
+data_path <- "/project/ourminsk/gallup/exports/dfg_rs.rds"
 
 master_function <- function(path) {
   dfg <- 
-    read_csv(path)
+    read_rds(path)
   
   dfg <- 
     dfg %>% 
     filter(year %in% c(2014:2017))
   
   med_inc_vars <-
-    c("median_income_county_scale", "median_income_demo_scale")
+    c("median_income_county_scale", "income_demo_ranger_sar_vars_scale")
   
   res <- 
     future_map_dfr(.x = med_inc_vars, .f = pur_regression_function, dfg = dfg)
