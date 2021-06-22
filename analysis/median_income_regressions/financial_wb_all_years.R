@@ -2,12 +2,12 @@
 ## Load Packages ##
 ###################
 
-library("tidyverse", lib.loc = "/home/djolear/R")
-library("lavaan", lib.loc = "/home/djolear/R")
-library("furrr", lib.loc = "/home/djolear/R")
-library("broom", lib.loc = "/home/djolear/R")
-library("broom.mixed", lib.loc = "/home/djolear/R")
-library("lme4", lib.loc = "/home/djolear/R")
+library("tidyverse", lib.loc = "/home/djolear/Rpackages")
+library("lavaan", lib.loc = "/home/djolear/Rpackages")
+library("furrr", lib.loc = "/home/djolear/Rpackages")
+library("broom", lib.loc = "/home/djolear/Rpackages")
+library("broom.mixed", lib.loc = "/home/djolear/Rpackages")
+library("lme4", lib.loc = "/home/djolear/Rpackages")
 
 
 ####################
