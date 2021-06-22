@@ -30,7 +30,7 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
           median_income_var_name == "income_demo_ranger_sar_vars_scale",
           scale(income),
           ifelse(
-            median_income_var_name == "income_demo_ranger_sar_vars_scale",
+            median_income_var_name == "median_income_county_scale",
             raw_income_scale,
             NA
           )
