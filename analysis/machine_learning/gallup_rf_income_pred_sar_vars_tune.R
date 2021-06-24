@@ -2,16 +2,16 @@
 ## Load Packages ##
 ###################
 
-library("tidyverse", lib.loc = "/home/djolear/R")
-library("lavaan", lib.loc = "/home/djolear/R")
-library("furrr", lib.loc = "/home/djolear/R")
-library("broom", lib.loc = "/home/djolear/R")
-library("glmnet", lib.loc = "/home/djolear/R")
-library("randomForest", lib.loc = "/home/djolear/R")
-library("ranger", lib.loc = "/home/djolear/R")
-# library("foreach", lib.loc = "/home/djolear/R")
-# library("doParallel", lib.loc = "/home/djolear/R")
-library("caret", lib.loc = "/home/djolear/R")
+library("tidyverse", lib.loc = "/home/djolear/Rpackages")
+library("lavaan", lib.loc = "/home/djolear/Rpackages")
+library("furrr", lib.loc = "/home/djolear/Rpackages")
+library("broom", lib.loc = "/home/djolear/Rpackages")
+library("glmnet", lib.loc = "/home/djolear/Rpackages")
+library("randomForest", lib.loc = "/home/djolear/Rpackages")
+library("ranger", lib.loc = "/home/djolear/Rpackages")
+# library("foreach", lib.loc = "/home/djolear/Rpackages")
+# library("doParallel", lib.loc = "/home/djolear/Rpackages")
+library("caret", lib.loc = "/home/djolear/Rpackages")
 
 
 ## Functions ##
@@ -28,7 +28,7 @@ get_best_result = function(caret_fit) {
 data_path <- "/project/ourminsk/gallup/exports/dfg_rs.rds"
 
 data <- 
-  read_rds(path)
+  read_rds(data_path)
 
 data <-
   data %>% 
@@ -48,10 +48,12 @@ data <-
     year,
     children_scale,
     census_region,
-    income_scale
+    income_scale,
+    COMB_WEIGHT
   ) %>% 
   filter_at(
     vars(
+      subid,
       median_home_value_county_scale,
       land_area_2010_scale,
       physicians_scale,
@@ -65,7 +67,8 @@ data <-
       year,
       children_scale,
       census_region,
-      income_scale
+      income_scale,
+      COMB_WEIGHT
     ),
     all_vars(!is.na(.))
   )
@@ -76,6 +79,7 @@ data_train <-
     age_scale,
     sex,
     race,
+    year,
     income_scale
   )
 
@@ -84,9 +88,9 @@ data_train <-
 
 tgrid <-
   expand.grid(
-    mtry = 1:2,
+    mtry = c(1, 2, 3),
     splitrule = "variance",
-    min.node.size = c(5, 10)
+    min.node.size = c(5, 10, 15, 20, 30, 40, 50, 60)
   )
 
 
@@ -99,8 +103,8 @@ tgrid <-
 
 model_caret <- 
   train(
-    income_scale  ~ ., 
-    data = data,
+    x = data_train[, 1:4],
+    y = data_train[, 5],
     method = "ranger",
     trControl = 
       trainControl(
@@ -111,8 +115,8 @@ model_caret <-
       ),
     tuneGrid = tgrid,
     num.trees = 500,
-    importance = "permutation",
-    num.threads = 8
+    num.threads = 8,
+    weights = data$COMB_WEIGHT
   )
 
 # stopCluster(cl)
@@ -132,7 +136,10 @@ data <-
   bind_cols(
     data,
     income_demo_ranger_all_vars_scale = scale(preds)
-  ) %>% 
+  ) 
+
+data <-
+  data %>% 
   dplyr::select(
     subid,
     income_demo_ranger_sar_vars_scale

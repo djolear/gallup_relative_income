@@ -8,9 +8,13 @@ Daniel O’Leary
           - [BMI](#bmi)
           - [Diabetes](#diabetes)
           - [High blood pressure](#high-blood-pressure)
+          - [Depression](#depression)
           - [Obesity](#obesity)
           - [Self-reported health](#self-reported-health)
           - [Height](#height)
+      - [Regression tables](#regression-tables)
+          - [Demographic reference](#demographic-reference)
+          - [Geographic reference](#geographic-reference)
 
 ``` r
 contrasts(dfg_rs$sex) <- contr.sum(2)
@@ -53,14 +57,14 @@ contrasts(dfg_rs$married) <- contr.sum(6)
 ### BMI
 
 ``` r
-lm1 <-
+lm_bmi_geo <-
   lm(
     bmi_scale ~
       raw_income_scale +
       median_income_county_scale +
       physicians_scale +
       unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
+      median_home_value_county_scale +
       land_area_2010_scale +
       education_scale +
       employment_all +
@@ -72,98 +76,68 @@ lm1 <-
     data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm_bmi_geo)
 ```
 
     ## 
     ## Call:
     ## lm(formula = bmi_scale ~ raw_income_scale + median_income_county_scale + 
-    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ##     physicians_scale + unweighted_pop_county_scale + median_home_value_county_scale + 
     ##     land_area_2010_scale + education_scale + employment_all + 
     ##     sex + age_scale + race + married + year, data = dfg_rs)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -3.7289 -0.6558 -0.1623  0.4672 21.6228 
+    ## -3.6663 -0.6554 -0.1620  0.4666 21.5873 
     ## 
     ## Coefficients:
-    ##                                            Estimate Std. Error t value Pr(>|t|)
-    ## (Intercept)                               0.0185304  0.0027185   6.816 9.34e-12
-    ## raw_income_scale                         -0.0544151  0.0008785 -61.942  < 2e-16
-    ## median_income_county_scale                0.0526182  0.0018257  28.821  < 2e-16
-    ## physicians_scale                         -0.0314087  0.0007839 -40.067  < 2e-16
-    ## unweighted_pop_county_scale              -0.0060548  0.0008695  -6.964 3.32e-12
-    ## median_monthly_housing_cost_county_scale -0.0933595  0.0019162 -48.721  < 2e-16
-    ## land_area_2010_scale                     -0.0053712  0.0007393  -7.265 3.72e-13
-    ## education_scale                          -0.0576914  0.0008022 -71.918  < 2e-16
-    ## employment_all1                           0.0004596  0.0008368   0.549  0.58285
-    ## sex1                                      0.0975401  0.0007241 134.701  < 2e-16
-    ## age_scale                                 0.0428301  0.0009415  45.493  < 2e-16
-    ## race1                                    -0.0334653  0.0017378 -19.258  < 2e-16
-    ## race2                                     0.0648137  0.0039038  16.603  < 2e-16
-    ## race3                                     0.2810246  0.0024763 113.486  < 2e-16
-    ## race4                                    -0.3644829  0.0042014 -86.753  < 2e-16
-    ## married1                                 -0.0698869  0.0019429 -35.970  < 2e-16
-    ## married2                                  0.0633598  0.0015190  41.711  < 2e-16
-    ## married3                                  0.0859394  0.0043516  19.749  < 2e-16
-    ## married4                                  0.0532707  0.0020707  25.725  < 2e-16
-    ## married5                                 -0.1080214  0.0024211 -44.616  < 2e-16
-    ## year2009                                  0.0123180  0.0027576   4.467 7.94e-06
-    ## year2010                                  0.0152956  0.0027620   5.538 3.06e-08
-    ## year2011                                 -0.0013804  0.0027409  -0.504  0.61453
-    ## year2012                                  0.0081857  0.0027052   3.026  0.00248
-    ## year2013                                  0.0176142  0.0032974   5.342 9.20e-08
-    ## year2014                                  0.0360929  0.0033207  10.869  < 2e-16
-    ## year2015                                  0.0546287  0.0033143  16.483  < 2e-16
-    ## year2016                                  0.0504270  0.0032974  15.293  < 2e-16
-    ## year2017                                  0.0491390  0.0034202  14.367  < 2e-16
-    ##                                             
-    ## (Intercept)                              ***
-    ## raw_income_scale                         ***
-    ## median_income_county_scale               ***
-    ## physicians_scale                         ***
-    ## unweighted_pop_county_scale              ***
-    ## median_monthly_housing_cost_county_scale ***
-    ## land_area_2010_scale                     ***
-    ## education_scale                          ***
-    ## employment_all1                             
-    ## sex1                                     ***
-    ## age_scale                                ***
-    ## race1                                    ***
-    ## race2                                    ***
-    ## race3                                    ***
-    ## race4                                    ***
-    ## married1                                 ***
-    ## married2                                 ***
-    ## married3                                 ***
-    ## married4                                 ***
-    ## married5                                 ***
-    ## year2009                                 ***
-    ## year2010                                 ***
-    ## year2011                                    
-    ## year2012                                 ** 
-    ## year2013                                 ***
-    ## year2014                                 ***
-    ## year2015                                 ***
-    ## year2016                                 ***
-    ## year2017                                 ***
+    ##                                  Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)                     1.881e-02  2.716e-03   6.925 4.37e-12 ***
+    ## raw_income_scale               -5.521e-02  8.777e-04 -62.906  < 2e-16 ***
+    ## median_income_county_scale      1.020e-02  1.033e-03   9.874  < 2e-16 ***
+    ## physicians_scale               -2.613e-02  7.994e-04 -32.685  < 2e-16 ***
+    ## unweighted_pop_county_scale    -5.797e-03  8.508e-04  -6.814 9.53e-12 ***
+    ## median_home_value_county_scale -6.362e-02  1.128e-03 -56.391  < 2e-16 ***
+    ## land_area_2010_scale           -7.224e-03  7.361e-04  -9.814  < 2e-16 ***
+    ## education_scale                -5.838e-02  8.013e-04 -72.852  < 2e-16 ***
+    ## employment_all1                 1.765e-06  8.363e-04   0.002  0.99832    
+    ## sex1                            9.727e-02  7.240e-04 134.354  < 2e-16 ***
+    ## age_scale                       4.384e-02  9.417e-04  46.553  < 2e-16 ***
+    ## race1                          -3.250e-02  1.733e-03 -18.759  < 2e-16 ***
+    ## race2                           6.950e-02  3.902e-03  17.811  < 2e-16 ***
+    ## race3                           2.690e-01  2.479e-03 108.489  < 2e-16 ***
+    ## race4                          -3.551e-01  4.205e-03 -84.437  < 2e-16 ***
+    ## married1                       -6.912e-02  1.943e-03 -35.581  < 2e-16 ***
+    ## married2                        6.328e-02  1.518e-03  41.680  < 2e-16 ***
+    ## married3                        8.619e-02  4.351e-03  19.811  < 2e-16 ***
+    ## married4                        5.232e-02  2.070e-03  25.272  < 2e-16 ***
+    ## married5                       -1.092e-01  2.421e-03 -45.118  < 2e-16 ***
+    ## year2009                        1.250e-02  2.757e-03   4.535 5.76e-06 ***
+    ## year2010                        1.514e-02  2.761e-03   5.481 4.22e-08 ***
+    ## year2011                       -7.969e-03  2.743e-03  -2.905  0.00367 ** 
+    ## year2012                       -2.304e-03  2.712e-03  -0.850  0.39552    
+    ## year2013                        7.147e-03  3.303e-03   2.164  0.03048 *  
+    ## year2014                        2.698e-02  3.328e-03   8.108 5.16e-16 ***
+    ## year2015                        5.064e-02  3.316e-03  15.270  < 2e-16 ***
+    ## year2016                        5.150e-02  3.291e-03  15.649  < 2e-16 ***
+    ## year2017                        5.510e-02  3.402e-03  16.195  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.9895 on 2006483 degrees of freedom
-    ##   (1523758 observations deleted due to missingness)
-    ## Multiple R-squared:  0.03881,    Adjusted R-squared:  0.03879 
-    ## F-statistic:  2893 on 28 and 2006483 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 0.9893 on 2006480 degrees of freedom
+    ##   (1523761 observations deleted due to missingness)
+    ## Multiple R-squared:  0.03919,    Adjusted R-squared:  0.03918 
+    ## F-statistic:  2923 on 28 and 2006480 DF,  p-value: < 2.2e-16
 
 ``` r
-lm1 <-
+lm_bmi_demo <-
   lm(
     bmi_scale ~
-      raw_income_scale +
-      median_income_demo_scale +
+      income_scale +
+      income_demo_ranger_sar_vars_scale +
       physicians_scale +
       unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
+      median_home_value_county_scale +
       land_area_2010_scale +
       education_scale +
       employment_all +
@@ -175,100 +149,70 @@ lm1 <-
     data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm_bmi_demo)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = bmi_scale ~ raw_income_scale + median_income_demo_scale + 
-    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ## lm(formula = bmi_scale ~ income_scale + income_demo_ranger_sar_vars_scale + 
+    ##     physicians_scale + unweighted_pop_county_scale + median_home_value_county_scale + 
     ##     land_area_2010_scale + education_scale + employment_all + 
     ##     sex + age_scale + race + married + year, data = dfg_rs)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -3.6229 -0.6517 -0.1594  0.4654 21.7769 
+    ## -3.8049 -0.6468 -0.1556  0.4645 21.5835 
     ## 
     ## Coefficients:
-    ##                                            Estimate Std. Error  t value
-    ## (Intercept)                               0.0491929  0.0027092   18.158
-    ## raw_income_scale                         -0.0629740  0.0008775  -71.764
-    ## median_income_demo_scale                  0.2159340  0.0016365  131.950
-    ## physicians_scale                         -0.0311956  0.0007807  -39.959
-    ## unweighted_pop_county_scale              -0.0145099  0.0008114  -17.883
-    ## median_monthly_housing_cost_county_scale -0.0429967  0.0008213  -52.354
-    ## land_area_2010_scale                     -0.0066310  0.0007324   -9.053
-    ## education_scale                          -0.2219152  0.0014754 -150.413
-    ## employment_all1                           0.0161428  0.0008423   19.165
-    ## sex1                                      0.0511129  0.0008025   63.695
-    ## age_scale                                 0.0456391  0.0009381   48.650
-    ## race1                                    -0.0327980  0.0017231  -19.034
-    ## race2                                     0.0632931  0.0038880   16.279
-    ## race3                                     0.2646036  0.0024642  107.378
-    ## race4                                    -0.3542430  0.0041842  -84.663
-    ## married1                                 -0.0418738  0.0019474  -21.502
-    ## married2                                  0.0449039  0.0015195   29.552
-    ## married3                                  0.0608780  0.0043383   14.033
-    ## married4                                  0.0284482  0.0020713   13.734
-    ## married5                                 -0.0690226  0.0024285  -28.422
-    ## year2009                                  0.0266503  0.0027483    9.697
-    ## year2010                                  0.0194208  0.0027507    7.060
-    ## year2011                                  0.0100553  0.0027307    3.682
-    ## year2012                                 -0.0065069  0.0026964   -2.413
-    ## year2013                                  0.0068875  0.0032846    2.097
-    ## year2014                                  0.0284274  0.0033055    8.600
-    ## year2015                                 -0.0093267  0.0033357   -2.796
-    ## year2016                                 -0.0550949  0.0033793  -16.304
-    ## year2017                                 -0.0438077  0.0034729  -12.614
-    ##                                          Pr(>|t|)    
-    ## (Intercept)                               < 2e-16 ***
-    ## raw_income_scale                          < 2e-16 ***
-    ## median_income_demo_scale                  < 2e-16 ***
-    ## physicians_scale                          < 2e-16 ***
-    ## unweighted_pop_county_scale               < 2e-16 ***
-    ## median_monthly_housing_cost_county_scale  < 2e-16 ***
-    ## land_area_2010_scale                      < 2e-16 ***
-    ## education_scale                           < 2e-16 ***
-    ## employment_all1                           < 2e-16 ***
-    ## sex1                                      < 2e-16 ***
-    ## age_scale                                 < 2e-16 ***
-    ## race1                                     < 2e-16 ***
-    ## race2                                     < 2e-16 ***
-    ## race3                                     < 2e-16 ***
-    ## race4                                     < 2e-16 ***
-    ## married1                                  < 2e-16 ***
-    ## married2                                  < 2e-16 ***
-    ## married3                                  < 2e-16 ***
-    ## married4                                  < 2e-16 ***
-    ## married5                                  < 2e-16 ***
-    ## year2009                                  < 2e-16 ***
-    ## year2010                                 1.66e-12 ***
-    ## year2011                                 0.000231 ***
-    ## year2012                                 0.015815 *  
-    ## year2013                                 0.036001 *  
-    ## year2014                                  < 2e-16 ***
-    ## year2015                                 0.005173 ** 
-    ## year2016                                  < 2e-16 ***
-    ## year2017                                  < 2e-16 ***
+    ##                                     Estimate Std. Error  t value Pr(>|t|)    
+    ## (Intercept)                        0.2369198  0.0028938   81.871  < 2e-16 ***
+    ## income_scale                      -0.0600559  0.0008769  -68.487  < 2e-16 ***
+    ## income_demo_ranger_sar_vars_scale  0.3050962  0.0015093  202.138  < 2e-16 ***
+    ## physicians_scale                  -0.0236927  0.0007905  -29.971  < 2e-16 ***
+    ## unweighted_pop_county_scale       -0.0071299  0.0008280   -8.611  < 2e-16 ***
+    ## median_home_value_county_scale    -0.0564010  0.0008482  -66.496  < 2e-16 ***
+    ## land_area_2010_scale              -0.0066891  0.0007280   -9.188  < 2e-16 ***
+    ## education_scale                   -0.0680633  0.0007966  -85.439  < 2e-16 ***
+    ## employment_all1                    0.0261333  0.0008435   30.983  < 2e-16 ***
+    ## sex1                              -0.0701832  0.0010938  -64.165  < 2e-16 ***
+    ## age_scale                          0.0969395  0.0009674  100.209  < 2e-16 ***
+    ## race1                             -0.3284804  0.0022595 -145.377  < 2e-16 ***
+    ## race2                              0.1643935  0.0038942   42.215  < 2e-16 ***
+    ## race3                              0.3764825  0.0025128  149.829  < 2e-16 ***
+    ## race4                             -0.5038444  0.0042292 -119.136  < 2e-16 ***
+    ## married1                          -0.0102773  0.0019458   -5.282 1.28e-07 ***
+    ## married2                           0.0184790  0.0015259   12.110  < 2e-16 ***
+    ## married3                           0.0155915  0.0043236    3.606 0.000311 ***
+    ## married4                          -0.0051254  0.0020702   -2.476 0.013295 *  
+    ## married5                           0.0101865  0.0024681    4.127 3.67e-05 ***
+    ## year2009                           0.0079002  0.0027300    2.894 0.003806 ** 
+    ## year2010                           0.0183512  0.0027343    6.711 1.93e-11 ***
+    ## year2011                           0.0080155  0.0027150    2.952 0.003154 ** 
+    ## year2012                           0.0160084  0.0026812    5.971 2.37e-09 ***
+    ## year2013                           0.0268266  0.0032658    8.214  < 2e-16 ***
+    ## year2014                           0.0480121  0.0032873   14.605  < 2e-16 ***
+    ## year2015                           0.0732908  0.0032767   22.368  < 2e-16 ***
+    ## year2016                           0.0766554  0.0032450   23.623  < 2e-16 ***
+    ## year2017                           0.0822996  0.0033445   24.608  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.9854 on 2005551 degrees of freedom
-    ##   (1524690 observations deleted due to missingness)
-    ## Multiple R-squared:  0.04671,    Adjusted R-squared:  0.0467 
-    ## F-statistic:  3510 on 28 and 2005551 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 0.9793 on 2004987 degrees of freedom
+    ##   (1525254 observations deleted due to missingness)
+    ## Multiple R-squared:  0.05823,    Adjusted R-squared:  0.05822 
+    ## F-statistic:  4428 on 28 and 2004987 DF,  p-value: < 2.2e-16
 
 ### Diabetes
 
 ``` r
-lm1 <-
+lm_diab_geo <-
   glm(
     diabetes ~
       raw_income_scale +
       median_income_county_scale +
       physicians_scale +
       unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
+      median_home_value_county_scale +
       land_area_2010_scale +
       education_scale +
       employment_all +
@@ -278,107 +222,76 @@ lm1 <-
       married + 
       year,
     family = "binomial",
-    data = dfg_rs %>% mutate(diabetes = ifelse(diabetes == 1, 1, ifelse(diabetes == 2, 0, NA)))
+    data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm_diab_geo)
 ```
 
     ## 
     ## Call:
     ## glm(formula = diabetes ~ raw_income_scale + median_income_county_scale + 
-    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ##     physicians_scale + unweighted_pop_county_scale + median_home_value_county_scale + 
     ##     land_area_2010_scale + education_scale + employment_all + 
     ##     sex + age_scale + race + married + year, family = "binomial", 
-    ##     data = dfg_rs %>% mutate(diabetes = ifelse(diabetes == 1, 
-    ##         1, ifelse(diabetes == 2, 0, NA))))
+    ##     data = dfg_rs)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.5653  -0.5579  -0.3960  -0.2851   3.1807  
+    ## -1.5683  -0.5577  -0.3961  -0.2848   3.2065  
     ## 
     ## Coefficients:
-    ##                                            Estimate Std. Error  z value
-    ## (Intercept)                              -1.8573045  0.0088315 -210.303
-    ## raw_income_scale                         -0.1716453  0.0029438  -58.307
-    ## median_income_county_scale                0.0198819  0.0058925    3.374
-    ## physicians_scale                         -0.0563165  0.0025959  -21.694
-    ## unweighted_pop_county_scale              -0.0004787  0.0028708   -0.167
-    ## median_monthly_housing_cost_county_scale -0.0998777  0.0061251  -16.306
-    ## land_area_2010_scale                     -0.0258995  0.0025051  -10.339
-    ## education_scale                          -0.1184489  0.0024395  -48.555
-    ## employment_all1                           0.2195714  0.0026250   83.645
-    ## sex1                                      0.1180691  0.0023023   51.284
-    ## age_scale                                 0.6563318  0.0031738  206.798
-    ## race1                                    -0.3654497  0.0058192  -62.801
-    ## race2                                     0.0795281  0.0119284    6.667
-    ## race3                                     0.2601616  0.0075786   34.328
-    ## race4                                    -0.0434505  0.0158085   -2.749
-    ## married1                                 -0.0764145  0.0065560  -11.656
-    ## married2                                  0.0266799  0.0047810    5.580
-    ## married3                                  0.2491043  0.0124045   20.082
-    ## married4                                  0.0957229  0.0060922   15.712
-    ## married5                                 -0.1740706  0.0066130  -26.323
-    ## year2009                                 -0.0300995  0.0088483   -3.402
-    ## year2010                                  0.0483952  0.0087635    5.522
-    ## year2011                                  0.0089407  0.0087856    1.018
-    ## year2012                                  0.0469505  0.0086470    5.430
-    ## year2013                                  0.0575503  0.0105228    5.469
-    ## year2014                                  0.0681349  0.0104352    6.529
-    ## year2015                                  0.0764255  0.0103995    7.349
-    ## year2016                                  0.0864797  0.0104158    8.303
-    ## year2017                                  0.0807805  0.0109342    7.388
-    ##                                          Pr(>|z|)    
-    ## (Intercept)                               < 2e-16 ***
-    ## raw_income_scale                          < 2e-16 ***
-    ## median_income_county_scale               0.000741 ***
-    ## physicians_scale                          < 2e-16 ***
-    ## unweighted_pop_county_scale              0.867557    
-    ## median_monthly_housing_cost_county_scale  < 2e-16 ***
-    ## land_area_2010_scale                      < 2e-16 ***
-    ## education_scale                           < 2e-16 ***
-    ## employment_all1                           < 2e-16 ***
-    ## sex1                                      < 2e-16 ***
-    ## age_scale                                 < 2e-16 ***
-    ## race1                                     < 2e-16 ***
-    ## race2                                    2.61e-11 ***
-    ## race3                                     < 2e-16 ***
-    ## race4                                    0.005986 ** 
-    ## married1                                  < 2e-16 ***
-    ## married2                                 2.40e-08 ***
-    ## married3                                  < 2e-16 ***
-    ## married4                                  < 2e-16 ***
-    ## married5                                  < 2e-16 ***
-    ## year2009                                 0.000670 ***
-    ## year2010                                 3.35e-08 ***
-    ## year2011                                 0.308847    
-    ## year2012                                 5.65e-08 ***
-    ## year2013                                 4.52e-08 ***
-    ## year2014                                 6.61e-11 ***
-    ## year2015                                 2.00e-13 ***
-    ## year2016                                  < 2e-16 ***
-    ## year2017                                 1.49e-13 ***
+    ##                                  Estimate Std. Error  z value Pr(>|z|)    
+    ## (Intercept)                    -1.8521412  0.0088297 -209.764  < 2e-16 ***
+    ## raw_income_scale               -0.1724056  0.0029427  -58.588  < 2e-16 ***
+    ## median_income_county_scale     -0.0090878  0.0034807   -2.611 0.009029 ** 
+    ## physicians_scale               -0.0485484  0.0026268  -18.482  < 2e-16 ***
+    ## unweighted_pop_county_scale     0.0074699  0.0028538    2.618 0.008856 ** 
+    ## median_home_value_county_scale -0.0976523  0.0039510  -24.716  < 2e-16 ***
+    ## land_area_2010_scale           -0.0270715  0.0024943  -10.853  < 2e-16 ***
+    ## education_scale                -0.1186522  0.0024374  -48.679  < 2e-16 ***
+    ## employment_all1                 0.2192279  0.0026246   83.528  < 2e-16 ***
+    ## sex1                            0.1178431  0.0023025   51.180  < 2e-16 ***
+    ## age_scale                       0.6582472  0.0031767  207.211  < 2e-16 ***
+    ## race1                          -0.3682977  0.0058055  -63.440  < 2e-16 ***
+    ## race2                           0.0839919  0.0119277    7.042 1.90e-12 ***
+    ## race3                           0.2442004  0.0075894   32.177  < 2e-16 ***
+    ## race4                          -0.0280962  0.0158254   -1.775 0.075835 .  
+    ## married1                       -0.0746986  0.0065576  -11.391  < 2e-16 ***
+    ## married2                        0.0254729  0.0047799    5.329 9.86e-08 ***
+    ## married3                        0.2504305  0.0124060   20.186  < 2e-16 ***
+    ## married4                        0.0945289  0.0060932   15.514  < 2e-16 ***
+    ## married5                       -0.1765915  0.0066154  -26.694  < 2e-16 ***
+    ## year2009                       -0.0300430  0.0088497   -3.395 0.000687 ***
+    ## year2010                        0.0477351  0.0087650    5.446 5.15e-08 ***
+    ## year2011                       -0.0005204  0.0087950   -0.059 0.952814    
+    ## year2012                        0.0317652  0.0086688    3.664 0.000248 ***
+    ## year2013                        0.0415014  0.0105446    3.936 8.29e-05 ***
+    ## year2014                        0.0525743  0.0104629    5.025 5.04e-07 ***
+    ## year2015                        0.0663087  0.0104136    6.368 1.92e-10 ***
+    ## year2016                        0.0807603  0.0104069    7.760 8.47e-15 ***
+    ## year2017                        0.0795982  0.0108910    7.309 2.70e-13 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 1540775  on 2057351  degrees of freedom
-    ## Residual deviance: 1402521  on 2057323  degrees of freedom
-    ##   (1472918 observations deleted due to missingness)
-    ## AIC: 1402579
+    ##     Null deviance: 1540774  on 2057348  degrees of freedom
+    ## Residual deviance: 1402159  on 2057320  degrees of freedom
+    ##   (1472921 observations deleted due to missingness)
+    ## AIC: 1402217
     ## 
     ## Number of Fisher Scoring iterations: 5
 
 ``` r
-lm1 <-
+lm_diab_demo <-
   glm(
     diabetes ~
-      raw_income_scale +
-      median_income_demo_scale +
+      income_scale +
+      income_demo_ranger_sar_vars_scale +
       physicians_scale +
       unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
+      median_home_value_county_scale +
       land_area_2010_scale +
       education_scale +
       employment_all +
@@ -388,109 +301,78 @@ lm1 <-
       married + 
       year,
     family = "binomial",
-    data = dfg_rs %>% mutate(diabetes = ifelse(diabetes == 1, 1, ifelse(diabetes == 2, 0, NA)))
+    data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm_diab_demo)
 ```
 
     ## 
     ## Call:
-    ## glm(formula = diabetes ~ raw_income_scale + median_income_demo_scale + 
-    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ## glm(formula = diabetes ~ income_scale + income_demo_ranger_sar_vars_scale + 
+    ##     physicians_scale + unweighted_pop_county_scale + median_home_value_county_scale + 
     ##     land_area_2010_scale + education_scale + employment_all + 
     ##     sex + age_scale + race + married + year, family = "binomial", 
-    ##     data = dfg_rs %>% mutate(diabetes = ifelse(diabetes == 1, 
-    ##         1, ifelse(diabetes == 2, 0, NA))))
+    ##     data = dfg_rs)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.5712  -0.5629  -0.4012  -0.2705   3.2028  
+    ## -1.6788  -0.5770  -0.4024  -0.2391   3.5581  
     ## 
     ## Coefficients:
-    ##                                           Estimate Std. Error  z value Pr(>|z|)
-    ## (Intercept)                              -1.791670   0.008829 -202.936  < 2e-16
-    ## raw_income_scale                         -0.185672   0.002958  -62.780  < 2e-16
-    ## median_income_demo_scale                  0.385362   0.005526   69.740  < 2e-16
-    ## physicians_scale                         -0.055371   0.002597  -21.323  < 2e-16
-    ## unweighted_pop_county_scale              -0.002428   0.002722   -0.892   0.3725
-    ## median_monthly_housing_cost_county_scale -0.079035   0.002725  -29.000  < 2e-16
-    ## land_area_2010_scale                     -0.025438   0.002488  -10.225  < 2e-16
-    ## education_scale                          -0.405251   0.004789  -84.612  < 2e-16
-    ## employment_all1                           0.238229   0.002638   90.306  < 2e-16
-    ## sex1                                      0.030547   0.002621   11.655  < 2e-16
-    ## age_scale                                 0.720746   0.003412  211.255  < 2e-16
-    ## race1                                    -0.378682   0.005801  -65.284  < 2e-16
-    ## race2                                     0.071432   0.011963    5.971 2.36e-09
-    ## race3                                     0.237399   0.007597   31.247  < 2e-16
-    ## race4                                    -0.029572   0.015864   -1.864   0.0623
-    ## married1                                 -0.043813   0.006569   -6.670 2.56e-11
-    ## married2                                  0.003103   0.004794    0.647   0.5175
-    ## married3                                  0.224872   0.012437   18.081  < 2e-16
-    ## married4                                  0.060712   0.006109    9.938  < 2e-16
-    ## married5                                 -0.135895   0.006627  -20.507  < 2e-16
-    ## year2009                                 -0.017738   0.008846   -2.005   0.0449
-    ## year2010                                  0.039897   0.008758    4.556 5.22e-06
-    ## year2011                                 -0.005230   0.008794   -0.595   0.5521
-    ## year2012                                 -0.003735   0.008676   -0.431   0.6668
-    ## year2013                                  0.010619   0.010548    1.007   0.3141
-    ## year2014                                  0.020052   0.010465    1.916   0.0554
-    ## year2015                                 -0.063730   0.010572   -6.028 1.66e-09
-    ## year2016                                 -0.127110   0.010806  -11.763  < 2e-16
-    ## year2017                                 -0.129408   0.011385  -11.367  < 2e-16
-    ##                                             
-    ## (Intercept)                              ***
-    ## raw_income_scale                         ***
-    ## median_income_demo_scale                 ***
-    ## physicians_scale                         ***
-    ## unweighted_pop_county_scale                 
-    ## median_monthly_housing_cost_county_scale ***
-    ## land_area_2010_scale                     ***
-    ## education_scale                          ***
-    ## employment_all1                          ***
-    ## sex1                                     ***
-    ## age_scale                                ***
-    ## race1                                    ***
-    ## race2                                    ***
-    ## race3                                    ***
-    ## race4                                    .  
-    ## married1                                 ***
-    ## married2                                    
-    ## married3                                 ***
-    ## married4                                 ***
-    ## married5                                 ***
-    ## year2009                                 *  
-    ## year2010                                 ***
-    ## year2011                                    
-    ## year2012                                    
-    ## year2013                                    
-    ## year2014                                 .  
-    ## year2015                                 ***
-    ## year2016                                 ***
-    ## year2017                                 ***
+    ##                                    Estimate Std. Error  z value Pr(>|z|)    
+    ## (Intercept)                       -1.436095   0.009340 -153.765  < 2e-16 ***
+    ## income_scale                      -0.184466   0.002850  -64.719  < 2e-16 ***
+    ## income_demo_ranger_sar_vars_scale  0.684169   0.005317  128.682  < 2e-16 ***
+    ## physicians_scale                  -0.043888   0.002624  -16.726  < 2e-16 ***
+    ## unweighted_pop_county_scale        0.010573   0.002822    3.747 0.000179 ***
+    ## median_home_value_county_scale    -0.102568   0.002980  -34.420  < 2e-16 ***
+    ## land_area_2010_scale              -0.025277   0.002486  -10.167  < 2e-16 ***
+    ## education_scale                   -0.132015   0.002457  -53.723  < 2e-16 ***
+    ## employment_all1                    0.242641   0.002621   92.573  < 2e-16 ***
+    ## sex1                              -0.295137   0.003910  -75.484  < 2e-16 ***
+    ## age_scale                          0.958818   0.004254  225.368  < 2e-16 ***
+    ## race1                             -1.029664   0.007803 -131.949  < 2e-16 ***
+    ## race2                              0.286195   0.012205   23.449  < 2e-16 ***
+    ## race3                              0.492984   0.007970   61.852  < 2e-16 ***
+    ## race4                             -0.388120   0.016328  -23.771  < 2e-16 ***
+    ## married1                           0.002798   0.006603    0.424 0.671701    
+    ## married2                          -0.033110   0.004853   -6.823 8.90e-12 ***
+    ## married3                           0.142632   0.012555   11.360  < 2e-16 ***
+    ## married4                          -0.010334   0.006146   -1.681 0.092680 .  
+    ## married5                           0.005479   0.006694    0.818 0.413112    
+    ## year2009                          -0.035993   0.008869   -4.058 4.94e-05 ***
+    ## year2010                           0.049434   0.008784    5.628 1.82e-08 ***
+    ## year2011                           0.017856   0.008812    2.026 0.042733 *  
+    ## year2012                           0.050140   0.008677    5.778 7.54e-09 ***
+    ## year2013                           0.059125   0.010564    5.597 2.18e-08 ***
+    ## year2014                           0.070312   0.010471    6.715 1.88e-11 ***
+    ## year2015                           0.084913   0.010419    8.150 3.64e-16 ***
+    ## year2016                           0.102020   0.010392    9.817  < 2e-16 ***
+    ## year2017                           0.099815   0.010856    9.195  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 1540005  on 2056392  degrees of freedom
-    ## Residual deviance: 1396737  on 2056364  degrees of freedom
-    ##   (1473877 observations deleted due to missingness)
-    ## AIC: 1396795
+    ##     Null deviance: 1539573  on 2055691  degrees of freedom
+    ## Residual deviance: 1382992  on 2055663  degrees of freedom
+    ##   (1474578 observations deleted due to missingness)
+    ## AIC: 1383050
     ## 
-    ## Number of Fisher Scoring iterations: 5
+    ## Number of Fisher Scoring iterations: 6
 
 ### High blood pressure
 
 ``` r
-lm1 <-
+lm_hbp_geo <-
   glm(
-    depression ~
+    hbp ~
       raw_income_scale +
-      median_income_demo_scale +
+      median_income_county_scale +
       physicians_scale +
       unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
+      median_home_value_county_scale +
       land_area_2010_scale +
       education_scale +
       employment_all +
@@ -500,107 +382,236 @@ lm1 <-
       married + 
       year,
     family = "binomial",
-    data = dfg_rs %>% mutate(depression = ifelse(depression == 1, 1, ifelse(depression == 2, 0, NA)))
+    data = dfg_rs
   )
 
-summary(lm1)
+summary(lm_hbp_geo)
 ```
 
     ## 
     ## Call:
-    ## glm(formula = depression ~ raw_income_scale + median_income_demo_scale + 
-    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ## glm(formula = hbp ~ raw_income_scale + median_income_county_scale + 
+    ##     physicians_scale + unweighted_pop_county_scale + median_home_value_county_scale + 
     ##     land_area_2010_scale + education_scale + employment_all + 
     ##     sex + age_scale + race + married + year, family = "binomial", 
-    ##     data = dfg_rs %>% mutate(depression = ifelse(depression == 
-    ##         1, 1, ifelse(depression == 2, 0, NA))))
+    ##     data = dfg_rs)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.6409  -0.6496  -0.5001  -0.3604   2.8547  
+    ## -2.3380  -0.8582  -0.5429   1.0478   2.8334  
     ## 
     ## Coefficients:
-    ##                                            Estimate Std. Error  z value
-    ## (Intercept)                              -1.6727736  0.0077404 -216.111
-    ## raw_income_scale                         -0.3271320  0.0025614 -127.716
-    ## median_income_demo_scale                  0.3799494  0.0045003   84.427
-    ## physicians_scale                          0.0320693  0.0021414   14.976
-    ## unweighted_pop_county_scale              -0.0006429  0.0023092   -0.278
-    ## median_monthly_housing_cost_county_scale -0.0380105  0.0023287  -16.322
-    ## land_area_2010_scale                     -0.0038983  0.0020388   -1.912
-    ## education_scale                          -0.3311530  0.0040510  -81.746
-    ## employment_all1                           0.3454596  0.0022365  154.464
-    ## sex1                                     -0.3431245  0.0022402 -153.168
-    ## age_scale                                -0.1813459  0.0025604  -70.826
-    ## race1                                     0.3152813  0.0052872   59.631
-    ## race2                                     0.3249605  0.0104538   31.085
-    ## race3                                    -0.2210826  0.0073743  -29.980
-    ## race4                                    -0.4206438  0.0149625  -28.113
-    ## married1                                 -0.1276872  0.0049365  -25.866
-    ## married2                                 -0.3834387  0.0039342  -97.463
-    ## married3                                  0.5047350  0.0096238   52.446
-    ## married4                                  0.2259728  0.0048859   46.250
-    ## married5                                 -0.2344570  0.0061148  -38.343
-    ## year2009                                 -0.0298384  0.0075938   -3.929
-    ## year2010                                  0.0100729  0.0075860    1.328
-    ## year2011                                 -0.0290719  0.0075717   -3.840
-    ## year2012                                 -0.0499817  0.0074919   -6.671
-    ## year2013                                  0.0029845  0.0090481    0.330
-    ## year2014                                  0.0170000  0.0090757    1.873
-    ## year2015                                 -0.0447209  0.0091485   -4.888
-    ## year2016                                 -0.1021145  0.0093310  -10.944
-    ## year2017                                 -0.0135572  0.0095649   -1.417
-    ##                                          Pr(>|z|)    
-    ## (Intercept)                               < 2e-16 ***
-    ## raw_income_scale                          < 2e-16 ***
-    ## median_income_demo_scale                  < 2e-16 ***
-    ## physicians_scale                          < 2e-16 ***
-    ## unweighted_pop_county_scale              0.780703    
-    ## median_monthly_housing_cost_county_scale  < 2e-16 ***
-    ## land_area_2010_scale                     0.055873 .  
-    ## education_scale                           < 2e-16 ***
-    ## employment_all1                           < 2e-16 ***
-    ## sex1                                      < 2e-16 ***
-    ## age_scale                                 < 2e-16 ***
-    ## race1                                     < 2e-16 ***
-    ## race2                                     < 2e-16 ***
-    ## race3                                     < 2e-16 ***
-    ## race4                                     < 2e-16 ***
-    ## married1                                  < 2e-16 ***
-    ## married2                                  < 2e-16 ***
-    ## married3                                  < 2e-16 ***
-    ## married4                                  < 2e-16 ***
-    ## married5                                  < 2e-16 ***
-    ## year2009                                 8.52e-05 ***
-    ## year2010                                 0.184235    
-    ## year2011                                 0.000123 ***
-    ## year2012                                 2.53e-11 ***
-    ## year2013                                 0.741517    
-    ## year2014                                 0.061051 .  
-    ## year2015                                 1.02e-06 ***
-    ## year2016                                  < 2e-16 ***
-    ## year2017                                 0.156369    
+    ##                                 Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept)                    -0.552008   0.006437 -85.761  < 2e-16 ***
+    ## raw_income_scale               -0.089050   0.002056 -43.309  < 2e-16 ***
+    ## median_income_county_scale     -0.015169   0.002443  -6.208 5.35e-10 ***
+    ## physicians_scale               -0.036110   0.001867 -19.343  < 2e-16 ***
+    ## unweighted_pop_county_scale    -0.005151   0.002047  -2.516   0.0119 *  
+    ## median_home_value_county_scale -0.073499   0.002719 -27.036  < 2e-16 ***
+    ## land_area_2010_scale           -0.023356   0.001769 -13.201  < 2e-16 ***
+    ## education_scale                -0.116412   0.001823 -63.868  < 2e-16 ***
+    ## employment_all1                 0.131208   0.001867  70.271  < 2e-16 ***
+    ## sex1                            0.116836   0.001676  69.716  < 2e-16 ***
+    ## age_scale                       0.899923   0.002348 383.321  < 2e-16 ***
+    ## race1                          -0.123597   0.004330 -28.547  < 2e-16 ***
+    ## race2                          -0.001542   0.009293  -0.166   0.8682    
+    ## race3                           0.511171   0.005856  87.293  < 2e-16 ***
+    ## race4                          -0.167858   0.011520 -14.571  < 2e-16 ***
+    ## married1                       -0.055290   0.004669 -11.842  < 2e-16 ***
+    ## married2                       -0.048014   0.003481 -13.793  < 2e-16 ***
+    ## married3                        0.160097   0.009656  16.580  < 2e-16 ***
+    ## married4                        0.081271   0.004551  17.858  < 2e-16 ***
+    ## married5                       -0.080651   0.005241 -15.388  < 2e-16 ***
+    ## year2009                       -0.001080   0.006327  -0.171   0.8644    
+    ## year2010                        0.025131   0.006324   3.974 7.07e-05 ***
+    ## year2011                       -0.001588   0.006315  -0.251   0.8014    
+    ## year2012                       -0.014917   0.006247  -2.388   0.0170 *  
+    ## year2013                       -0.011400   0.007643  -1.492   0.1358    
+    ## year2014                       -0.036799   0.007674  -4.795 1.62e-06 ***
+    ## year2015                       -0.046528   0.007659  -6.075 1.24e-09 ***
+    ## year2016                       -0.063468   0.007640  -8.307  < 2e-16 ***
+    ## year2017                       -0.066063   0.007959  -8.300  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 1886512  on 2056368  degrees of freedom
-    ## Residual deviance: 1753139  on 2056340  degrees of freedom
-    ##   (1473901 observations deleted due to missingness)
-    ## AIC: 1753197
+    ##     Null deviance: 2649884  on 2056707  degrees of freedom
+    ## Residual deviance: 2290188  on 2056679  degrees of freedom
+    ##   (1473562 observations deleted due to missingness)
+    ## AIC: 2290246
+    ## 
+    ## Number of Fisher Scoring iterations: 4
+
+``` r
+lm_hbp_demo <-
+  glm(
+    hbp ~
+      income_scale +
+      income_demo_ranger_sar_vars_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_home_value_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year,
+    family = "binomial",
+    data = dfg_rs
+  )
+
+summary(lm_hbp_demo)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = hbp ~ income_scale + income_demo_ranger_sar_vars_scale + 
+    ##     physicians_scale + unweighted_pop_county_scale + median_home_value_county_scale + 
+    ##     land_area_2010_scale + education_scale + employment_all + 
+    ##     sex + age_scale + race + married + year, family = "binomial", 
+    ##     data = dfg_rs)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -2.3507  -0.8835  -0.5212   1.0586   2.9950  
+    ## 
+    ## Coefficients:
+    ##                                     Estimate Std. Error z value Pr(>|z|)    
+    ## (Intercept)                       -0.3241326  0.0068589 -47.257  < 2e-16 ***
+    ## income_scale                      -0.1016313  0.0020672 -49.164  < 2e-16 ***
+    ## income_demo_ranger_sar_vars_scale  0.3536685  0.0037346  94.701  < 2e-16 ***
+    ## physicians_scale                  -0.0345622  0.0018643 -18.539  < 2e-16 ***
+    ## unweighted_pop_county_scale       -0.0023897  0.0020181  -1.184  0.23635    
+    ## median_home_value_county_scale    -0.0834507  0.0020471 -40.765  < 2e-16 ***
+    ## land_area_2010_scale              -0.0217967  0.0017619 -12.371  < 2e-16 ***
+    ## education_scale                   -0.1227059  0.0018301 -67.049  < 2e-16 ***
+    ## employment_all1                    0.1517026  0.0018942  80.090  < 2e-16 ***
+    ## sex1                              -0.0843180  0.0027109 -31.103  < 2e-16 ***
+    ## age_scale                          1.0136881  0.0027101 374.037  < 2e-16 ***
+    ## race1                             -0.4663295  0.0056708 -82.233  < 2e-16 ***
+    ## race2                              0.1066063  0.0094642  11.264  < 2e-16 ***
+    ## race3                              0.6522460  0.0061281 106.436  < 2e-16 ***
+    ## race4                             -0.3613162  0.0118450 -30.504  < 2e-16 ***
+    ## married1                          -0.0114815  0.0047369  -2.424  0.01536 *  
+    ## married2                          -0.0823933  0.0035315 -23.331  < 2e-16 ***
+    ## married3                           0.0982545  0.0097467  10.081  < 2e-16 ***
+    ## married4                           0.0249926  0.0045856   5.450 5.03e-08 ***
+    ## married5                           0.0296319  0.0053290   5.561 2.69e-08 ***
+    ## year2009                          -0.0056462  0.0063283  -0.892  0.37228    
+    ## year2010                           0.0264024  0.0063242   4.175 2.98e-05 ***
+    ## year2011                           0.0085648  0.0063145   1.356  0.17498    
+    ## year2012                          -0.0039777  0.0062396  -0.637  0.52380    
+    ## year2013                          -0.0005577  0.0076424  -0.073  0.94183    
+    ## year2014                          -0.0255854  0.0076618  -3.339  0.00084 ***
+    ## year2015                          -0.0338017  0.0076451  -4.421 9.81e-06 ***
+    ## year2016                          -0.0499636  0.0076107  -6.565 5.21e-11 ***
+    ## year2017                          -0.0528306  0.0079123  -6.677 2.44e-11 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 2647910  on 2055057  degrees of freedom
+    ## Residual deviance: 2279166  on 2055029  degrees of freedom
+    ##   (1475212 observations deleted due to missingness)
+    ## AIC: 2279224
+    ## 
+    ## Number of Fisher Scoring iterations: 4
+
+### Depression
+
+``` r
+lm_dep_geo <-
+  glm(
+    depression ~
+      raw_income_scale +
+      median_income_county_scale +
+      physicians_scale +
+      unweighted_pop_county_scale +
+      median_home_value_county_scale +
+      land_area_2010_scale +
+      education_scale +
+      employment_all +
+      sex +
+      age_scale +
+      race +
+      married + 
+      year,
+    family = "binomial",
+    data = dfg_rs 
+  )
+
+summary(lm_dep_geo)
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = depression ~ raw_income_scale + median_income_county_scale + 
+    ##     physicians_scale + unweighted_pop_county_scale + median_home_value_county_scale + 
+    ##     land_area_2010_scale + education_scale + employment_all + 
+    ##     sex + age_scale + race + married + year, family = "binomial", 
+    ##     data = dfg_rs)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -1.5151  -0.6524  -0.5052  -0.3618   2.7979  
+    ## 
+    ## Coefficients:
+    ##                                 Estimate Std. Error  z value Pr(>|z|)    
+    ## (Intercept)                    -1.746650   0.007737 -225.748  < 2e-16 ***
+    ## raw_income_scale               -0.310821   0.002541 -122.326  < 2e-16 ***
+    ## median_income_county_scale     -0.056695   0.002925  -19.385  < 2e-16 ***
+    ## physicians_scale                0.024271   0.002177   11.147  < 2e-16 ***
+    ## unweighted_pop_county_scale    -0.016744   0.002397   -6.984 2.86e-12 ***
+    ## median_home_value_county_scale  0.029714   0.003150    9.434  < 2e-16 ***
+    ## land_area_2010_scale           -0.008148   0.002056   -3.963 7.41e-05 ***
+    ## education_scale                -0.044300   0.002152  -20.583  < 2e-16 ***
+    ## employment_all1                 0.319995   0.002218  144.246  < 2e-16 ***
+    ## sex1                           -0.259397   0.002000 -129.728  < 2e-16 ***
+    ## age_scale                      -0.187316   0.002515  -74.477  < 2e-16 ***
+    ## race1                           0.333057   0.005295   62.903  < 2e-16 ***
+    ## race2                           0.332713   0.010425   31.915  < 2e-16 ***
+    ## race3                          -0.195225   0.007374  -26.475  < 2e-16 ***
+    ## race4                          -0.446809   0.014964  -29.859  < 2e-16 ***
+    ## married1                       -0.173688   0.004924  -35.277  < 2e-16 ***
+    ## married2                       -0.345935   0.003903  -88.639  < 2e-16 ***
+    ## married3                        0.541420   0.009588   56.470  < 2e-16 ***
+    ## married4                        0.267503   0.004856   55.088  < 2e-16 ***
+    ## married5                       -0.295873   0.006063  -48.801  < 2e-16 ***
+    ## year2009                       -0.054047   0.007572   -7.138 9.48e-13 ***
+    ## year2010                        0.005915   0.007570    0.781 0.434611    
+    ## year2011                       -0.041486   0.007560   -5.487 4.08e-08 ***
+    ## year2012                       -0.010840   0.007479   -1.449 0.147218    
+    ## year2013                        0.032088   0.009044    3.548 0.000388 ***
+    ## year2014                        0.048131   0.009079    5.301 1.15e-07 ***
+    ## year2015                        0.085960   0.009054    9.494  < 2e-16 ***
+    ## year2016                        0.116023   0.009036   12.840  < 2e-16 ***
+    ## year2017                        0.204167   0.009246   22.081  < 2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## (Dispersion parameter for binomial family taken to be 1)
+    ## 
+    ##     Null deviance: 1887542  on 2057324  degrees of freedom
+    ## Residual deviance: 1761266  on 2057296  degrees of freedom
+    ##   (1472945 observations deleted due to missingness)
+    ## AIC: 1761324
     ## 
     ## Number of Fisher Scoring iterations: 5
 
 ``` r
-lm1 <-
+lm_dep_demo <-
   glm(
-    hbp ~
-      raw_income_scale +
-      median_income_demo_scale +
+    depression ~
+      income_scale +
+      income_demo_ranger_sar_vars_scale +
       physicians_scale +
       unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
+      median_home_value_county_scale +
       land_area_2010_scale +
       education_scale +
       employment_all +
@@ -610,109 +621,78 @@ lm1 <-
       married + 
       year,
     family = "binomial",
-    data = dfg_rs %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 2, 0, NA)))
+    data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm_dep_demo)
 ```
 
     ## 
     ## Call:
-    ## glm(formula = hbp ~ raw_income_scale + median_income_demo_scale + 
-    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ## glm(formula = depression ~ income_scale + income_demo_ranger_sar_vars_scale + 
+    ##     physicians_scale + unweighted_pop_county_scale + median_home_value_county_scale + 
     ##     land_area_2010_scale + education_scale + employment_all + 
     ##     sex + age_scale + race + married + year, family = "binomial", 
-    ##     data = dfg_rs %>% mutate(hbp = ifelse(hbp == 1, 1, ifelse(hbp == 
-    ##         2, 0, NA))))
+    ##     data = dfg_rs)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -2.3293  -0.8705  -0.5342   1.0529   2.8685  
+    ## -1.6489  -0.6385  -0.4902  -0.3619   2.9257  
     ## 
     ## Coefficients:
-    ##                                           Estimate Std. Error z value Pr(>|z|)
-    ## (Intercept)                              -0.520752   0.006436 -80.909  < 2e-16
-    ## raw_income_scale                         -0.096309   0.002064 -46.671  < 2e-16
-    ## median_income_demo_scale                  0.223930   0.004020  55.699  < 2e-16
-    ## physicians_scale                         -0.042063   0.001835 -22.920  < 2e-16
-    ## unweighted_pop_county_scale              -0.011373   0.001959  -5.805 6.44e-09
-    ## median_monthly_housing_cost_county_scale -0.070340   0.001921 -36.615  < 2e-16
-    ## land_area_2010_scale                     -0.021899   0.001762 -12.428  < 2e-16
-    ## education_scale                          -0.286299   0.003558 -80.475  < 2e-16
-    ## employment_all1                           0.144620   0.001883  76.811  < 2e-16
-    ## sex1                                      0.067582   0.001897  35.627  < 2e-16
-    ## age_scale                                 0.924158   0.002421 381.692  < 2e-16
-    ## race1                                    -0.128504   0.004333 -29.656  < 2e-16
-    ## race2                                    -0.009861   0.009320  -1.058 0.290034
-    ## race3                                     0.514004   0.005867  87.603  < 2e-16
-    ## race4                                    -0.172577   0.011550 -14.942  < 2e-16
-    ## married1                                 -0.036848   0.004697  -7.846 4.30e-15
-    ## married2                                 -0.062060   0.003493 -17.767  < 2e-16
-    ## married3                                  0.142424   0.009681  14.712  < 2e-16
-    ## married4                                  0.061269   0.004563  13.427  < 2e-16
-    ## married5                                 -0.049199   0.005254  -9.363  < 2e-16
-    ## year2009                                  0.010027   0.006318   1.587 0.112507
-    ## year2010                                  0.023855   0.006313   3.779 0.000158
-    ## year2011                                  0.006294   0.006307   0.998 0.318285
-    ## year2012                                 -0.028041   0.006239  -4.494 6.98e-06
-    ## year2013                                 -0.020921   0.007636  -2.740 0.006151
-    ## year2014                                 -0.044608   0.007661  -5.823 5.78e-09
-    ## year2015                                 -0.117919   0.007758 -15.199  < 2e-16
-    ## year2016                                 -0.184240   0.007920 -23.264  < 2e-16
-    ## year2017                                 -0.174107   0.008185 -21.271  < 2e-16
-    ##                                             
-    ## (Intercept)                              ***
-    ## raw_income_scale                         ***
-    ## median_income_demo_scale                 ***
-    ## physicians_scale                         ***
-    ## unweighted_pop_county_scale              ***
-    ## median_monthly_housing_cost_county_scale ***
-    ## land_area_2010_scale                     ***
-    ## education_scale                          ***
-    ## employment_all1                          ***
-    ## sex1                                     ***
-    ## age_scale                                ***
-    ## race1                                    ***
-    ## race2                                       
-    ## race3                                    ***
-    ## race4                                    ***
-    ## married1                                 ***
-    ## married2                                 ***
-    ## married3                                 ***
-    ## married4                                 ***
-    ## married5                                 ***
-    ## year2009                                    
-    ## year2010                                 ***
-    ## year2011                                    
-    ## year2012                                 ***
-    ## year2013                                 ** 
-    ## year2014                                 ***
-    ## year2015                                 ***
-    ## year2016                                 ***
-    ## year2017                                 ***
+    ##                                    Estimate Std. Error  z value Pr(>|z|)    
+    ## (Intercept)                       -1.309897   0.008225 -159.260  < 2e-16 ***
+    ## income_scale                      -0.334268   0.002415 -138.439  < 2e-16 ***
+    ## income_demo_ranger_sar_vars_scale  0.619891   0.004246  145.986  < 2e-16 ***
+    ## physicians_scale                   0.027065   0.002193   12.341  < 2e-16 ***
+    ## unweighted_pop_county_scale       -0.008718   0.002386   -3.654 0.000258 ***
+    ## median_home_value_county_scale    -0.008901   0.002431   -3.662 0.000251 ***
+    ## land_area_2010_scale              -0.004070   0.002047   -1.988 0.046772 *  
+    ## education_scale                   -0.058180   0.002183  -26.655  < 2e-16 ***
+    ## employment_all1                    0.349459   0.002238  156.129  < 2e-16 ***
+    ## sex1                              -0.601383   0.003074 -195.631  < 2e-16 ***
+    ## age_scale                         -0.062151   0.002741  -22.672  < 2e-16 ***
+    ## race1                             -0.278257   0.006739  -41.289  < 2e-16 ***
+    ## race2                              0.531484   0.010603   50.127  < 2e-16 ***
+    ## race3                              0.019590   0.007586    2.582 0.009810 ** 
+    ## race4                             -0.740403   0.015191  -48.739  < 2e-16 ***
+    ## married1                          -0.078192   0.004960  -15.764  < 2e-16 ***
+    ## married2                          -0.422103   0.003994 -105.676  < 2e-16 ***
+    ## married3                           0.403054   0.009739   41.384  < 2e-16 ***
+    ## married4                           0.152590   0.004948   30.840  < 2e-16 ***
+    ## married5                          -0.064043   0.006273  -10.209  < 2e-16 ***
+    ## year2009                          -0.061729   0.007636   -8.084 6.25e-16 ***
+    ## year2010                           0.010702   0.007634    1.402 0.160949    
+    ## year2011                          -0.014590   0.007618   -1.915 0.055478 .  
+    ## year2012                           0.016893   0.007530    2.243 0.024873 *  
+    ## year2013                           0.059587   0.009108    6.542 6.07e-11 ***
+    ## year2014                           0.074444   0.009138    8.146 3.75e-16 ***
+    ## year2015                           0.115290   0.009114   12.650  < 2e-16 ***
+    ## year2016                           0.147491   0.009072   16.258  < 2e-16 ***
+    ## year2017                           0.231366   0.009252   25.008  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 2648569  on 2055750  degrees of freedom
-    ## Residual deviance: 2286133  on 2055722  degrees of freedom
-    ##   (1474519 observations deleted due to missingness)
-    ## AIC: 2286191
+    ##     Null deviance: 1885978  on 2055669  degrees of freedom
+    ## Residual deviance: 1735223  on 2055641  degrees of freedom
+    ##   (1474600 observations deleted due to missingness)
+    ## AIC: 1735281
     ## 
-    ## Number of Fisher Scoring iterations: 4
+    ## Number of Fisher Scoring iterations: 5
 
 ### Obesity
 
 ``` r
-lm1 <-
+lm_obe_geo <-
   glm(
     obese ~
       raw_income_scale +
       median_income_county_scale +
       physicians_scale +
       unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
+      median_home_value_county_scale +
       land_area_2010_scale +
       education_scale +
       employment_all +
@@ -722,107 +702,76 @@ lm1 <-
       married + 
       year,
     family = "binomial",
-    data = dfg_rs %>% mutate(obese = ifelse(obese == 1, 0, ifelse(obese == 0, 1, NA)))
+    data = dfg_rs
   )
 
-summary(lm1)
+summary(lm_obe_geo)
 ```
 
     ## 
     ## Call:
     ## glm(formula = obese ~ raw_income_scale + median_income_county_scale + 
-    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ##     physicians_scale + unweighted_pop_county_scale + median_home_value_county_scale + 
     ##     land_area_2010_scale + education_scale + employment_all + 
     ##     sex + age_scale + race + married + year, family = "binomial", 
-    ##     data = dfg_rs %>% mutate(obese = ifelse(obese == 1, 0, ifelse(obese == 
-    ##         0, 1, NA))))
+    ##     data = dfg_rs)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.3546  -0.8146  -0.7168   1.3727   2.4754  
+    ## -1.3255  -0.8158  -0.7205   1.3751   2.6130  
     ## 
     ## Coefficients:
-    ##                                           Estimate Std. Error  z value Pr(>|z|)
-    ## (Intercept)                              -1.130781   0.006690 -169.022  < 2e-16
-    ## raw_income_scale                         -0.122335   0.002065  -59.230  < 2e-16
-    ## median_income_county_scale                0.099703   0.004259   23.412  < 2e-16
-    ## physicians_scale                         -0.059412   0.001872  -31.738  < 2e-16
-    ## unweighted_pop_county_scale              -0.012034   0.002118   -5.682 1.33e-08
-    ## median_monthly_housing_cost_county_scale -0.183577   0.004475  -41.026  < 2e-16
-    ## land_area_2010_scale                     -0.008873   0.001733   -5.121 3.04e-07
-    ## education_scale                          -0.123001   0.001833  -67.102  < 2e-16
-    ## employment_all1                           0.008700   0.001926    4.516 6.30e-06
-    ## sex1                                      0.089831   0.001680   53.486  < 2e-16
-    ## age_scale                                 0.034947   0.002173   16.081  < 2e-16
-    ## race1                                     0.004182   0.004591    0.911    0.362
-    ## race2                                     0.179123   0.009071   19.746  < 2e-16
-    ## race3                                     0.526093   0.005887   89.370  < 2e-16
-    ## race4                                    -0.834618   0.013420  -62.192  < 2e-16
-    ## married1                                 -0.108220   0.004515  -23.970  < 2e-16
-    ## married2                                  0.110380   0.003475   31.760  < 2e-16
-    ## married3                                  0.132921   0.009601   13.845  < 2e-16
-    ## married4                                  0.096927   0.004675   20.735  < 2e-16
-    ## married5                                 -0.178678   0.005634  -31.712  < 2e-16
-    ## year2009                                  0.034699   0.006423    5.402 6.58e-08
-    ## year2010                                  0.040639   0.006426    6.325 2.54e-10
-    ## year2011                                  0.008928   0.006411    1.392    0.164
-    ## year2012                                  0.029325   0.006322    4.639 3.50e-06
-    ## year2013                                  0.058978   0.007651    7.709 1.27e-14
-    ## year2014                                  0.097186   0.007650   12.704  < 2e-16
-    ## year2015                                  0.126504   0.007613   16.616  < 2e-16
-    ## year2016                                  0.129895   0.007591   17.113  < 2e-16
-    ## year2017                                  0.122188   0.007885   15.496  < 2e-16
-    ##                                             
-    ## (Intercept)                              ***
-    ## raw_income_scale                         ***
-    ## median_income_county_scale               ***
-    ## physicians_scale                         ***
-    ## unweighted_pop_county_scale              ***
-    ## median_monthly_housing_cost_county_scale ***
-    ## land_area_2010_scale                     ***
-    ## education_scale                          ***
-    ## employment_all1                          ***
-    ## sex1                                     ***
-    ## age_scale                                ***
-    ## race1                                       
-    ## race2                                    ***
-    ## race3                                    ***
-    ## race4                                    ***
-    ## married1                                 ***
-    ## married2                                 ***
-    ## married3                                 ***
-    ## married4                                 ***
-    ## married5                                 ***
-    ## year2009                                 ***
-    ## year2010                                 ***
-    ## year2011                                    
-    ## year2012                                 ***
-    ## year2013                                 ***
-    ## year2014                                 ***
-    ## year2015                                 ***
-    ## year2016                                 ***
-    ## year2017                                 ***
+    ##                                 Estimate Std. Error  z value Pr(>|z|)    
+    ## (Intercept)                    -1.129326   0.006689 -168.825  < 2e-16 ***
+    ## raw_income_scale               -0.124041   0.002065  -60.074  < 2e-16 ***
+    ## median_income_county_scale      0.025761   0.002490   10.346  < 2e-16 ***
+    ## physicians_scale               -0.049332   0.001901  -25.955  < 2e-16 ***
+    ## unweighted_pop_county_scale    -0.007460   0.002106   -3.542 0.000398 ***
+    ## median_home_value_county_scale -0.143828   0.002867  -50.158  < 2e-16 ***
+    ## land_area_2010_scale           -0.011568   0.001735   -6.667 2.60e-11 ***
+    ## education_scale                -0.124227   0.001831  -67.830  < 2e-16 ***
+    ## employment_all1                 0.007901   0.001926    4.102 4.10e-05 ***
+    ## sex1                            0.089394   0.001680   53.218  < 2e-16 ***
+    ## age_scale                       0.037159   0.002175   17.085  < 2e-16 ***
+    ## race1                           0.005364   0.004582    1.171 0.241777    
+    ## race2                           0.189181   0.009076   20.845  < 2e-16 ***
+    ## race3                           0.502007   0.005896   85.147  < 2e-16 ***
+    ## race4                          -0.817209   0.013439  -60.808  < 2e-16 ***
+    ## married1                       -0.106821   0.004517  -23.647  < 2e-16 ***
+    ## married2                        0.110174   0.003475   31.703  < 2e-16 ***
+    ## married3                        0.133924   0.009605   13.944  < 2e-16 ***
+    ## married4                        0.095042   0.004676   20.326  < 2e-16 ***
+    ## married5                       -0.181237   0.005636  -32.159  < 2e-16 ***
+    ## year2009                        0.035068   0.006426    5.457 4.83e-08 ***
+    ## year2010                        0.040213   0.006428    6.256 3.95e-10 ***
+    ## year2011                       -0.004577   0.006419   -0.713 0.475767    
+    ## year2012                        0.007664   0.006337    1.209 0.226487    
+    ## year2013                        0.036604   0.007665    4.775 1.79e-06 ***
+    ## year2014                        0.076904   0.007668   10.029  < 2e-16 ***
+    ## year2015                        0.116124   0.007622   15.235  < 2e-16 ***
+    ## year2016                        0.128935   0.007582   17.006  < 2e-16 ***
+    ## year2017                        0.130078   0.007851   16.568  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 2324782  on 2006511  degrees of freedom
-    ## Residual deviance: 2277944  on 2006483  degrees of freedom
-    ##   (1523758 observations deleted due to missingness)
-    ## AIC: 2278002
+    ##     Null deviance: 2324778  on 2006508  degrees of freedom
+    ## Residual deviance: 2277022  on 2006480  degrees of freedom
+    ##   (1523761 observations deleted due to missingness)
+    ## AIC: 2277080
     ## 
     ## Number of Fisher Scoring iterations: 4
 
 ``` r
-lm1 <-
+lm_obe_demo <-
   glm(
-    obese ~
-      raw_income_scale +
-      median_income_demo_scale +
+    smoke ~
+      income_scale +
+      income_demo_ranger_sar_vars_scale +
       physicians_scale +
       unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
+      median_home_value_county_scale +
       land_area_2010_scale +
       education_scale +
       employment_all +
@@ -832,109 +781,78 @@ lm1 <-
       married + 
       year,
     family = "binomial",
-    data = dfg_rs %>% mutate(obese = ifelse(obese == 1, 0, ifelse(obese == 0, 1, NA)))
+    data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm_obe_demo)
 ```
 
     ## 
     ## Call:
-    ## glm(formula = obese ~ raw_income_scale + median_income_demo_scale + 
-    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ## glm(formula = smoke ~ income_scale + income_demo_ranger_sar_vars_scale + 
+    ##     physicians_scale + unweighted_pop_county_scale + median_home_value_county_scale + 
     ##     land_area_2010_scale + education_scale + employment_all + 
     ##     sex + age_scale + race + married + year, family = "binomial", 
-    ##     data = dfg_rs %>% mutate(obese = ifelse(obese == 1, 0, ifelse(obese == 
-    ##         0, 1, NA))))
+    ##     data = dfg_rs)
     ## 
     ## Deviance Residuals: 
     ##     Min       1Q   Median       3Q      Max  
-    ## -1.5669  -0.8180  -0.7077   1.3477   2.6764  
+    ## -1.7738  -0.6300  -0.4621  -0.3116   3.2285  
     ## 
     ## Coefficients:
-    ##                                           Estimate Std. Error  z value Pr(>|z|)
-    ## (Intercept)                              -1.082182   0.006701 -161.486  < 2e-16
-    ## raw_income_scale                         -0.138017   0.002081  -66.321  < 2e-16
-    ## median_income_demo_scale                  0.394472   0.003913  100.805  < 2e-16
-    ## physicians_scale                         -0.059703   0.001877  -31.806  < 2e-16
-    ## unweighted_pop_county_scale              -0.028144   0.002006  -14.033  < 2e-16
-    ## median_monthly_housing_cost_county_scale -0.088773   0.001974  -44.971  < 2e-16
-    ## land_area_2010_scale                     -0.011312   0.001736   -6.515 7.25e-11
-    ## education_scale                          -0.424690   0.003516 -120.793  < 2e-16
-    ## employment_all1                           0.034958   0.001946   17.968  < 2e-16
-    ## sex1                                      0.004943   0.001878    2.632  0.00849
-    ## age_scale                                 0.042741   0.002211   19.331  < 2e-16
-    ## race1                                     0.005120   0.004581    1.118  0.26375
-    ## race2                                     0.177064   0.009095   19.469  < 2e-16
-    ## race3                                     0.499277   0.005897   84.668  < 2e-16
-    ## race4                                    -0.820569   0.013442  -61.044  < 2e-16
-    ## married1                                 -0.061941   0.004534  -13.660  < 2e-16
-    ## married2                                  0.080649   0.003495   23.076  < 2e-16
-    ## married3                                  0.090934   0.009625    9.448  < 2e-16
-    ## married4                                  0.053137   0.004702   11.301  < 2e-16
-    ## married5                                 -0.113934   0.005674  -20.079  < 2e-16
-    ## year2009                                  0.061218   0.006444    9.501  < 2e-16
-    ## year2010                                  0.049973   0.006439    7.761 8.45e-15
-    ## year2011                                  0.029271   0.006429    4.553 5.28e-06
-    ## year2012                                  0.002138   0.006343    0.337  0.73611
-    ## year2013                                  0.039487   0.007670    5.148 2.63e-07
-    ## year2014                                  0.083369   0.007665   10.876  < 2e-16
-    ## year2015                                  0.010849   0.007718    1.406  0.15984
-    ## year2016                                 -0.060460   0.007841   -7.711 1.25e-14
-    ## year2017                                 -0.052912   0.008126   -6.511 7.44e-11
-    ##                                             
-    ## (Intercept)                              ***
-    ## raw_income_scale                         ***
-    ## median_income_demo_scale                 ***
-    ## physicians_scale                         ***
-    ## unweighted_pop_county_scale              ***
-    ## median_monthly_housing_cost_county_scale ***
-    ## land_area_2010_scale                     ***
-    ## education_scale                          ***
-    ## employment_all1                          ***
-    ## sex1                                     ** 
-    ## age_scale                                ***
-    ## race1                                       
-    ## race2                                    ***
-    ## race3                                    ***
-    ## race4                                    ***
-    ## married1                                 ***
-    ## married2                                 ***
-    ## married3                                 ***
-    ## married4                                 ***
-    ## married5                                 ***
-    ## year2009                                 ***
-    ## year2010                                 ***
-    ## year2011                                 ***
-    ## year2012                                    
-    ## year2013                                 ***
-    ## year2014                                 ***
-    ## year2015                                    
-    ## year2016                                 ***
-    ## year2017                                 ***
+    ##                                    Estimate Std. Error  z value Pr(>|z|)    
+    ## (Intercept)                       -1.100930   0.008033 -137.054  < 2e-16 ***
+    ## income_scale                      -0.258314   0.002414 -106.995  < 2e-16 ***
+    ## income_demo_ranger_sar_vars_scale  0.708972   0.004723  150.103  < 2e-16 ***
+    ## physicians_scale                  -0.022311   0.002279   -9.789  < 2e-16 ***
+    ## unweighted_pop_county_scale       -0.005648   0.002513   -2.248   0.0246 *  
+    ## median_home_value_county_scale    -0.102658   0.002631  -39.016  < 2e-16 ***
+    ## land_area_2010_scale              -0.008613   0.002078   -4.145 3.40e-05 ***
+    ## education_scale                   -0.446990   0.002225 -200.930  < 2e-16 ***
+    ## employment_all1                    0.082899   0.002316   35.787  < 2e-16 ***
+    ## sex1                              -0.215046   0.003191  -67.390  < 2e-16 ***
+    ## age_scale                         -0.327717   0.002712 -120.862  < 2e-16 ***
+    ## race1                             -0.482872   0.006744  -71.597  < 2e-16 ***
+    ## race2                              0.587508   0.010009   58.697  < 2e-16 ***
+    ## race3                              0.419735   0.006900   60.835  < 2e-16 ***
+    ## race4                             -0.550502   0.013658  -40.305  < 2e-16 ***
+    ## married1                          -0.082491   0.004878  -16.912  < 2e-16 ***
+    ## married2                          -0.557903   0.004050 -137.742  < 2e-16 ***
+    ## married3                           0.223775   0.009856   22.706  < 2e-16 ***
+    ## married4                           0.185496   0.005072   36.570  < 2e-16 ***
+    ## married5                          -0.028283   0.007072   -3.999 6.35e-05 ***
+    ## year2009                          -0.018637   0.007570   -2.462   0.0138 *  
+    ## year2010                          -0.018849   0.007600   -2.480   0.0131 *  
+    ## year2011                          -0.069454   0.007590   -9.150  < 2e-16 ***
+    ## year2012                          -0.058109   0.007525   -7.722 1.14e-14 ***
+    ## year2013                          -0.066894   0.009156   -7.306 2.76e-13 ***
+    ## year2014                          -0.113849   0.009274  -12.276  < 2e-16 ***
+    ## year2015                          -0.156705   0.009394  -16.681  < 2e-16 ***
+    ## year2016                          -0.144323   0.009361  -15.417  < 2e-16 ***
+    ## year2017                          -0.146432   0.009637  -15.195  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
     ## (Dispersion parameter for binomial family taken to be 1)
     ## 
-    ##     Null deviance: 2323788  on 2005579  degrees of freedom
-    ## Residual deviance: 2267129  on 2005551  degrees of freedom
-    ##   (1524690 observations deleted due to missingness)
-    ## AIC: 2267187
+    ##     Null deviance: 1872702  on 2057584  degrees of freedom
+    ## Residual deviance: 1677731  on 2057556  degrees of freedom
+    ##   (1472685 observations deleted due to missingness)
+    ## AIC: 1677789
     ## 
-    ## Number of Fisher Scoring iterations: 4
+    ## Number of Fisher Scoring iterations: 5
 
 ### Self-reported health
 
 ``` r
-lm1 <-
+lm_srh_geo <-
   lm(
     scale(sr_health) ~
       raw_income_scale +
       median_income_county_scale +
       physicians_scale +
       unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
+      median_home_value_county_scale +
       land_area_2010_scale +
       education_scale +
       employment_all +
@@ -946,13 +864,13 @@ lm1 <-
     data = dfg_rs %>% mutate(sr_health = ifelse(sr_health %in% c(1:5), 6 - sr_health, NA))
   )
 
-summary(lm1)
+summary(lm_srh_geo)
 ```
 
     ## 
     ## Call:
     ## lm(formula = scale(sr_health) ~ raw_income_scale + median_income_county_scale + 
-    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ##     physicians_scale + unweighted_pop_county_scale + median_home_value_county_scale + 
     ##     land_area_2010_scale + education_scale + employment_all + 
     ##     sex + age_scale + race + married + year, data = dfg_rs %>% 
     ##     mutate(sr_health = ifelse(sr_health %in% c(1:5), 6 - sr_health, 
@@ -960,86 +878,56 @@ summary(lm1)
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -3.10147 -0.65743  0.03355  0.71485  2.55368 
+    ## -3.11408 -0.65753  0.03361  0.71502  2.54129 
     ## 
     ## Coefficients:
-    ##                                            Estimate Std. Error  t value
-    ## (Intercept)                              -0.1331295  0.0036555  -36.419
-    ## raw_income_scale                          0.1731691  0.0008768  197.512
-    ## median_income_county_scale               -0.0051223  0.0018265   -2.804
-    ## physicians_scale                          0.0143890  0.0007788   18.475
-    ## unweighted_pop_county_scale              -0.0092225  0.0008621  -10.698
-    ## median_monthly_housing_cost_county_scale  0.0275896  0.0019121   14.429
-    ## land_area_2010_scale                      0.0069331  0.0007329    9.460
-    ## education_scale                           0.1453128  0.0007985  181.982
-    ## employment_all1                          -0.1354375  0.0008272 -163.721
-    ## sex1                                     -0.0394452  0.0007201  -54.776
-    ## age_scale                                -0.0902203  0.0009368  -96.308
-    ## race1                                     0.1215618  0.0017318   70.196
-    ## race2                                    -0.0490858  0.0038988  -12.590
-    ## race3                                     0.0183442  0.0024680    7.433
-    ## race4                                    -0.0290685  0.0041738   -6.965
-    ## married1                                  0.0631991  0.0019298   32.748
-    ## married2                                  0.0777486  0.0015056   51.638
-    ## married3                                 -0.1631095  0.0042920  -38.003
-    ## married4                                 -0.0528630  0.0020629  -25.626
-    ## married5                                  0.0980923  0.0024001   40.870
-    ## year2009                                 -0.0114402  0.0036149   -3.165
-    ## year2010                                 -0.0333408  0.0036162   -9.220
-    ## year2011                                 -0.0218239  0.0036013   -6.060
-    ## year2012                                 -0.0263408  0.0035793   -7.359
-    ## year2013                                 -0.0619783  0.0039782  -15.580
-    ## year2014                                 -0.0585967  0.0039933  -14.674
-    ## year2015                                 -0.0697201  0.0039925  -17.463
-    ## year2016                                 -0.0769976  0.0039819  -19.337
-    ## year2017                                 -0.1133533  0.0085729  -13.222
-    ##                                          Pr(>|t|)    
-    ## (Intercept)                               < 2e-16 ***
-    ## raw_income_scale                          < 2e-16 ***
-    ## median_income_county_scale                0.00504 ** 
-    ## physicians_scale                          < 2e-16 ***
-    ## unweighted_pop_county_scale               < 2e-16 ***
-    ## median_monthly_housing_cost_county_scale  < 2e-16 ***
-    ## land_area_2010_scale                      < 2e-16 ***
-    ## education_scale                           < 2e-16 ***
-    ## employment_all1                           < 2e-16 ***
-    ## sex1                                      < 2e-16 ***
-    ## age_scale                                 < 2e-16 ***
-    ## race1                                     < 2e-16 ***
-    ## race2                                     < 2e-16 ***
-    ## race3                                    1.06e-13 ***
-    ## race4                                    3.29e-12 ***
-    ## married1                                  < 2e-16 ***
-    ## married2                                  < 2e-16 ***
-    ## married3                                  < 2e-16 ***
-    ## married4                                  < 2e-16 ***
-    ## married5                                  < 2e-16 ***
-    ## year2009                                  0.00155 ** 
-    ## year2010                                  < 2e-16 ***
-    ## year2011                                 1.36e-09 ***
-    ## year2012                                 1.85e-13 ***
-    ## year2013                                  < 2e-16 ***
-    ## year2014                                  < 2e-16 ***
-    ## year2015                                  < 2e-16 ***
-    ## year2016                                  < 2e-16 ***
-    ## year2017                                  < 2e-16 ***
+    ##                                  Estimate Std. Error  t value Pr(>|t|)    
+    ## (Intercept)                    -0.1316608  0.0036544  -36.029  < 2e-16 ***
+    ## raw_income_scale                0.1735512  0.0008762  198.078  < 2e-16 ***
+    ## median_income_county_scale      0.0128310  0.0010326   12.426  < 2e-16 ***
+    ## physicians_scale                0.0144079  0.0007951   18.120  < 2e-16 ***
+    ## unweighted_pop_county_scale    -0.0067239  0.0008438   -7.969 1.60e-15 ***
+    ## median_home_value_county_scale  0.0098960  0.0011364    8.708  < 2e-16 ***
+    ## land_area_2010_scale            0.0077501  0.0007297   10.620  < 2e-16 ***
+    ## education_scale                 0.1456971  0.0007978  182.615  < 2e-16 ***
+    ## employment_all1                -0.1351856  0.0008270 -163.467  < 2e-16 ***
+    ## sex1                           -0.0393925  0.0007201  -54.700  < 2e-16 ***
+    ## age_scale                      -0.0902529  0.0009372  -96.302  < 2e-16 ***
+    ## race1                           0.1199903  0.0017271   69.477  < 2e-16 ***
+    ## race2                          -0.0503065  0.0038984  -12.905  < 2e-16 ***
+    ## race3                           0.0207076  0.0024715    8.379  < 2e-16 ***
+    ## race4                          -0.0302576  0.0041784   -7.241 4.44e-13 ***
+    ## married1                        0.0633679  0.0019301   32.831  < 2e-16 ***
+    ## married2                        0.0772156  0.0015052   51.299  < 2e-16 ***
+    ## married3                       -0.1629005  0.0042922  -37.953  < 2e-16 ***
+    ## married4                       -0.0527593  0.0020630  -25.574  < 2e-16 ***
+    ## married5                        0.0979744  0.0024005   40.814  < 2e-16 ***
+    ## year2009                       -0.0115644  0.0036151   -3.199  0.00138 ** 
+    ## year2010                       -0.0334589  0.0036163   -9.252  < 2e-16 ***
+    ## year2011                       -0.0208711  0.0036039   -5.791 6.99e-09 ***
+    ## year2012                       -0.0247833  0.0035853   -6.913 4.76e-12 ***
+    ## year2013                       -0.0605011  0.0039839  -15.186  < 2e-16 ***
+    ## year2014                       -0.0578373  0.0040002  -14.458  < 2e-16 ***
+    ## year2015                       -0.0704859  0.0039953  -17.642  < 2e-16 ***
+    ## year2016                       -0.0794063  0.0039775  -19.964  < 2e-16 ***
+    ## year2017                       -0.1173578  0.0085662  -13.700  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.9224 on 1759140 degrees of freedom
-    ##   (1771101 observations deleted due to missingness)
-    ## Multiple R-squared:  0.1437, Adjusted R-squared:  0.1437 
-    ## F-statistic: 1.054e+04 on 28 and 1759140 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 0.9225 on 1759138 degrees of freedom
+    ##   (1771103 observations deleted due to missingness)
+    ## Multiple R-squared:  0.1436, Adjusted R-squared:  0.1436 
+    ## F-statistic: 1.054e+04 on 28 and 1759138 DF,  p-value: < 2.2e-16
 
 ``` r
-lm1 <-
+lm_srh_demo <-
   lm(
     scale(sr_health) ~
-      raw_income_scale +
-      median_income_demo_scale +
+      income_scale +
+      income_demo_ranger_sar_vars_scale +
       physicians_scale +
       unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
+      median_home_value_county_scale +
       land_area_2010_scale +
       education_scale +
       employment_all +
@@ -1051,13 +939,13 @@ lm1 <-
     data = dfg_rs %>% mutate(sr_health = ifelse(sr_health %in% c(1:5), 6 - sr_health, NA))
   )
 
-summary(lm1)
+summary(lm_srh_demo)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = scale(sr_health) ~ raw_income_scale + median_income_demo_scale + 
-    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ## lm(formula = scale(sr_health) ~ income_scale + income_demo_ranger_sar_vars_scale + 
+    ##     physicians_scale + unweighted_pop_county_scale + median_home_value_county_scale + 
     ##     land_area_2010_scale + education_scale + employment_all + 
     ##     sex + age_scale + race + married + year, data = dfg_rs %>% 
     ##     mutate(sr_health = ifelse(sr_health %in% c(1:5), 6 - sr_health, 
@@ -1065,88 +953,58 @@ summary(lm1)
     ## 
     ## Residuals:
     ##      Min       1Q   Median       3Q      Max 
-    ## -3.15185 -0.65671  0.03679  0.71400  2.58662 
+    ## -3.16176 -0.65394  0.03618  0.71493  2.67557 
     ## 
     ## Coefficients:
-    ##                                            Estimate Std. Error  t value
-    ## (Intercept)                              -0.1509910  0.0036537  -41.326
-    ## raw_income_scale                          0.1776532  0.0008787  202.180
-    ## median_income_demo_scale                 -0.1048152  0.0017135  -61.171
-    ## physicians_scale                          0.0141369  0.0007779   18.173
-    ## unweighted_pop_county_scale              -0.0085332  0.0008067  -10.578
-    ## median_monthly_housing_cost_county_scale  0.0224671  0.0008208   27.373
-    ## land_area_2010_scale                      0.0066694  0.0007282    9.159
-    ## education_scale                           0.2248805  0.0015249  147.474
-    ## employment_all1                          -0.1432505  0.0008360 -171.348
-    ## sex1                                     -0.0176786  0.0008025  -22.029
-    ## age_scale                                -0.0905503  0.0009357  -96.770
-    ## race1                                     0.1232871  0.0017222   71.587
-    ## race2                                    -0.0479040  0.0038945  -12.300
-    ## race3                                     0.0249307  0.0024634   10.120
-    ## race4                                    -0.0334930  0.0041694   -8.033
-    ## married1                                  0.0491278  0.0019415   25.304
-    ## married2                                  0.0875327  0.0015116   57.907
-    ## married3                                 -0.1512826  0.0042917  -35.250
-    ## married4                                 -0.0405519  0.0020705  -19.585
-    ## married5                                  0.0792057  0.0024168   32.773
-    ## year2009                                 -0.0184479  0.0036128   -5.106
-    ## year2010                                 -0.0353268  0.0036124   -9.779
-    ## year2011                                 -0.0271959  0.0035984   -7.558
-    ## year2012                                 -0.0189197  0.0035775   -5.289
-    ## year2013                                 -0.0561379  0.0039746  -14.124
-    ## year2014                                 -0.0535077  0.0039878  -13.418
-    ## year2015                                 -0.0363955  0.0040199   -9.054
-    ## year2016                                 -0.0217203  0.0040651   -5.343
-    ## year2017                                 -0.0628835  0.0086156   -7.299
-    ##                                          Pr(>|t|)    
-    ## (Intercept)                               < 2e-16 ***
-    ## raw_income_scale                          < 2e-16 ***
-    ## median_income_demo_scale                  < 2e-16 ***
-    ## physicians_scale                          < 2e-16 ***
-    ## unweighted_pop_county_scale               < 2e-16 ***
-    ## median_monthly_housing_cost_county_scale  < 2e-16 ***
-    ## land_area_2010_scale                      < 2e-16 ***
-    ## education_scale                           < 2e-16 ***
-    ## employment_all1                           < 2e-16 ***
-    ## sex1                                      < 2e-16 ***
-    ## age_scale                                 < 2e-16 ***
-    ## race1                                     < 2e-16 ***
-    ## race2                                     < 2e-16 ***
-    ## race3                                     < 2e-16 ***
-    ## race4                                    9.51e-16 ***
-    ## married1                                  < 2e-16 ***
-    ## married2                                  < 2e-16 ***
-    ## married3                                  < 2e-16 ***
-    ## married4                                  < 2e-16 ***
-    ## married5                                  < 2e-16 ***
-    ## year2009                                 3.29e-07 ***
-    ## year2010                                  < 2e-16 ***
-    ## year2011                                 4.10e-14 ***
-    ## year2012                                 1.23e-07 ***
-    ## year2013                                  < 2e-16 ***
-    ## year2014                                  < 2e-16 ***
-    ## year2015                                  < 2e-16 ***
-    ## year2016                                 9.14e-08 ***
-    ## year2017                                 2.90e-13 ***
+    ##                                     Estimate Std. Error  t value Pr(>|t|)    
+    ## (Intercept)                       -0.2447920  0.0037915  -64.564  < 2e-16 ***
+    ## income_scale                       0.1907835  0.0008775  217.408  < 2e-16 ***
+    ## income_demo_ranger_sar_vars_scale -0.1636799  0.0015058 -108.702  < 2e-16 ***
+    ## physicians_scale                   0.0141831  0.0007906   17.939  < 2e-16 ***
+    ## unweighted_pop_county_scale       -0.0086040  0.0008256  -10.421  < 2e-16 ***
+    ## median_home_value_county_scale     0.0189972  0.0008592   22.111  < 2e-16 ***
+    ## land_area_2010_scale               0.0064574  0.0007257    8.898  < 2e-16 ***
+    ## education_scale                    0.1466787  0.0007976  183.892  < 2e-16 ***
+    ## employment_all1                   -0.1432501  0.0008384 -170.854  < 2e-16 ***
+    ## sex1                               0.0501097  0.0010906   45.949  < 2e-16 ***
+    ## age_scale                         -0.1225623  0.0009691 -126.477  < 2e-16 ***
+    ## race1                              0.2763680  0.0022634  122.103  < 2e-16 ***
+    ## race2                             -0.1015785  0.0039109  -25.973  < 2e-16 ***
+    ## race3                             -0.0366042  0.0025181  -14.536  < 2e-16 ***
+    ## race4                              0.0493908  0.0042241   11.693  < 2e-16 ***
+    ## married1                           0.0336669  0.0019438   17.320  < 2e-16 ***
+    ## married2                           0.0927007  0.0015217   60.919  < 2e-16 ***
+    ## married3                          -0.1178041  0.0042886  -27.469  < 2e-16 ***
+    ## married4                          -0.0193888  0.0020739   -9.349  < 2e-16 ***
+    ## married5                           0.0356729  0.0024601   14.501  < 2e-16 ***
+    ## year2009                          -0.0096780  0.0035989   -2.689  0.00716 ** 
+    ## year2010                          -0.0349198  0.0036001   -9.700  < 2e-16 ***
+    ## year2011                          -0.0282451  0.0035867   -7.875 3.41e-15 ***
+    ## year2012                          -0.0332471  0.0035662   -9.323  < 2e-16 ***
+    ## year2013                          -0.0690765  0.0039621  -17.435  < 2e-16 ***
+    ## year2014                          -0.0663552  0.0039758  -16.690  < 2e-16 ***
+    ## year2015                          -0.0797288  0.0039711  -20.077  < 2e-16 ***
+    ## year2016                          -0.0882054  0.0039481  -22.342  < 2e-16 ***
+    ## year2017                          -0.1255390  0.0085218  -14.732  < 2e-16 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.9215 on 1759042 degrees of freedom
-    ##   (1771199 observations deleted due to missingness)
-    ## Multiple R-squared:  0.1455, Adjusted R-squared:  0.1455 
-    ## F-statistic: 1.07e+04 on 28 and 1759042 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 0.9181 on 1757729 degrees of freedom
+    ##   (1772512 observations deleted due to missingness)
+    ## Multiple R-squared:  0.1516, Adjusted R-squared:  0.1516 
+    ## F-statistic: 1.122e+04 on 28 and 1757729 DF,  p-value: < 2.2e-16
 
 ### Height
 
 ``` r
-lm1 <-
+lm_ht_geo <-
   lm(
-    scale(HEIGHT) ~
+    height_scale ~
       raw_income_scale +
       median_income_county_scale +
       physicians_scale +
       unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
+      median_home_value_county_scale +
       land_area_2010_scale +
       education_scale +
       employment_all +
@@ -1158,98 +1016,68 @@ lm1 <-
     data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm_ht_geo)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = scale(HEIGHT) ~ raw_income_scale + median_income_county_scale + 
-    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ## lm(formula = height_scale ~ raw_income_scale + median_income_county_scale + 
+    ##     physicians_scale + unweighted_pop_county_scale + median_home_value_county_scale + 
     ##     land_area_2010_scale + education_scale + employment_all + 
     ##     sex + age_scale + race + married + year, data = dfg_rs)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.5461 -0.4466 -0.0104  0.4361  7.9934 
+    ## -5.5603 -0.4467 -0.0105  0.4360  7.9809 
     ## 
     ## Coefficients:
-    ##                                            Estimate Std. Error  t value
-    ## (Intercept)                              -0.1589904  0.0018538  -85.766
-    ## raw_income_scale                          0.0491020  0.0005986   82.031
-    ## median_income_county_scale                0.0045866  0.0012444    3.686
-    ## physicians_scale                         -0.0064990  0.0005341  -12.169
-    ## unweighted_pop_county_scale              -0.0023712  0.0005931   -3.998
-    ## median_monthly_housing_cost_county_scale -0.0146024  0.0013059  -11.182
-    ## land_area_2010_scale                      0.0078044  0.0005045   15.469
-    ## education_scale                           0.0586744  0.0005467  107.317
-    ## employment_all1                          -0.0084786  0.0005697  -14.883
-    ## sex1                                      0.6873537  0.0004928 1394.653
-    ## age_scale                                -0.1014158  0.0006423 -157.898
-    ## race1                                     0.1966598  0.0011854  165.903
-    ## race2                                     0.0990225  0.0026613   37.208
-    ## race3                                     0.1901373  0.0016890  112.575
-    ## race4                                    -0.3045173  0.0028673 -106.205
-    ## married1                                  0.0017828  0.0013242    1.346
-    ## married2                                  0.0106778  0.0010354   10.313
-    ## married3                                  0.0020768  0.0029685    0.700
-    ## married4                                  0.0211716  0.0014107   15.008
-    ## married5                                 -0.0312147  0.0016492  -18.927
-    ## year2009                                  0.0094922  0.0018801    5.049
-    ## year2010                                  0.0103448  0.0018820    5.497
-    ## year2011                                  0.0034369  0.0018674    1.840
-    ## year2012                                  0.0011312  0.0018434    0.614
-    ## year2013                                  0.0018655  0.0022473    0.830
-    ## year2014                                  0.0037000  0.0022626    1.635
-    ## year2015                                  0.0019968  0.0022588    0.884
-    ## year2016                                  0.0014130  0.0022470    0.629
-    ## year2017                                  0.0072321  0.0023310    3.103
-    ##                                          Pr(>|t|)    
-    ## (Intercept)                               < 2e-16 ***
-    ## raw_income_scale                          < 2e-16 ***
-    ## median_income_county_scale               0.000228 ***
-    ## physicians_scale                          < 2e-16 ***
-    ## unweighted_pop_county_scale              6.40e-05 ***
-    ## median_monthly_housing_cost_county_scale  < 2e-16 ***
-    ## land_area_2010_scale                      < 2e-16 ***
-    ## education_scale                           < 2e-16 ***
-    ## employment_all1                           < 2e-16 ***
-    ## sex1                                      < 2e-16 ***
-    ## age_scale                                 < 2e-16 ***
-    ## race1                                     < 2e-16 ***
-    ## race2                                     < 2e-16 ***
-    ## race3                                     < 2e-16 ***
-    ## race4                                     < 2e-16 ***
-    ## married1                                 0.178200    
-    ## married2                                  < 2e-16 ***
-    ## married3                                 0.484158    
-    ## married4                                  < 2e-16 ***
-    ## married5                                  < 2e-16 ***
-    ## year2009                                 4.45e-07 ***
-    ## year2010                                 3.87e-08 ***
-    ## year2011                                 0.065701 .  
-    ## year2012                                 0.539436    
-    ## year2013                                 0.406498    
-    ## year2014                                 0.101988    
-    ## year2015                                 0.376689    
-    ## year2016                                 0.529460    
-    ## year2017                                 0.001919 ** 
+    ##                                  Estimate Std. Error  t value Pr(>|t|)    
+    ## (Intercept)                    -0.1606306  0.0018526  -86.703  < 2e-16 ***
+    ## raw_income_scale                0.0488055  0.0005982   81.593  < 2e-16 ***
+    ## median_income_county_scale     -0.0080539  0.0007044  -11.434  < 2e-16 ***
+    ## physicians_scale               -0.0074623  0.0005448  -13.698  < 2e-16 ***
+    ## unweighted_pop_county_scale    -0.0052375  0.0005805   -9.022  < 2e-16 ***
+    ## median_home_value_county_scale  0.0001315  0.0007692    0.171   0.8643    
+    ## land_area_2010_scale            0.0072367  0.0005025   14.403  < 2e-16 ***
+    ## education_scale                 0.0583664  0.0005463  106.841  < 2e-16 ***
+    ## employment_all1                -0.0086778  0.0005695  -15.238  < 2e-16 ***
+    ## sex1                            0.6873379  0.0004929 1394.574  < 2e-16 ***
+    ## age_scale                      -0.1015436  0.0006426 -158.024  < 2e-16 ***
+    ## race1                           0.1982299  0.0011823  167.664  < 2e-16 ***
+    ## race2                           0.0995770  0.0026609   37.422  < 2e-16 ***
+    ## race3                           0.1895693  0.0016913  112.087  < 2e-16 ***
+    ## race4                          -0.3048071  0.0028705 -106.184  < 2e-16 ***
+    ## married1                        0.0014673  0.0013244    1.108   0.2679    
+    ## married2                        0.0112929  0.0010351   10.910  < 2e-16 ***
+    ## married3                        0.0018012  0.0029685    0.607   0.5440    
+    ## married4                        0.0212199  0.0014108   15.041  < 2e-16 ***
+    ## married5                       -0.0308903  0.0016494  -18.728  < 2e-16 ***
+    ## year2009                        0.0095713  0.0018801    5.091 3.57e-07 ***
+    ## year2010                        0.0104873  0.0018820    5.572 2.51e-08 ***
+    ## year2011                        0.0035096  0.0018694    1.877   0.0605 .  
+    ## year2012                        0.0012180  0.0018481    0.659   0.5099    
+    ## year2013                        0.0020383  0.0022516    0.905   0.3653    
+    ## year2014                        0.0044410  0.0022678    1.958   0.0502 .  
+    ## year2015                        0.0035358  0.0022609    1.564   0.1178    
+    ## year2016                        0.0039190  0.0022432    1.747   0.0806 .  
+    ## year2017                        0.0106135  0.0023193    4.576 4.74e-06 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.6796 on 2038681 degrees of freedom
-    ##   (1491560 observations deleted due to missingness)
+    ## Residual standard error: 0.6797 on 2038678 degrees of freedom
+    ##   (1491563 observations deleted due to missingness)
     ## Multiple R-squared:  0.5332, Adjusted R-squared:  0.5332 
-    ## F-statistic: 8.318e+04 on 28 and 2038681 DF,  p-value: < 2.2e-16
+    ## F-statistic: 8.317e+04 on 28 and 2038678 DF,  p-value: < 2.2e-16
 
 ``` r
-lm1 <-
+lm_ht_demo <-
   lm(
-    scale(HEIGHT) ~
-      raw_income_scale +
-      median_income_demo_scale +
+    height_scale ~
+      income_scale +
+      income_demo_ranger_sar_vars_scale +
       physicians_scale +
       unweighted_pop_county_scale +
-      median_monthly_housing_cost_county_scale +
+      median_home_value_county_scale +
       land_area_2010_scale +
       education_scale +
       employment_all +
@@ -1261,85 +1089,287 @@ lm1 <-
     data = dfg_rs 
   )
 
-summary(lm1)
+summary(lm_ht_demo)
 ```
 
     ## 
     ## Call:
-    ## lm(formula = scale(HEIGHT) ~ raw_income_scale + median_income_demo_scale + 
-    ##     physicians_scale + unweighted_pop_county_scale + median_monthly_housing_cost_county_scale + 
+    ## lm(formula = height_scale ~ income_scale + income_demo_ranger_sar_vars_scale + 
+    ##     physicians_scale + unweighted_pop_county_scale + median_home_value_county_scale + 
     ##     land_area_2010_scale + education_scale + employment_all + 
     ##     sex + age_scale + race + married + year, data = dfg_rs)
     ## 
     ## Residuals:
     ##     Min      1Q  Median      3Q     Max 
-    ## -5.5272 -0.4467 -0.0104  0.4360  7.9740 
+    ## -5.5311 -0.4467 -0.0105  0.4358  8.0138 
     ## 
     ## Coefficients:
-    ##                                            Estimate Std. Error  t value
-    ## (Intercept)                              -0.1526591  0.0018544  -82.325
-    ## raw_income_scale                          0.0474336  0.0006001   79.038
-    ## median_income_demo_scale                  0.0397190  0.0011201   35.460
-    ## physicians_scale                         -0.0064154  0.0005339  -12.017
-    ## unweighted_pop_county_scale              -0.0030518  0.0005556   -5.493
-    ## median_monthly_housing_cost_county_scale -0.0101531  0.0005616  -18.080
-    ## land_area_2010_scale                      0.0077932  0.0005017   15.533
-    ## education_scale                           0.0285324  0.0010101   28.247
-    ## employment_all1                          -0.0054769  0.0005756   -9.515
-    ## sex1                                      0.6788522  0.0005478 1239.178
-    ## age_scale                                -0.1008831  0.0006424 -157.043
-    ## race1                                     0.1964027  0.0011798  166.466
-    ## race2                                     0.0985446  0.0026604   37.041
-    ## race3                                     0.1875046  0.0016870  111.144
-    ## race4                                    -0.3027415  0.0028662 -105.625
-    ## married1                                  0.0069352  0.0013321    5.206
-    ## married2                                  0.0071020  0.0010396    6.832
-    ## married3                                 -0.0024394  0.0029704   -0.821
-    ## married4                                  0.0166031  0.0014163   11.723
-    ## married5                                 -0.0241124  0.0016603  -14.523
-    ## year2009                                  0.0120910  0.0018807    6.429
-    ## year2010                                  0.0110415  0.0018813    5.869
-    ## year2011                                  0.0054468  0.0018674    2.917
-    ## year2012                                 -0.0017133  0.0018443   -0.929
-    ## year2013                                 -0.0002868  0.0022470   -0.128
-    ## year2014                                  0.0019237  0.0022607    0.851
-    ## year2015                                 -0.0103867  0.0022819   -4.552
-    ## year2016                                 -0.0190828  0.0023118   -8.254
-    ## year2017                                 -0.0111196  0.0023757   -4.681
-    ##                                          Pr(>|t|)    
-    ## (Intercept)                               < 2e-16 ***
-    ## raw_income_scale                          < 2e-16 ***
-    ## median_income_demo_scale                  < 2e-16 ***
-    ## physicians_scale                          < 2e-16 ***
-    ## unweighted_pop_county_scale              3.96e-08 ***
-    ## median_monthly_housing_cost_county_scale  < 2e-16 ***
-    ## land_area_2010_scale                      < 2e-16 ***
-    ## education_scale                           < 2e-16 ***
-    ## employment_all1                           < 2e-16 ***
-    ## sex1                                      < 2e-16 ***
-    ## age_scale                                 < 2e-16 ***
-    ## race1                                     < 2e-16 ***
-    ## race2                                     < 2e-16 ***
-    ## race3                                     < 2e-16 ***
-    ## race4                                     < 2e-16 ***
-    ## married1                                 1.93e-07 ***
-    ## married2                                 8.39e-12 ***
-    ## married3                                  0.41153    
-    ## married4                                  < 2e-16 ***
-    ## married5                                  < 2e-16 ***
-    ## year2009                                 1.29e-10 ***
-    ## year2010                                 4.38e-09 ***
-    ## year2011                                  0.00354 ** 
-    ## year2012                                  0.35290    
-    ## year2013                                  0.89844    
-    ## year2014                                  0.39482    
-    ## year2015                                 5.32e-06 ***
-    ## year2016                                  < 2e-16 ***
-    ## year2017                                 2.86e-06 ***
+    ##                                     Estimate Std. Error  t value Pr(>|t|)    
+    ## (Intercept)                       -0.1317662  0.0019926  -66.128  < 2e-16 ***
+    ## income_scale                       0.0475461  0.0006032   78.821  < 2e-16 ***
+    ## income_demo_ranger_sar_vars_scale  0.0357854  0.0010387   34.452  < 2e-16 ***
+    ## physicians_scale                  -0.0073336  0.0005439  -13.484  < 2e-16 ***
+    ## unweighted_pop_county_scale       -0.0038663  0.0005705   -6.778 1.22e-11 ***
+    ## median_home_value_county_scale    -0.0050294  0.0005838   -8.615  < 2e-16 ***
+    ## land_area_2010_scale               0.0074921  0.0005017   14.932  < 2e-16 ***
+    ## education_scale                    0.0568613  0.0005483  103.702  < 2e-16 ***
+    ## employment_all1                   -0.0042924  0.0005799   -7.401 1.35e-13 ***
+    ## sex1                               0.6681047  0.0007508  889.861  < 2e-16 ***
+    ## age_scale                         -0.0961062  0.0006666 -144.172  < 2e-16 ***
+    ## race1                              0.1622016  0.0015573  104.156  < 2e-16 ***
+    ## race2                              0.1109791  0.0026809   41.397  < 2e-16 ***
+    ## race3                              0.2028680  0.0017307  117.216  < 2e-16 ***
+    ## race4                             -0.3221840  0.0029142 -110.555  < 2e-16 ***
+    ## married1                           0.0084984  0.0013390    6.347 2.20e-10 ***
+    ## married2                           0.0047411  0.0010503    4.514 6.36e-06 ***
+    ## married3                          -0.0041609  0.0029784   -1.397   0.1624    
+    ## married4                           0.0144523  0.0014241   10.148  < 2e-16 ***
+    ## married5                          -0.0174342  0.0016976  -10.270  < 2e-16 ***
+    ## year2009                           0.0087470  0.0018796    4.654 3.26e-06 ***
+    ## year2010                           0.0106820  0.0018814    5.678 1.37e-08 ***
+    ## year2011                           0.0038486  0.0018680    2.060   0.0394 *  
+    ## year2012                           0.0015441  0.0018451    0.837   0.4027    
+    ## year2013                           0.0023096  0.0022478    1.027   0.3042    
+    ## year2014                           0.0046995  0.0022620    2.078   0.0377 *  
+    ## year2015                           0.0041795  0.0022552    1.853   0.0638 .  
+    ## year2016                           0.0048759  0.0022331    2.183   0.0290 *  
+    ## year2017                           0.0106817  0.0023019    4.640 3.48e-06 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
     ## 
-    ## Residual standard error: 0.6794 on 2037734 degrees of freedom
-    ##   (1492507 observations deleted due to missingness)
-    ## Multiple R-squared:  0.5335, Adjusted R-squared:  0.5335 
-    ## F-statistic: 8.324e+04 on 28 and 2037734 DF,  p-value: < 2.2e-16
+    ## Residual standard error: 0.6793 on 2037136 degrees of freedom
+    ##   (1493105 observations deleted due to missingness)
+    ## Multiple R-squared:  0.5336, Adjusted R-squared:  0.5336 
+    ## F-statistic: 8.324e+04 on 28 and 2037136 DF,  p-value: < 2.2e-16
+
+## Regression tables
+
+### Demographic reference
+
+``` r
+stargazer(
+  lm_diab_demo, lm_hbp_demo, lm_obe_demo, lm_bmi_demo, lm_dep_demo, lm_srh_demo,
+  ci = TRUE,
+  type = "html", digits = 2,
+  out = "regression_table_health_outcomes_demo.doc",
+  dep.var.labels = c("diabetes", "high blood pressure", "obesity", "BMI", "depression", "self-reported health"),
+  covariate.labels =
+    c(
+      "own income",
+      "demographic reference \n median income",
+      "ratio of physicians",
+      "population",
+      "housing cost",
+      "land area",
+      "education",
+      "employment = employed",
+      "sex = male",
+      "age",
+      "race = white",
+      "race = African American",
+      "race = Asian",
+      "race = American Indian \n Alaska native",
+      "marital status = single",
+      "marital status = married",
+      "marital status = separated",
+      "marital status = divorced",
+      "marital status = widowed"
+    ),
+  omit = c("year"),
+  star.char = c("*", "**", "***"),
+  star.cutoffs = c(0.05, 0.01, 0.001),
+  notes = c("* p<0.05; ** p<0.01; *** p<0.001")
+)
+```
+
+    ## 
+    ## <table style="text-align:center"><tr><td colspan="7" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="6"><em>Dependent variable:</em></td></tr>
+    ## <tr><td></td><td colspan="6" style="border-bottom: 1px solid black"></td></tr>
+    ## <tr><td style="text-align:left"></td><td>diabetes</td><td>high blood pressure</td><td>obesity</td><td>BMI</td><td>depression</td><td>self-reported health</td></tr>
+    ## <tr><td style="text-align:left"></td><td><em>logistic</em></td><td><em>logistic</em></td><td><em>logistic</em></td><td><em>OLS</em></td><td><em>logistic</em></td><td><em>OLS</em></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(1)</td><td>(2)</td><td>(3)</td><td>(4)</td><td>(5)</td><td>(6)</td></tr>
+    ## <tr><td colspan="7" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">own income</td><td>-0.18<sup>***</sup></td><td>-0.10<sup>***</sup></td><td>-0.26<sup>***</sup></td><td>-0.06<sup>***</sup></td><td>-0.33<sup>***</sup></td><td>0.19<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.19, -0.18)</td><td>(-0.11, -0.10)</td><td>(-0.26, -0.25)</td><td>(-0.06, -0.06)</td><td>(-0.34, -0.33)</td><td>(0.19, 0.19)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">median income</td><td>0.68<sup>***</sup></td><td>0.35<sup>***</sup></td><td>0.71<sup>***</sup></td><td>0.31<sup>***</sup></td><td>0.62<sup>***</sup></td><td>-0.16<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.67, 0.69)</td><td>(0.35, 0.36)</td><td>(0.70, 0.72)</td><td>(0.30, 0.31)</td><td>(0.61, 0.63)</td><td>(-0.17, -0.16)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">ratio of physicians</td><td>-0.04<sup>***</sup></td><td>-0.03<sup>***</sup></td><td>-0.02<sup>***</sup></td><td>-0.02<sup>***</sup></td><td>0.03<sup>***</sup></td><td>0.01<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.05, -0.04)</td><td>(-0.04, -0.03)</td><td>(-0.03, -0.02)</td><td>(-0.03, -0.02)</td><td>(0.02, 0.03)</td><td>(0.01, 0.02)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">population</td><td>0.01<sup>***</sup></td><td>-0.002</td><td>-0.01<sup>*</sup></td><td>-0.01<sup>***</sup></td><td>-0.01<sup>***</sup></td><td>-0.01<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.01, 0.02)</td><td>(-0.01, 0.002)</td><td>(-0.01, -0.001)</td><td>(-0.01, -0.01)</td><td>(-0.01, -0.004)</td><td>(-0.01, -0.01)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">housing cost</td><td>-0.10<sup>***</sup></td><td>-0.08<sup>***</sup></td><td>-0.10<sup>***</sup></td><td>-0.06<sup>***</sup></td><td>-0.01<sup>***</sup></td><td>0.02<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.11, -0.10)</td><td>(-0.09, -0.08)</td><td>(-0.11, -0.10)</td><td>(-0.06, -0.05)</td><td>(-0.01, -0.004)</td><td>(0.02, 0.02)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">land area</td><td>-0.03<sup>***</sup></td><td>-0.02<sup>***</sup></td><td>-0.01<sup>***</sup></td><td>-0.01<sup>***</sup></td><td>-0.004<sup>*</sup></td><td>0.01<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.03, -0.02)</td><td>(-0.03, -0.02)</td><td>(-0.01, -0.005)</td><td>(-0.01, -0.01)</td><td>(-0.01, -0.0001)</td><td>(0.01, 0.01)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">education</td><td>-0.13<sup>***</sup></td><td>-0.12<sup>***</sup></td><td>-0.45<sup>***</sup></td><td>-0.07<sup>***</sup></td><td>-0.06<sup>***</sup></td><td>0.15<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.14, -0.13)</td><td>(-0.13, -0.12)</td><td>(-0.45, -0.44)</td><td>(-0.07, -0.07)</td><td>(-0.06, -0.05)</td><td>(0.15, 0.15)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">employment = employed</td><td>0.24<sup>***</sup></td><td>0.15<sup>***</sup></td><td>0.08<sup>***</sup></td><td>0.03<sup>***</sup></td><td>0.35<sup>***</sup></td><td>-0.14<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.24, 0.25)</td><td>(0.15, 0.16)</td><td>(0.08, 0.09)</td><td>(0.02, 0.03)</td><td>(0.35, 0.35)</td><td>(-0.14, -0.14)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">sex = male</td><td>-0.30<sup>***</sup></td><td>-0.08<sup>***</sup></td><td>-0.22<sup>***</sup></td><td>-0.07<sup>***</sup></td><td>-0.60<sup>***</sup></td><td>0.05<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.30, -0.29)</td><td>(-0.09, -0.08)</td><td>(-0.22, -0.21)</td><td>(-0.07, -0.07)</td><td>(-0.61, -0.60)</td><td>(0.05, 0.05)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">age</td><td>0.96<sup>***</sup></td><td>1.01<sup>***</sup></td><td>-0.33<sup>***</sup></td><td>0.10<sup>***</sup></td><td>-0.06<sup>***</sup></td><td>-0.12<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.95, 0.97)</td><td>(1.01, 1.02)</td><td>(-0.33, -0.32)</td><td>(0.10, 0.10)</td><td>(-0.07, -0.06)</td><td>(-0.12, -0.12)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">race = white</td><td>-1.03<sup>***</sup></td><td>-0.47<sup>***</sup></td><td>-0.48<sup>***</sup></td><td>-0.33<sup>***</sup></td><td>-0.28<sup>***</sup></td><td>0.28<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-1.04, -1.01)</td><td>(-0.48, -0.46)</td><td>(-0.50, -0.47)</td><td>(-0.33, -0.32)</td><td>(-0.29, -0.27)</td><td>(0.27, 0.28)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">race = African American</td><td>0.29<sup>***</sup></td><td>0.11<sup>***</sup></td><td>0.59<sup>***</sup></td><td>0.16<sup>***</sup></td><td>0.53<sup>***</sup></td><td>-0.10<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.26, 0.31)</td><td>(0.09, 0.13)</td><td>(0.57, 0.61)</td><td>(0.16, 0.17)</td><td>(0.51, 0.55)</td><td>(-0.11, -0.09)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">race = Asian</td><td>0.49<sup>***</sup></td><td>0.65<sup>***</sup></td><td>0.42<sup>***</sup></td><td>0.38<sup>***</sup></td><td>0.02<sup>**</sup></td><td>-0.04<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.48, 0.51)</td><td>(0.64, 0.66)</td><td>(0.41, 0.43)</td><td>(0.37, 0.38)</td><td>(0.005, 0.03)</td><td>(-0.04, -0.03)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">Alaska native</td><td>-0.39<sup>***</sup></td><td>-0.36<sup>***</sup></td><td>-0.55<sup>***</sup></td><td>-0.50<sup>***</sup></td><td>-0.74<sup>***</sup></td><td>0.05<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.42, -0.36)</td><td>(-0.38, -0.34)</td><td>(-0.58, -0.52)</td><td>(-0.51, -0.50)</td><td>(-0.77, -0.71)</td><td>(0.04, 0.06)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">marital status = single</td><td>0.003</td><td>-0.01<sup>*</sup></td><td>-0.08<sup>***</sup></td><td>-0.01<sup>***</sup></td><td>-0.08<sup>***</sup></td><td>0.03<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.01, 0.02)</td><td>(-0.02, -0.002)</td><td>(-0.09, -0.07)</td><td>(-0.01, -0.01)</td><td>(-0.09, -0.07)</td><td>(0.03, 0.04)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">marital status = married</td><td>-0.03<sup>***</sup></td><td>-0.08<sup>***</sup></td><td>-0.56<sup>***</sup></td><td>0.02<sup>***</sup></td><td>-0.42<sup>***</sup></td><td>0.09<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.04, -0.02)</td><td>(-0.09, -0.08)</td><td>(-0.57, -0.55)</td><td>(0.02, 0.02)</td><td>(-0.43, -0.41)</td><td>(0.09, 0.10)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">marital status = separated</td><td>0.14<sup>***</sup></td><td>0.10<sup>***</sup></td><td>0.22<sup>***</sup></td><td>0.02<sup>***</sup></td><td>0.40<sup>***</sup></td><td>-0.12<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.12, 0.17)</td><td>(0.08, 0.12)</td><td>(0.20, 0.24)</td><td>(0.01, 0.02)</td><td>(0.38, 0.42)</td><td>(-0.13, -0.11)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">marital status = divorced</td><td>-0.01</td><td>0.02<sup>***</sup></td><td>0.19<sup>***</sup></td><td>-0.01<sup>*</sup></td><td>0.15<sup>***</sup></td><td>-0.02<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.02, 0.002)</td><td>(0.02, 0.03)</td><td>(0.18, 0.20)</td><td>(-0.01, -0.001)</td><td>(0.14, 0.16)</td><td>(-0.02, -0.02)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">marital status = widowed</td><td>0.01</td><td>0.03<sup>***</sup></td><td>-0.03<sup>***</sup></td><td>0.01<sup>***</sup></td><td>-0.06<sup>***</sup></td><td>0.04<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.01, 0.02)</td><td>(0.02, 0.04)</td><td>(-0.04, -0.01)</td><td>(0.01, 0.02)</td><td>(-0.08, -0.05)</td><td>(0.03, 0.04)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">Constant</td><td>-1.44<sup>***</sup></td><td>-0.32<sup>***</sup></td><td>-1.10<sup>***</sup></td><td>0.24<sup>***</sup></td><td>-1.31<sup>***</sup></td><td>-0.24<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-1.45, -1.42)</td><td>(-0.34, -0.31)</td><td>(-1.12, -1.09)</td><td>(0.23, 0.24)</td><td>(-1.33, -1.29)</td><td>(-0.25, -0.24)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td colspan="7" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>2,055,692</td><td>2,055,058</td><td>2,057,585</td><td>2,005,016</td><td>2,055,670</td><td>1,757,758</td></tr>
+    ## <tr><td style="text-align:left">R<sup>2</sup></td><td></td><td></td><td></td><td>0.06</td><td></td><td>0.15</td></tr>
+    ## <tr><td style="text-align:left">Adjusted R<sup>2</sup></td><td></td><td></td><td></td><td>0.06</td><td></td><td>0.15</td></tr>
+    ## <tr><td style="text-align:left">Log Likelihood</td><td>-691,495.80</td><td>-1,139,583.00</td><td>-838,865.50</td><td></td><td>-867,611.30</td><td></td></tr>
+    ## <tr><td style="text-align:left">Akaike Inf. Crit.</td><td>1,383,050.00</td><td>2,279,224.00</td><td>1,677,789.00</td><td></td><td>1,735,281.00</td><td></td></tr>
+    ## <tr><td style="text-align:left">Residual Std. Error</td><td></td><td></td><td></td><td>0.98 (df = 2004987)</td><td></td><td>0.92 (df = 1757729)</td></tr>
+    ## <tr><td style="text-align:left">F Statistic</td><td></td><td></td><td></td><td>4,427.61<sup>***</sup> (df = 28; 2004987)</td><td></td><td>11,221.72<sup>***</sup> (df = 28; 1757729)</td></tr>
+    ## <tr><td colspan="7" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"><em>Note:</em></td><td colspan="6" style="text-align:right"><sup>*</sup>p<0.05; <sup>**</sup>p<0.01; <sup>***</sup>p<0.001</td></tr>
+    ## <tr><td style="text-align:left"></td><td colspan="6" style="text-align:right">* p<0.05; ** p<0.01; *** p<0.001</td></tr>
+    ## </table>
+
+### Geographic reference
+
+``` r
+stargazer(
+  lm_diab_geo, lm_hbp_geo, lm_obe_geo, lm_bmi_geo, lm_dep_geo, lm_srh_geo,
+  ci = TRUE,
+  type = "html", digits = 2,
+  out = "regression_table_health_outcomes_geo.doc",
+  dep.var.labels = c("diabetes", "high blood pressure", "obesity", "BMI", "depression", "self-reported health"),
+  covariate.labels =
+    c(
+      "own income",
+      "geographic reference \n median income",
+      "ratio of physicians",
+      "population",
+      "housing cost",
+      "land area",
+      "education",
+      "employment = employed",
+      "sex = male",
+      "age",
+      "race = white",
+      "race = African American",
+      "race = Asian",
+      "race = American Indian \n Alaska native",
+      "marital status = single",
+      "marital status = married",
+      "marital status = separated",
+      "marital status = divorced",
+      "marital status = widowed"
+    ),
+  omit = c("year"),
+  star.char = c("*", "**", "***"),
+  star.cutoffs = c(0.05, 0.01, 0.001),
+  notes = c("* p<0.05; ** p<0.01; *** p<0.001")
+)
+```
+
+    ## 
+    ## <table style="text-align:center"><tr><td colspan="7" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"></td><td colspan="6"><em>Dependent variable:</em></td></tr>
+    ## <tr><td></td><td colspan="6" style="border-bottom: 1px solid black"></td></tr>
+    ## <tr><td style="text-align:left"></td><td>diabetes</td><td>high blood pressure</td><td>obesity</td><td>BMI</td><td>depression</td><td>self-reported health</td></tr>
+    ## <tr><td style="text-align:left"></td><td><em>logistic</em></td><td><em>logistic</em></td><td><em>logistic</em></td><td><em>OLS</em></td><td><em>logistic</em></td><td><em>OLS</em></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(1)</td><td>(2)</td><td>(3)</td><td>(4)</td><td>(5)</td><td>(6)</td></tr>
+    ## <tr><td colspan="7" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">own income</td><td>-0.17<sup>***</sup></td><td>-0.09<sup>***</sup></td><td>-0.12<sup>***</sup></td><td>-0.06<sup>***</sup></td><td>-0.31<sup>***</sup></td><td>0.17<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.18, -0.17)</td><td>(-0.09, -0.09)</td><td>(-0.13, -0.12)</td><td>(-0.06, -0.05)</td><td>(-0.32, -0.31)</td><td>(0.17, 0.18)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">median income</td><td>-0.01<sup>**</sup></td><td>-0.02<sup>***</sup></td><td>0.03<sup>***</sup></td><td>0.01<sup>***</sup></td><td>-0.06<sup>***</sup></td><td>0.01<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.02, -0.002)</td><td>(-0.02, -0.01)</td><td>(0.02, 0.03)</td><td>(0.01, 0.01)</td><td>(-0.06, -0.05)</td><td>(0.01, 0.01)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">ratio of physicians</td><td>-0.05<sup>***</sup></td><td>-0.04<sup>***</sup></td><td>-0.05<sup>***</sup></td><td>-0.03<sup>***</sup></td><td>0.02<sup>***</sup></td><td>0.01<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.05, -0.04)</td><td>(-0.04, -0.03)</td><td>(-0.05, -0.05)</td><td>(-0.03, -0.02)</td><td>(0.02, 0.03)</td><td>(0.01, 0.02)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">population</td><td>0.01<sup>**</sup></td><td>-0.01<sup>*</sup></td><td>-0.01<sup>***</sup></td><td>-0.01<sup>***</sup></td><td>-0.02<sup>***</sup></td><td>-0.01<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.002, 0.01)</td><td>(-0.01, -0.001)</td><td>(-0.01, -0.003)</td><td>(-0.01, -0.004)</td><td>(-0.02, -0.01)</td><td>(-0.01, -0.01)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">housing cost</td><td>-0.10<sup>***</sup></td><td>-0.07<sup>***</sup></td><td>-0.14<sup>***</sup></td><td>-0.06<sup>***</sup></td><td>0.03<sup>***</sup></td><td>0.01<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.11, -0.09)</td><td>(-0.08, -0.07)</td><td>(-0.15, -0.14)</td><td>(-0.07, -0.06)</td><td>(0.02, 0.04)</td><td>(0.01, 0.01)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">land area</td><td>-0.03<sup>***</sup></td><td>-0.02<sup>***</sup></td><td>-0.01<sup>***</sup></td><td>-0.01<sup>***</sup></td><td>-0.01<sup>***</sup></td><td>0.01<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.03, -0.02)</td><td>(-0.03, -0.02)</td><td>(-0.01, -0.01)</td><td>(-0.01, -0.01)</td><td>(-0.01, -0.004)</td><td>(0.01, 0.01)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">education</td><td>-0.12<sup>***</sup></td><td>-0.12<sup>***</sup></td><td>-0.12<sup>***</sup></td><td>-0.06<sup>***</sup></td><td>-0.04<sup>***</sup></td><td>0.15<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.12, -0.11)</td><td>(-0.12, -0.11)</td><td>(-0.13, -0.12)</td><td>(-0.06, -0.06)</td><td>(-0.05, -0.04)</td><td>(0.14, 0.15)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">employment = employed</td><td>0.22<sup>***</sup></td><td>0.13<sup>***</sup></td><td>0.01<sup>***</sup></td><td>0.0000</td><td>0.32<sup>***</sup></td><td>-0.14<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.21, 0.22)</td><td>(0.13, 0.13)</td><td>(0.004, 0.01)</td><td>(-0.002, 0.002)</td><td>(0.32, 0.32)</td><td>(-0.14, -0.13)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">sex = male</td><td>0.12<sup>***</sup></td><td>0.12<sup>***</sup></td><td>0.09<sup>***</sup></td><td>0.10<sup>***</sup></td><td>-0.26<sup>***</sup></td><td>-0.04<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.11, 0.12)</td><td>(0.11, 0.12)</td><td>(0.09, 0.09)</td><td>(0.10, 0.10)</td><td>(-0.26, -0.26)</td><td>(-0.04, -0.04)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">age</td><td>0.66<sup>***</sup></td><td>0.90<sup>***</sup></td><td>0.04<sup>***</sup></td><td>0.04<sup>***</sup></td><td>-0.19<sup>***</sup></td><td>-0.09<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.65, 0.66)</td><td>(0.90, 0.90)</td><td>(0.03, 0.04)</td><td>(0.04, 0.05)</td><td>(-0.19, -0.18)</td><td>(-0.09, -0.09)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">race = white</td><td>-0.37<sup>***</sup></td><td>-0.12<sup>***</sup></td><td>0.01</td><td>-0.03<sup>***</sup></td><td>0.33<sup>***</sup></td><td>0.12<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.38, -0.36)</td><td>(-0.13, -0.12)</td><td>(-0.004, 0.01)</td><td>(-0.04, -0.03)</td><td>(0.32, 0.34)</td><td>(0.12, 0.12)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">race = African American</td><td>0.08<sup>***</sup></td><td>-0.002</td><td>0.19<sup>***</sup></td><td>0.07<sup>***</sup></td><td>0.33<sup>***</sup></td><td>-0.05<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.06, 0.11)</td><td>(-0.02, 0.02)</td><td>(0.17, 0.21)</td><td>(0.06, 0.08)</td><td>(0.31, 0.35)</td><td>(-0.06, -0.04)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">race = Asian</td><td>0.24<sup>***</sup></td><td>0.51<sup>***</sup></td><td>0.50<sup>***</sup></td><td>0.27<sup>***</sup></td><td>-0.20<sup>***</sup></td><td>0.02<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.23, 0.26)</td><td>(0.50, 0.52)</td><td>(0.49, 0.51)</td><td>(0.26, 0.27)</td><td>(-0.21, -0.18)</td><td>(0.02, 0.03)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">Alaska native</td><td>-0.03</td><td>-0.17<sup>***</sup></td><td>-0.82<sup>***</sup></td><td>-0.36<sup>***</sup></td><td>-0.45<sup>***</sup></td><td>-0.03<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.06, 0.003)</td><td>(-0.19, -0.15)</td><td>(-0.84, -0.79)</td><td>(-0.36, -0.35)</td><td>(-0.48, -0.42)</td><td>(-0.04, -0.02)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">marital status = single</td><td>-0.07<sup>***</sup></td><td>-0.06<sup>***</sup></td><td>-0.11<sup>***</sup></td><td>-0.07<sup>***</sup></td><td>-0.17<sup>***</sup></td><td>0.06<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.09, -0.06)</td><td>(-0.06, -0.05)</td><td>(-0.12, -0.10)</td><td>(-0.07, -0.07)</td><td>(-0.18, -0.16)</td><td>(0.06, 0.07)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">marital status = married</td><td>0.03<sup>***</sup></td><td>-0.05<sup>***</sup></td><td>0.11<sup>***</sup></td><td>0.06<sup>***</sup></td><td>-0.35<sup>***</sup></td><td>0.08<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.02, 0.03)</td><td>(-0.05, -0.04)</td><td>(0.10, 0.12)</td><td>(0.06, 0.07)</td><td>(-0.35, -0.34)</td><td>(0.07, 0.08)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">marital status = separated</td><td>0.25<sup>***</sup></td><td>0.16<sup>***</sup></td><td>0.13<sup>***</sup></td><td>0.09<sup>***</sup></td><td>0.54<sup>***</sup></td><td>-0.16<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.23, 0.27)</td><td>(0.14, 0.18)</td><td>(0.12, 0.15)</td><td>(0.08, 0.09)</td><td>(0.52, 0.56)</td><td>(-0.17, -0.15)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">marital status = divorced</td><td>0.09<sup>***</sup></td><td>0.08<sup>***</sup></td><td>0.10<sup>***</sup></td><td>0.05<sup>***</sup></td><td>0.27<sup>***</sup></td><td>-0.05<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(0.08, 0.11)</td><td>(0.07, 0.09)</td><td>(0.09, 0.10)</td><td>(0.05, 0.06)</td><td>(0.26, 0.28)</td><td>(-0.06, -0.05)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">marital status = widowed</td><td>-0.18<sup>***</sup></td><td>-0.08<sup>***</sup></td><td>-0.18<sup>***</sup></td><td>-0.11<sup>***</sup></td><td>-0.30<sup>***</sup></td><td>0.10<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-0.19, -0.16)</td><td>(-0.09, -0.07)</td><td>(-0.19, -0.17)</td><td>(-0.11, -0.10)</td><td>(-0.31, -0.28)</td><td>(0.09, 0.10)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td style="text-align:left">Constant</td><td>-1.85<sup>***</sup></td><td>-0.55<sup>***</sup></td><td>-1.13<sup>***</sup></td><td>0.02<sup>***</sup></td><td>-1.75<sup>***</sup></td><td>-0.13<sup>***</sup></td></tr>
+    ## <tr><td style="text-align:left"></td><td>(-1.87, -1.83)</td><td>(-0.56, -0.54)</td><td>(-1.14, -1.12)</td><td>(0.01, 0.02)</td><td>(-1.76, -1.73)</td><td>(-0.14, -0.12)</td></tr>
+    ## <tr><td style="text-align:left"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    ## <tr><td colspan="7" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left">Observations</td><td>2,057,349</td><td>2,056,708</td><td>2,006,509</td><td>2,006,509</td><td>2,057,325</td><td>1,759,167</td></tr>
+    ## <tr><td style="text-align:left">R<sup>2</sup></td><td></td><td></td><td></td><td>0.04</td><td></td><td>0.14</td></tr>
+    ## <tr><td style="text-align:left">Adjusted R<sup>2</sup></td><td></td><td></td><td></td><td>0.04</td><td></td><td>0.14</td></tr>
+    ## <tr><td style="text-align:left">Log Likelihood</td><td>-701,079.50</td><td>-1,145,094.00</td><td>-1,138,511.00</td><td></td><td>-880,633.20</td><td></td></tr>
+    ## <tr><td style="text-align:left">Akaike Inf. Crit.</td><td>1,402,217.00</td><td>2,290,246.00</td><td>2,277,080.00</td><td></td><td>1,761,324.00</td><td></td></tr>
+    ## <tr><td style="text-align:left">Residual Std. Error</td><td></td><td></td><td></td><td>0.99 (df = 2006480)</td><td></td><td>0.92 (df = 1759138)</td></tr>
+    ## <tr><td style="text-align:left">F Statistic</td><td></td><td></td><td></td><td>2,923.28<sup>***</sup> (df = 28; 2006480)</td><td></td><td>10,537.34<sup>***</sup> (df = 28; 1759138)</td></tr>
+    ## <tr><td colspan="7" style="border-bottom: 1px solid black"></td></tr><tr><td style="text-align:left"><em>Note:</em></td><td colspan="6" style="text-align:right"><sup>*</sup>p<0.05; <sup>**</sup>p<0.01; <sup>***</sup>p<0.001</td></tr>
+    ## <tr><td style="text-align:left"></td><td colspan="6" style="text-align:right">* p<0.05; ** p<0.01; *** p<0.001</td></tr>
+    ## </table>

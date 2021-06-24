@@ -36,7 +36,7 @@ machine_path <-
   )
 
 dfg_rs <-
-  write_rds("D:/data/gallup/exports/dfg_rs.rds")
+  read_rds("D:/data/gallup/exports/dfg_rs.rds")
 
 dfg_rs <-
   dfg_rs %>% 

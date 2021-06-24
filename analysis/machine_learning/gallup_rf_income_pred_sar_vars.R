@@ -30,6 +30,11 @@ data_path <- "/project/ourminsk/gallup/exports/dfg_rs.rds"
 data <- 
   read_rds(data_path)
 
+data_path <- "/project/ourminsk/gallup/exports/dfg_rs.rds"
+
+data <- 
+  read_rds(data_path)
+
 data <-
   data %>% 
   mutate(income_scale = scale(income)) %>% 
@@ -48,10 +53,12 @@ data <-
     year,
     children_scale,
     census_region,
-    income_scale
+    income_scale,
+    COMB_WEIGHT
   ) %>% 
   filter_at(
     vars(
+      subid,
       median_home_value_county_scale,
       land_area_2010_scale,
       physicians_scale,
@@ -65,7 +72,8 @@ data <-
       year,
       children_scale,
       census_region,
-      income_scale
+      income_scale,
+      COMB_WEIGHT
     ),
     all_vars(!is.na(.))
   )
@@ -80,31 +88,19 @@ data_train <-
   )
 
 
-## Set up Tune Grid ##
-
-tgrid <-
-  expand.grid(
-    mtry = 3:6,
-    splitrule = "variance",
-    min.node.size = c(10, 20)
-  )
-
-
-data_train <-
-  data %>% 
-  dplyr::select(
-    age_scale,
-    sex,
-    race,
-    income_scale
-  )
 
 
 rf <-
   ranger(
-    income_scale ~ .,
-    data = data_train,
-    num.threads = 8
+    formula         = income_scale ~ ., 
+    data            = data_train, 
+    num.trees       = 500,
+    mtry            = hyper_grid$mtry[i],
+    min.node.size   = 0.632,
+    sample.fraction = hyper_grid$sampe_size[i],
+    seed            = 123,
+    case.weights    = data$COMB_WEIGHT,
+    num.threads     = 8
   )
 
 
@@ -123,5 +119,5 @@ data <-
     income_demo_ranger_sar_vars_scale
   )
 
-write_csv(data, "/project/ourminsk/gallup/results/ml/preds_rf_income_sar_vars.csv")
+write_csv(data, "/project/ourminsk/gallup/results/ml/preds_rf_income_sar_vars_non_caret_tune.csv")
 
