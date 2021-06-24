@@ -8,13 +8,15 @@ library("furrr", lib.loc = "/home/djolear/Rpackages")
 library("broom", lib.loc = "/home/djolear/Rpackages")
 library("broom.mixed", lib.loc = "/home/djolear/Rpackages")
 library("lme4", lib.loc = "/home/djolear/Rpackages")
+library("foreach", lib.loc = "/home/djolear/Rpackages")
+library("doParallel", lib.loc = "/home/djolear/Rpackages")
 
 
 ####################
 ## Setup Parallel ##
 ####################
 
-plan(multicore, workers = 8)
+# plan(multicore, workers = 8)
 
 ###############
 ## Functions ##
@@ -466,8 +468,14 @@ master_function <- function(current_year, dfg) {
   
 }
 
+myCluster <- makeCluster(8, type = "PSOCK")
+
+registerDoParallel(myCluster)
+
 #future_map(.x = years$year, .f = master_function, dfg)
 
 foreach(i = 1:nrow(years), .packages = c("tidyverse", "doParallel"))%dopar%{
   master_function(years$year[i], dfg)
 }
+
+stopCluster(myCluster)
