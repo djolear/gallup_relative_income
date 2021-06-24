@@ -21,22 +21,11 @@ plan(multicore, workers = 2)
 ###############
 
 health_regression_function <- function(median_income_var_name, dfg) {
-  
+
   # select data and set median income variable
   dfg <-
     dfg %>% 
-    mutate(
-      income_scale = 
-        ifelse(
-          median_income_var_name == "income_demo_ranger_sar_vars_scale",
-          scale(income),
-          ifelse(
-            median_income_var_name == "median_income_county_scale",
-            raw_income_scale,
-            NA
-          )
-        )
-    ) %>% 
+    mutate(income_scale = scale(income)) %>%  
     mutate_at(
       vars(
         employment_all,
@@ -48,6 +37,14 @@ health_regression_function <- function(median_income_var_name, dfg) {
       ),
       as.factor
     )
+  
+  if (median_income_var_name == "income_demo_ranger_sar_vars_scale") {
+    dfg$income_scale <- dfg$income_scale
+  } else if (median_income_var_name == "median_income_county_scale") {
+    dfg$income_scale <- dfg$raw_income_scale
+  } else {
+    dfg$income_scale <- NA
+  }
   
   contrasts(dfg$sex) <- contr.sum(2)
   contrasts(dfg$employment_all) <- contr.sum(2)

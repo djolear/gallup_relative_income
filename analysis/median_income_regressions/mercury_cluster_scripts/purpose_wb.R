@@ -25,22 +25,12 @@ pur_regression_function <- function(median_income_var_name, dfg) {
   
   dfg <-
     dfg %>% 
-    mutate(
-      income_scale = 
-        ifelse(
-          median_income_var_name == "income_demo_ranger_sar_vars_scale",
-          scale(income),
-          ifelse(
-            median_income_var_name == "median_income_county_scale",
-            raw_income_scale,
-            NA
-          )
-        )
-    ) %>% 
+    mutate(income_scale = scale(income)) %>% 
     select(
       median_income_var_scale = !!enquo(median_income_var_name),
       PURPOSE_scale,
       income_scale,
+      raw_income_scale,
       education_scale,
       total_pop_county_scale,
       median_home_value_county_scale,
@@ -59,6 +49,7 @@ pur_regression_function <- function(median_income_var_name, dfg) {
         median_income_var_scale,
         PURPOSE_scale,
         income_scale,
+        raw_income_scale,
         education_scale,
         total_pop_county_scale,
         median_home_value_county_scale,
@@ -85,6 +76,14 @@ pur_regression_function <- function(median_income_var_name, dfg) {
       ),
       as.factor
     )
+  
+  if (median_income_var_name == "income_demo_ranger_sar_vars_scale") {
+    dfg$income_scale <- dfg$income_scale
+  } else if (median_income_var_name == "median_income_county_scale") {
+    dfg$income_scale <- dfg$raw_income_scale
+  } else {
+    dfg$income_scale <- NA
+  }
   
   contrasts(dfg$sex) <- contr.sum(2)
   contrasts(dfg$employment_all) <- contr.sum(2)
