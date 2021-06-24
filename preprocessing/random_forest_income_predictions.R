@@ -54,7 +54,7 @@ rf <-
 data <-
   bind_cols(
     data,
-    income_demo_ranger_sar_age_m2_scale = scale(rf$predictions)
+    income_demo_ranger_sar_vars_scale = scale(rf$predictions)
   )
 
 dfg_rs <-
@@ -63,15 +63,18 @@ dfg_rs <-
     data %>% 
       dplyr::select(
         subid,
-        income_demo_ranger_sar_age_m2_scale
+        income_demo_ranger_sar_vars_scale
       )
   )
+
+write_rds(dfg_rs, "D:/data/gallup/exports/dfg_rs.rds")
+write_csv(dfg_rs, "D:/data/gallup/exports/dfg_rs.csv")
 
 gallup_rf_income <-
   data %>% 
   dplyr::select(
     subid,
-    income_demo_ranger_sar_age_m2_scale
+    income_demo_ranger_sar_vars_scale
   )
 
-write_csv(gallup_rf_income, "D:\data\gallup\results\ml_predictions\gallup_rf_income_preds.csv")
+write_csv(gallup_rf_income, "D:/data/gallup/results/ml_predictions/gallup_rf_income_preds.csv")

@@ -24,7 +24,16 @@ data <-
     year,
     children_scale,
     census_region,
-    income_scale
+    income_scale,
+    ladder_now_scale,
+    fruits_veggies_scale,
+    eat_healthy,
+    smoke,
+    diabetes,
+    hbp,
+    obese,
+    depression,
+    COMB_WEIGHT
   ) %>% 
   filter_at(
     vars(
@@ -41,83 +50,49 @@ data <-
       year,
       children_scale,
       census_region,
-      income_scale
+      income_scale,
+      ladder_now_scale,
+      fruits_veggies_scale,
+      eat_healthy,
+      smoke,
+      diabetes,
+      hbp,
+      obese,
+      depression,
+      COMB_WEIGHT
     ),
     all_vars(!is.na(.))
-  ) %>% 
-  sample_n(50000)
+  )
 
-
-# lm1 <- 
-#   lm(
-#     fruits_veggies ~ 
-#       median_income_demo_sar + 
-#       income + 
-#       married +
-#       race + 
-#       sex + 
-#       age + 
-#       education +
-#       employment_all +
-#       year, 
-#     data
-#   )
-# 
-# summary(lm1)
-# lm.beta(lm1)
-# VIF(lm1)
+#train_ind <- sample(1:nrow(data), 250000)
 
 data_train <-
   data %>%
   dplyr::select(
-    -subid
-  )
-# 
-# rf <- 
-#   ranger(
-#     raw_income_scale ~ .,
-#     data = data_train
-#   )
-
-# tgrid <- 
-#   expand.grid(
-#     mtry = 3:6,
-#     splitrule = "variance",
-#     min.node.size = c(10, 20)
-#   )
-
-tgrid <-
-  expand.grid(
-    mtry = 3,
-    splitrule = "variance",
-    min.node.size = c(10)
+    sex,
+    age_scale,
+    race,
+    year,
+    income_scale
   )
 
-model_caret <- 
-  train(
-    income_scale  ~ ., 
+
+
+rf <-
+  ranger(
+    income_scale ~ .,
     data = data_train,
-    method = "ranger",
-    trControl = 
-      trainControl(
-        method="cv", 
-        number = 5, 
-        verboseIter = T
-      ),
-    tuneGrid = tgrid,
-    num.trees = 100,
-    importance = "permutation"
+    case.weights = data$COMB_WEIGHT,
+    mtry = 3,
+    min.node.size = 10
   )
 
-get_best_result(model_caret)
-
-preds <- predict(model_caret, data_train)
 
 
 data <-
   bind_cols(
     data,
-    income_demo_ranger_scale = scale(preds)
+    income_demo_ranger_sar_age_m2_scale = scale(rf$predictions)
   )
 
 
@@ -149,7 +124,7 @@ VIF(lm1)
 
 gbm <- 
   gbm(
-    income ~ .,
+    income_scale ~ .,
     data = data_train
   )
 
@@ -157,32 +132,34 @@ gbm <-
 data <-
   bind_cols(
     data,
-    income_demo_gbm = gbm$fit
+    income_demo_gbm_scale = scale(gbm$fit)
   )
 
 lm1 <- 
   lm(
-    fruits_veggies ~ 
-      income_demo_gbm + 
-      income + 
+    smoke ~ 
+      income_demo_ranger_sar_scale + 
+      income_scale + 
       married +
       race + 
       sex + 
-      age + 
-      education, 
+      age_scale + 
+      education_scale +
+      year +
+      employment_all, 
     data
   )
 
 
 summary(lm1)
 lm.beta(lm1)
-VIF(lm1)
+regclass::VIF(lm1)
 
 
 
 X_train <-
   data_train %>% 
-  dplyr::select(-income) %>% 
+  dplyr::select(-income_scale) %>% 
   as.matrix()
 
 
@@ -193,11 +170,11 @@ dtrain <-
 
 dtrain <-
   cbind(
-    as.numeric(data$age),
+    as.numeric(data$age_scale),
     dtrain
   )
 
-dtrain <- xgb.DMatrix(data = dtrain, label = data_train$income)
+dtrain <- xgb.DMatrix(data = dtrain, label = data_train$income_scale)
 
 
 
@@ -211,7 +188,7 @@ pred <- predict(xgb, dtrain)
 data <-
   bind_cols(
     data,
-    income_demo_xgb = pred
+    income_demo_xgb = scale(pred)
   )
 
 
@@ -250,44 +227,48 @@ data_train <-
     married,
     employment_all,
     year,
-    median_income_demo_sar,
-    raw_income_scale
+    income_demo_gbm_scale ,
+    income_scale,
+    smoke
   ) %>% 
-  mutate(
-    median_income_demo_sar_scale = scale(median_income_demo_sar)
-  ) %>% 
-  dplyr::select(-median_income_demo_sar)
+  sample_n(100000)
 
 outcome_train <-
-  data %>% 
+  data_train %>% 
   dplyr::select(
-    ladder_now_scale
+    smoke
   ) %>%
   data.matrix()
+
+data_train <-
+  data_train %>% 
+  dplyr::select(-smoke)
 
 x_train <- model.matrix( ~ .-1, data_train)
 x_train
 
 
-library(glmnet)
-
-set.seed(123) 
-cv <- cv.glmnet(x = data.matrix(x_train), y = outcome_train)
-# Display the best lambda value
-cv$lambda.min
-
-
-model <- glmnet(x = x_train, y = outcome_train, alpha = 0, lambda = cv$lambda.min)
-
-coef(model)
-
-library(caret)
+# library(glmnet)
+# 
+# set.seed(123) 
+# cv <- cv.glmnet(x = data.matrix(x_train), y = outcome_train)
+# # Display the best lambda value
+# cv$lambda.min
+# 
+# 
+# model <- glmnet(x = x_train, y = outcome_train, alpha = 0, lambda = cv$lambda.min)
+# 
+# coef(model)
+# 
+# library(caret)
 cv_5 = trainControl(method = "cv", number = 5)
 
 hit_elnet = train(
-  eat_healthy ~ ., data = data,
+  x = x_train,
+  y = as.factor(outcome_train),
   method = "glmnet",
-  trControl = cv_5
+  trControl = cv_5,
+  verbose = TRUE
 )
 
 get_best_result = function(caret_fit) {
@@ -300,3 +281,5 @@ get_best_result = function(caret_fit) {
 get_best_result(hit_elnet)
 
 varImp(hit_elnet)
+
+coef(hit_elnet$finalModel, hit_elnet$bestTune$lambda)
