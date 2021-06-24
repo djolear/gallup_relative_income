@@ -233,4 +233,8 @@ master_function <- function(current_year, dfg) {
   
 }
 
-future_map(.x = years$year, .f = master_function, dfg)
+#future_map(.x = years$year, .f = master_function, dfg)
+
+foreach(i = 1:nrow(years), .packages = c("tidyverse", "doParallel"))%dopar%{
+  master_function(years$year[i], dfg)
+}
