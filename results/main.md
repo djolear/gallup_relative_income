@@ -1,5 +1,13 @@
 # Gallup Relative Income Project Results
 
+### Background
+
 A person's subjective sense of their own social status predicts important psychological and health outcomes (Adler et al., 2000; Singh-Manoux et al., 2003, 2005; Snyder-Mackler et al., 2020). One salient source of status is income comparisons, which have been studied in psychology and economics using relative income comparisons (Boyce et al., 2010; Cheung & Lucas, 2016; Clark et al., 2008; Clark & Oswald, 1996; Luttmer, 2005). A given absolute level of income may confer different levels of status depending on the income distribution, such that having an income lower than the typical income of a given reference group is negatively associated with subjective well-being (SWB). This effect is operationalized in regression models predicting SWB from the income of a reference group, controlling for a person's own income. Typically, reference group income is negatively associated with SWB, controlling for the (typically positive) effect of own income. 
 
 While prior research has largely focused on relationships between reference group income and SWB, in the present research, we examine relationships between reference group income and a range of health behaviors, health outcomes, and psychological constructs.
+
+### Our approach
+
+Researchers have developed several ways of deriving a reference group income to use in relative income analyses. The most common reference group is geographic (e.g. one's county). An alternate type of reference group is demographic (e.g., people of given gender, age, education level). However, few studies have validated whether the reference groups used in deriving comparison incomes are the ones that people think of when they compare themselves to others.
+
+In a [pilot study](https://github.com/djolear/rss_analysis/blob/master/rss_analysis.md), we administered a survey designed to assess the validity of different ways of operationalizing income comparisons. Specifically, we asked participants to provide information about who they compare themselves to when considering how well they are doing in life. The results of this survey indicated that the vast majority of individuals compare themselves to people who are demographically similar to them whereas nearly half our sample reported comparing themselves to people who live outside their county of residence. We therefore opted to focus our analyses on a demographic reference group income though we also examined results using a geographic reference group income.
