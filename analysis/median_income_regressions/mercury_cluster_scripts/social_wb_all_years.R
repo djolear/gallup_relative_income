@@ -106,7 +106,7 @@ soc_regression_function <- function(median_income_var_name, dfg) {
         race +
         married +
         year +
-        (0 + income_scale|fips_code),
+        (1 + income_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
       data = dfg
@@ -157,8 +157,8 @@ soc_regression_function <- function(median_income_var_name, dfg) {
         race +
         married +
         year +
-        (0 + income_scale|fips_code) +
-        (0 + median_income_var_scale|fips_code),
+        (1 + income_scale|fips_code) +
+        (1 + median_income_var_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
       data = dfg
@@ -214,8 +214,8 @@ soc_regression_function <- function(median_income_var_name, dfg) {
         age_scale +
         race +
         married +
-        (0 + income_scale|fips_code) +
-        (0 + median_income_var_scale|fips_code),
+        (1 + income_scale|fips_code) +
+        (1 + median_income_var_scale|fips_code),
       REML = FALSE,
       control = lmerControl(optimizer = "bobyqa"),
       data = dfg

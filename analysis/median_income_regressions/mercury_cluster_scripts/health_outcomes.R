@@ -22,6 +22,9 @@ plan(multicore, workers = 2)
 
 health_regression_function <- function(median_income_var_name, dfg) {
 
+  library("broom.mixed", lib.loc = "/home/djolear/Rpackages")
+  
+  
   # select data and set median income variable
   dfg <-
     dfg %>% 
@@ -39,9 +42,9 @@ health_regression_function <- function(median_income_var_name, dfg) {
     )
   
   if (median_income_var_name == "income_demo_ranger_sar_vars_scale") {
-    dfg$income_scale <- dfg$income_scale
+    dfg$income_scale <- as.numeric(dfg$income_scale)
   } else if (median_income_var_name == "median_income_county_scale") {
-    dfg$income_scale <- dfg$raw_income_scale
+    dfg$income_scale <- as.numeric(dfg$raw_income_scale)
   } else {
     dfg$income_scale <- NA
   }
@@ -871,8 +874,13 @@ master_function <- function(path) {
   med_inc_vars <-
     c("median_income_county_scale", "income_demo_ranger_sar_vars_scale")
   
-  res <- 
-    future_map_dfr(.x = med_inc_vars, .f = health_regression_function, dfg = dfg)
+  # res <- 
+  #   future_map_dfr(.x = med_inc_vars, .f = health_regression_function, dfg = dfg)
+  
+  res <-
+    foreach(i = 1:length(med_inc_vars), .combine = cbind, .packages = c("tidyverse", "doParallel", "lme4", "broom"))%dopar%{
+      health_regression_function(med_inc_vars[i], dfg)
+    }
   
   write_csv(res, paste0("/project/ourminsk/gallup/results/regression/health_outcomes_mi_all_years.csv"))
   

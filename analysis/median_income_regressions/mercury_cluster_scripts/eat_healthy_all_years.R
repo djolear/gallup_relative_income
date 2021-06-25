@@ -95,7 +95,7 @@ eh_regression_function <- function(median_income_var_name, dfg) {
   lm1 <-
     glmer(
       eat_healthy ~
-        raw_income_scale +
+        income_scale +
         total_pop_county_scale +
         median_home_value_county_scale +
         land_area_2010_scale +
@@ -107,7 +107,7 @@ eh_regression_function <- function(median_income_var_name, dfg) {
         race +
         married +
         year +
-        (1 + raw_income_scale|fips_code),
+        (1 + income_scale|fips_code),
       family = "binomial",
       control = glmerControl(optimizer = "bobyqa"),
       data = dfg
@@ -139,7 +139,7 @@ eh_regression_function <- function(median_income_var_name, dfg) {
   lm1 <-
     glmer(
       eat_healthy ~
-        raw_income_scale +
+        income_scale +
         median_income_var_scale +
         total_pop_county_scale +
         median_home_value_county_scale +
@@ -153,7 +153,7 @@ eh_regression_function <- function(median_income_var_name, dfg) {
         married +
         year +
         (1 + median_income_var_scale|fips_code) +
-        (1 + raw_income_scale|fips_code),
+        (1 + income_scale|fips_code),
       family = "binomial",
       control = glmerControl(optimizer = "bobyqa"),
       data = dfg
@@ -191,7 +191,7 @@ eh_regression_function <- function(median_income_var_name, dfg) {
   lm1 <-
     glmer(
       eat_healthy ~
-        median_income_var_scale * raw_income_scale +
+        median_income_var_scale * income_scale +
         median_income_var_scale * education_scale +
         median_income_var_scale * employment_all +
         median_income_var_scale * sex +
@@ -210,7 +210,7 @@ eh_regression_function <- function(median_income_var_name, dfg) {
         race +
         married +
         (1 + median_income_var_scale|fips_code) +
-        (1 + raw_income_scale|fips_code),      
+        (1 + income_scale|fips_code),      
       family = "binomial",
       control = glmerControl(optimizer = "bobyqa"),
       data = dfg

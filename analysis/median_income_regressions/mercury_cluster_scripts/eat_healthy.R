@@ -24,6 +24,9 @@ library("doParallel", lib.loc = "/home/djolear/Rpackages")
 
 eh_regression_function <- function(median_income_var_name, dfg) {
   
+  library("broom.mixed", lib.loc = "/home/djolear/Rpackages")
+  
+  
   dfg <-
     dfg %>% 
     mutate(income_scale = scale(income)) %>% 
@@ -79,9 +82,9 @@ eh_regression_function <- function(median_income_var_name, dfg) {
     )
   
   if (median_income_var_name == "income_demo_ranger_sar_vars_scale") {
-    dfg$income_scale <- dfg$income_scale
+    dfg$income_scale <- as.numeric(dfg$income_scale)
   } else if (median_income_var_name == "median_income_county_scale") {
-    dfg$income_scale <- dfg$raw_income_scale
+    dfg$income_scale <- as.numeric(dfg$raw_income_scale)
   } else {
     dfg$income_scale <- NA
   }
@@ -252,7 +255,7 @@ plan(multicore, workers = 8)
 ## Functions ##
 ###############
 
-fv_regression_function <- function(median_income_var_name, dfg) {
+eh_regression_function <- function(median_income_var_name, dfg) {
   
   # select data and set median income variable
   
@@ -458,8 +461,13 @@ master_function <- function(current_year, dfg) {
   med_inc_vars <-
     c("median_income_county_scale", "income_demo_ranger_sar_vars_scale")
   
-  res <- 
-    future_map_dfr(.x = med_inc_vars, .f = fv_regression_function, dfg = dfg)
+  res <-
+    foreach(i = 1:length(med_inc_vars), .combine = cbind, .packages = c("tidyverse", "doParallel", "lme4", "broom"))%dopar%{
+      eh_regression_function(med_inc_vars[i], dfg)
+    }
+  
+  # res <- 
+  #   future_map_dfr(.x = med_inc_vars, .f = eh_regression_function, dfg = dfg)
   
   write_csv(res, paste0("/project/ourminsk/gallup/results/regression/fv_mi_", dfg$year[1], ".csv"))
   

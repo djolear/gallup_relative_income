@@ -94,7 +94,7 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
   lm1 <-
     glmer(
       smoke ~
-        raw_income_scale +
+        income_scale +
         total_pop_county_scale +
         median_home_value_county_scale +
         land_area_2010_scale +
@@ -105,7 +105,7 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
         age_scale +
         race +
         married +
-        (1 + raw_income_scale|fips_code),
+        (1 + income_scale|fips_code),
       family = "binomial",
       control = glmerControl(optimizer = "bobyqa"),
       data = dfg
@@ -142,7 +142,7 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
   lm1 <-
     glmer(
       smoke ~
-        raw_income_scale +
+        income_scale +
         median_income_var_scale +
         total_pop_county_scale +
         median_home_value_county_scale +
@@ -155,7 +155,7 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
         race +
         married +
         (1 + median_income_var_scale|fips_code) +
-        (1 + raw_income_scale|fips_code),
+        (1 + income_scale|fips_code),
       family = "binomial",
       control = glmerControl(optimizer = "bobyqa"),
       data = dfg
@@ -191,7 +191,7 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
   lm1 <-
     glmer(
       smoke ~
-        median_income_var_scale * raw_income_scale +
+        median_income_var_scale * income_scale +
         median_income_var_scale * education_scale +
         median_income_var_scale * employment_all +
         median_income_var_scale * sex +
@@ -209,7 +209,7 @@ smoke_regression_function <- function(median_income_var_name, dfg) {
         race +
         married +
         (1 + median_income_var_scale|fips_code) +
-        (1 + raw_income_scale|fips_code),      
+        (1 + income_scale|fips_code),      
       family = "binomial",
       control = glmerControl(optimizer = "bobyqa"),
       data = dfg
