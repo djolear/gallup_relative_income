@@ -8,6 +8,8 @@ library("furrr", lib.loc = "/home/djolear/Rpackages")
 library("broom", lib.loc = "/home/djolear/Rpackages")
 library("broom.mixed", lib.loc = "/home/djolear/Rpackages")
 library("lme4", lib.loc = "/home/djolear/Rpackages")
+library("foreach", lib.loc = "/home/djolear/Rpackages")
+library("doParallel", lib.loc = "/home/djolear/Rpackages")
 
 
 
