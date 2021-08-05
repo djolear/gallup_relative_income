@@ -114,7 +114,7 @@ model_caret <-
         allowParallel = TRUE
       ),
     tuneGrid = tgrid,
-    num.trees = 500,
+    num.trees = 1000,
     num.threads = 8,
     weights = data$COMB_WEIGHT
   )

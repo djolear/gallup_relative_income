@@ -117,7 +117,7 @@ summary(lm_bmi_geo)
 
 lm_bmi_demo <-
   lm(
-    bmi_scale ~
+    ladder_now_scale ~
       income_scale +
       income_demo_ranger_sar_vars_scale +
       physicians_scale +
